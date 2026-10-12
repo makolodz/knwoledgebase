@@ -4,7 +4,9 @@
 SPA qui affiche les enchères, permet d'enchérir et montre les nouvelles offres en temps réel. Elle parle à l'API Fastify en HTTP et au serveur Socket.IO en temps réel. Raisons du choix : [ADR-002](../decisions/ADR-002-frontend-vue.md).
 
 ## Stack
-Vue 3 (Composition API, `<script setup lang="ts">`), Vite, TypeScript strict, Vue Router, Pinia, socket.io-client.
+Vue 3 (Composition API, `<script setup lang="ts">`), Vite, TypeScript strict, Vue Router, Pinia, socket.io-client, **PrimeVue + Tailwind** ([ADR-012](../decisions/ADR-012-ui-primevue.md)).
+
+Description de chaque écran : [screens.md](screens.md).
 
 ## Structure (`apps/web/src`)
 - `views/` : pages (liste des enchères, détail d'une enchère, connexion, espace vendeur, admin)

@@ -2,9 +2,10 @@
 
 Plateforme d'enchères en direct pour une association : des vendeurs proposent des objets, des acheteurs enchérissent en temps réel, le gagnant paie via Stripe.
 
-Stack : TypeScript strict · Node.js 22 LTS · Fastify + tRPC · Socket.IO 4 · MongoDB + Mongoose · Vue 3 + Vite + Pinia · Stripe Checkout · Brevo (SMTP) · photos sur disque + sharp · monorepo pnpm.
+Stack : TypeScript strict · Node.js 22 LTS · Fastify + tRPC · Socket.IO 4 · MongoDB + Mongoose · Vue 3 + Vite + Pinia + PrimeVue + Tailwind · Stripe Checkout · Brevo (SMTP) · photos sur disque + sharp · monorepo pnpm.
 
 ## Avant de coder
+Pour toute page, suis sa fiche dans [docs/technical/screens.md](docs/technical/screens.md).
 Repère l'étape en cours dans [docs/roadmap.md](docs/roadmap.md) et respecte sa définition de « terminé ».
 Lis [docs/index.md](docs/index.md), puis les documents liés à ta tâche.
 En cas de conflit entre documents, [docs/domain/business-rules.md](docs/domain/business-rules.md) fait foi.

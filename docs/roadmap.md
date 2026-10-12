@@ -19,7 +19,7 @@ Règles :
 - [ ] ESLint + Prettier, Vitest configuré dans chaque paquet.
 - [ ] Docker Compose : MongoDB + Mailpit.
 - [ ] `apps/api` : Fastify + tRPC (`/api/trpc`) + Socket.IO sur le même serveur, config Zod, logs pino avec `redact`, `@fastify/helmet`, CORS.
-- [ ] `apps/web` : Vue 3 + Vite + Router + Pinia, client tRPC typé, client Socket.IO.
+- [ ] `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue + Tailwind, mise en page commune ([screens.md](technical/screens.md)), client tRPC typé, client Socket.IO.
 - [ ] Procédure `health` appelée depuis le front.
 - [ ] CI : lint, typecheck, tests.
 - [ ] Écrire `docs/runbooks/local-development.md`, la section « Commandes » d'[AGENTS.md](../AGENTS.md) et `.env.example`.

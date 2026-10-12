@@ -19,6 +19,7 @@
 | Modèle de données, requête atomique d'offre, index | [technical/database.md](technical/database.md) |
 | Sessions, JWT, limites anti-abus, CORS, secrets | [technical/security.md](technical/security.md) |
 | Stratégie de tests, priorités, E2E | [technical/testing.md](technical/testing.md) |
+| Écrans : routes, contenu, actions, états, wireframes | [technical/screens.md](technical/screens.md) |
 | Front Vue | [technical/frontend.md](technical/frontend.md) |
 | Comprendre pourquoi un choix a été fait | [decisions/](decisions/) |
 
@@ -37,6 +38,7 @@
 | [ADR-009](decisions/ADR-009-comptes.md) | Comptes par email et mot de passe, anonymisation à la suppression |
 | [ADR-010](decisions/ADR-010-api-trpc.md) | API en tRPC, sans OpenAPI |
 | [ADR-011](decisions/ADR-011-sessions-jwt-refresh.md) | Sessions : JWT 15 min + refresh token en base |
+| [ADR-012](decisions/ADR-012-ui-primevue.md) | Interface avec PrimeVue + Tailwind |
 
 ## Pas encore écrit
 Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander ou proposer de les rédiger.
