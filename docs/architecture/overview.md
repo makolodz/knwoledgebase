@@ -37,7 +37,7 @@ Règles détaillées : [business-rules.md](../domain/business-rules.md).
 | Jobs | `setInterval` qui interroge MongoDB | Aucune dépendance, rattrapage après redémarrage | [008](../decisions/ADR-008-jobs-setinterval.md) |
 | Tests | Vitest (+ Vue Test Utils), mongodb-memory-server, Playwright | Rapide, base réelle, E2E temps réel | — |
 | Qualité | ESLint + Prettier | Cohérence du code | — |
-| Dev/infra | Docker Compose (Node + Mongo + Mailpit) | Environnement reproductible | — |
+| Dev/infra | Docker Compose (Mongo + Mailpit) ; l'API et le front tournent sur la machine | Environnement reproductible, rechargement à chaud | [013](../decisions/ADR-013-outillage-monorepo.md) |
 | Monorepo | pnpm workspaces | Types partagés entre front et back | [001](../decisions/ADR-001-stack-backend.md) |
 
 ## Structure du monorepo

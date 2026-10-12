@@ -17,7 +17,7 @@ Règles :
 ## Étape 1 — Squelette du monorepo
 - [x] pnpm workspaces : `apps/api`, `apps/web`, `packages/shared`, TypeScript strict partagé.
 - [x] ESLint + Prettier, Vitest configuré dans chaque paquet.
-- [ ] Docker Compose : MongoDB + Mailpit.
+- [x] Docker Compose : MongoDB + Mailpit.
 - [x] `apps/api` : Fastify + tRPC (`/api/trpc`) + Socket.IO sur le même serveur, config Zod, logs pino avec `redact`, `@fastify/helmet`, CORS.
 - [x] `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue + Tailwind, mise en page commune ([screens.md](technical/screens.md)), client tRPC typé, client Socket.IO.
 - [x] Procédure `health` appelée depuis le front.
