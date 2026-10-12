@@ -31,6 +31,7 @@ En cas de conflit entre documents, [docs/domain/business-rules.md](docs/domain/b
 - Nouveau choix structurant → nouvel ADR dans `docs/decisions/` (format de [ADR-001](docs/decisions/ADR-001-stack-backend.md)).
 - Problème non évident résolu → note dans `docs/lessons-learned/`.
 - Un fait est écrit à **un seul endroit** ; les autres documents pointent vers lui.
+- Avancement : à chaque modification, mettre à jour [docs/progress.md](docs/progress.md) (cases de la roadmap, tableau, historique) dans le même commit.
 
 ## Commandes
 Pas encore de code : les commandes (install, dev, test, lint) seront ajoutées ici.

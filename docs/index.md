@@ -1,6 +1,7 @@
 # Index de la documentation
 
 **Par où commencer : [roadmap.md](roadmap.md)** (étapes dans l'ordre et définition de « terminé »).
+**Où en est le projet : [progress.md](progress.md)** (tableau de bord, mis à jour à chaque modification).
 
 ## Quel document lire ?
 
