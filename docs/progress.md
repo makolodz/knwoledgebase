@@ -8,7 +8,7 @@
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
-| 1 | Squelette du monorepo | `███████░░░` 75 % | 6 / 8 | 🟡 En cours |
+| 1 | Squelette du monorepo | `████████░░` 88 % | 7 / 8 | 🟡 En cours |
 | 2 | Comptes et sessions | `░░░░░░░░░░` 0 % | 0 / 8 | ⚪ Pas commencée |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
@@ -16,9 +16,9 @@
 | 6 | Paiement | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 7 | Administration et RGPD | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
-| | **Total** | `█░░░░░░░░░` **13 %** | **6 / 47** | |
+| | **Total** | `█░░░░░░░░░` **15 %** | **7 / 47** | |
 
-**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier), `packages/shared`, `apps/api` (Fastify + tRPC + Socket.IO) et `apps/web` (Vue 3 : page `health` + indicateur temps réel) avec leurs tests, et Docker Compose (MongoDB + Mailpit). Reste : CI et E2E, runbook.
+**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier), `packages/shared`, `apps/api` (Fastify + tRPC + Socket.IO) et `apps/web` (Vue 3 : page `health` + indicateur temps réel) avec leurs tests, Docker Compose (MongoDB + Mailpit), le test E2E Playwright (T1.1) et la CI GitHub Actions. Reste : runbook, section « Commandes » d'AGENTS.md et vérification de la CI sur GitHub.
 
 ## État de la documentation
 
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-12 | CI GitHub Actions (`check` : lint, formatage, types, tests ; `e2e` : Playwright sur PR et `main`), actions épinglées par SHA ; test E2E T1.1 | 1 |
 | 2026-10-12 | Docker Compose : MongoDB 8.0 et Mailpit, ports liés à `127.0.0.1`, scripts `pnpm infra:up/down/logs` | 1 |
 | 2026-10-12 | `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue 4 + Tailwind, mise en page, clients tRPC et Socket.IO, page `health` ; tests T1.11 à T1.13 ; addendum à l'ADR-012 (PrimeVue 5 sous licence propriétaire : on reste en 4.5.5 MIT) | 1 |
 | 2026-10-12 | `apps/api` : Fastify + tRPC (`health`) + Socket.IO sur le même serveur, config Zod, logs `redact`, Helmet, CORS ; tests T1.2, T1.3, T1.5 à T1.10 ; `.env.example` | 1 |

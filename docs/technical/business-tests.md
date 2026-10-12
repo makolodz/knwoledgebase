@@ -15,7 +15,7 @@ Convention :
 
 | ID | Niveau | Scénario |
 |---|---|---|
-| T1.1 | E2E | `pnpm dev` lance l'API et le front ; le front affiche la réponse de `health`. |
+| T1.1 | E2E | L'API et le front démarrent (scripts `dev`, lancés par Playwright) ; le front affiche la réponse de `health`. `pnpm dev` lui-même se vérifie à la main ([runbook](../runbooks/local-development.md)). |
 | T1.2 | Int | `health` répond sans authentification. |
 | T1.3 | Int | Une requête sans `Content-Type` ou au mauvais format est refusée proprement (pas de 500). |
 | T1.4 | Unit | Une entrée invalide est rejetée par son schéma Zod, dans `packages/shared`. |

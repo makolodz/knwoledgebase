@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - e2e
 
 # Scripts d'installation : aucun n'est exécuté. esbuild fonctionne sans (binaire fourni par
 # un paquet optionnel par plateforme).
@@ -31,6 +32,9 @@ catalog:
 # pnpm 12 propose d'installer les « skills » d'agents IA livrés par certaines dépendances.
 # Refusé : le projet n'accepte pas d'instructions venant de paquets tiers.
 permissions:
+  "@playwright/test":
+    build: false
+    skills: false
   "@trpc/client":
     skills: false
   "@trpc/server":

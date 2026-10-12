@@ -21,7 +21,7 @@ Règles :
 - [x] `apps/api` : Fastify + tRPC (`/api/trpc`) + Socket.IO sur le même serveur, config Zod, logs pino avec `redact`, `@fastify/helmet`, CORS.
 - [x] `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue + Tailwind, mise en page commune ([screens.md](technical/screens.md)), client tRPC typé, client Socket.IO.
 - [x] Procédure `health` appelée depuis le front.
-- [ ] CI : lint, typecheck, tests.
+- [x] CI : lint, typecheck, tests.
 - [ ] Écrire `docs/runbooks/local-development.md`, la section « Commandes » d'[AGENTS.md](../AGENTS.md) et `.env.example`.
 
 **Fini quand** : `pnpm dev` lance API + front, le front affiche la réponse de `health`.
