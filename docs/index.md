@@ -12,6 +12,7 @@
 | Paiement Stripe, impayés, remboursements | [domain/workflows/payment.md](domain/workflows/payment.md) |
 | Inscription, connexion, vérification, mot de passe oublié, rôles, suspension, suppression (RGPD) | [domain/workflows/account.md](domain/workflows/account.md) |
 | Code serveur (Fastify, services, jobs, webhook, emails, photos) | [technical/backend.md](technical/backend.md) |
+| Procédures tRPC, routes HTTP, erreurs, pagination | [technical/api.md](technical/api.md) |
 | Événements Socket.IO | [technical/realtime.md](technical/realtime.md) |
 | Modèle de données, requête atomique d'offre, index | [technical/database.md](technical/database.md) |
 | Front Vue | [technical/frontend.md](technical/frontend.md) |
@@ -30,10 +31,10 @@
 | [ADR-007](decisions/ADR-007-photos-disque-local.md) | Photos sur disque local, une seule instance d'API |
 | [ADR-008](decisions/ADR-008-jobs-setinterval.md) | Tâches automatiques par `setInterval` |
 | [ADR-009](decisions/ADR-009-comptes.md) | Comptes par email et mot de passe, anonymisation à la suppression |
+| [ADR-010](decisions/ADR-010-api-trpc.md) | API en tRPC, sans OpenAPI |
 
 ## Pas encore écrit
 Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander ou proposer de les rédiger.
-- `technical/api.md` : routes HTTP, format des erreurs
 - `technical/testing.md` : stratégie de tests
 - `technical/security.md` : auth, rôles, rate limiting, secrets
 - `architecture/modules.md` : découpage des modules une fois le code en place

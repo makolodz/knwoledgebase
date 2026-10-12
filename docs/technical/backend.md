@@ -2,14 +2,15 @@
 
 ## Rôle
 Un seul process Node.js qui héberge :
-- l'API HTTP **Fastify** ;
+- l'API **tRPC** sur **Fastify**, plus quelques routes classiques ([api.md](api.md)) ;
 - le serveur **Socket.IO**, attaché au même serveur HTTP ([realtime.md](realtime.md)) ;
 - les **jobs planifiés** : ouverture, clôture, rappels et expiration des paiements ([data-flow.md](../architecture/data-flow.md)) ;
 - le **webhook Stripe** ([payment.md](../domain/workflows/payment.md)).
 
 ## Structure (`apps/api/src`)
 - `config/` : variables d'environnement validées par Zod au démarrage
-- `routes/` : routes HTTP (validation + appel de service)
+- `trpc/` : routeurs tRPC (validation + appel de service) ([api.md](api.md))
+- `routes/` : routes Fastify classiques (webhook Stripe, upload)
 - `sockets/` : handlers Socket.IO (validation + appel de service)
 - `services/` : **toute** la logique métier, partagée entre HTTP, Socket.IO et jobs
 - `models/` : modèles Mongoose ([database.md](database.md))

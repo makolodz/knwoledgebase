@@ -23,7 +23,8 @@ Règles détaillées : [business-rules.md](../domain/business-rules.md).
 |---|---|---|---|
 | Langage | TypeScript (strict) | Typage partagé front/back, moins de bugs | [001](../decisions/ADR-001-stack-backend.md) |
 | Runtime | Node.js 22 LTS | Imposé, support long terme | — |
-| API HTTP | Fastify | Rapide, maintenu, validation de schémas et logs intégrés | [001](../decisions/ADR-001-stack-backend.md) |
+| API | tRPC sur Fastify | Typage de bout en bout front/API | [010](../decisions/ADR-010-api-trpc.md) |
+| Serveur HTTP | Fastify | Rapide, maintenu, validation de schémas et logs intégrés | [001](../decisions/ADR-001-stack-backend.md) |
 | Temps réel | Socket.IO v4 | Imposé | — |
 | BDD | MongoDB 7+ via Mongoose | Imposé ; Mongoose apporte schémas et validation | [001](../decisions/ADR-001-stack-backend.md) |
 | Validation | Zod | Schémas partagés client/serveur | [001](../decisions/ADR-001-stack-backend.md) |

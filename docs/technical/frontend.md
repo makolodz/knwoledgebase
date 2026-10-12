@@ -11,7 +11,7 @@ Vue 3 (Composition API, `<script setup lang="ts">`), Vite, TypeScript strict, Vu
 - `components/` : composants réutilisables (carte d'enchère, compte à rebours, formulaire d'offre)
 - `stores/` : stores Pinia (`auth`, `auctions`)
 - `composables/` : logique réutilisable (`useAuctionSocket`, `useCountdown`)
-- `api/` : appels HTTP
+- `api/` : client tRPC typé avec `AppRouter` ([api.md](api.md))
 
 ## Temps réel
 Composable `useAuctionSocket(auctionId)` :
