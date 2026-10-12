@@ -8,7 +8,9 @@ Un seul process Node.js qui héberge :
 - le **webhook Stripe** ([payment.md](../domain/workflows/payment.md)).
 
 ## Structure (`apps/api/src`)
-- `config/` : variables d'environnement validées par Zod au démarrage
+- `server.ts` : point d'entrée (charge la config, écoute, arrêt propre sur SIGINT/SIGTERM)
+- `app.ts` : `buildApp(config)` construit le serveur Fastify sans l'écouter (utilisé par `server.ts` et par les tests)
+- `config/` : variables d'environnement validées par Zod au démarrage, options des logs (`redact`)
 - `trpc/` : routeurs tRPC (validation + appel de service) ([api.md](api.md))
 - `routes/` : routes Fastify classiques (webhook Stripe, upload)
 - `sockets/` : handlers Socket.IO (validation + appel de service)

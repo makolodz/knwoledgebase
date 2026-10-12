@@ -8,7 +8,7 @@
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
-| 1 | Squelette du monorepo | `░░░░░░░░░░` 0 % | 0 / 8 | 🟡 En cours |
+| 1 | Squelette du monorepo | `█░░░░░░░░░` 13 % | 1 / 8 | 🟡 En cours |
 | 2 | Comptes et sessions | `░░░░░░░░░░` 0 % | 0 / 8 | ⚪ Pas commencée |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
@@ -16,9 +16,9 @@
 | 6 | Paiement | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 7 | Administration et RGPD | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
-| | **Total** | `░░░░░░░░░░` **0 %** | **0 / 47** | |
+| | **Total** | `░░░░░░░░░░` **2 %** | **1 / 47** | |
 
-**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier) et `packages/shared` avec ses tests. Reste : `apps/api`, `apps/web`, Docker Compose, CI et E2E, runbook.
+**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier), `packages/shared` et `apps/api` (Fastify + tRPC + Socket.IO) avec leurs tests. Reste : `apps/web`, Docker Compose, CI et E2E, runbook.
 
 ## État de la documentation
 
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-12 | `apps/api` : Fastify + tRPC (`health`) + Socket.IO sur le même serveur, config Zod, logs `redact`, Helmet, CORS ; tests T1.2, T1.3, T1.5 à T1.10 ; `.env.example` | 1 |
 | 2026-10-12 | Début de l'étape 1 : outillage racine, `packages/shared` (schémas Zod `health` et pagination, T1.4) et [ADR-013](decisions/ADR-013-outillage-monorepo.md) | 1 |
 | 2026-10-12 | Règles Claude Code par domaine (`.claude/rules/` : offres, cycle d'enchère, paiement, comptes, temps réel) | Préparation étapes 2, 4, 5, 6 |
 | 2026-10-12 | Outillage qualité : gabarit de PR, Dependabot, permissions Claude Code (`.claude/settings.json`), checklist dans `CLAUDE.md` | Préparation étape 1 |

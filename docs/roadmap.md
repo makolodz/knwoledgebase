@@ -18,7 +18,7 @@ Règles :
 - [ ] pnpm workspaces : `apps/api`, `apps/web`, `packages/shared`, TypeScript strict partagé.
 - [ ] ESLint + Prettier, Vitest configuré dans chaque paquet.
 - [ ] Docker Compose : MongoDB + Mailpit.
-- [ ] `apps/api` : Fastify + tRPC (`/api/trpc`) + Socket.IO sur le même serveur, config Zod, logs pino avec `redact`, `@fastify/helmet`, CORS.
+- [x] `apps/api` : Fastify + tRPC (`/api/trpc`) + Socket.IO sur le même serveur, config Zod, logs pino avec `redact`, `@fastify/helmet`, CORS.
 - [ ] `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue + Tailwind, mise en page commune ([screens.md](technical/screens.md)), client tRPC typé, client Socket.IO.
 - [ ] Procédure `health` appelée depuis le front.
 - [ ] CI : lint, typecheck, tests.

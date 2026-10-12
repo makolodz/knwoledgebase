@@ -20,6 +20,11 @@ Convention :
 | T1.3 | Int | Une requête sans `Content-Type` ou au mauvais format est refusée proprement (pas de 500). |
 | T1.4 | Unit | Une entrée invalide est rejetée par son schéma Zod, dans `packages/shared`. |
 | T1.5 | Int | Les logs n'affichent jamais les champs `password`, `token`, `authorization` (`redact`). |
+| T1.6 | Int | Les en-têtes de sécurité Helmet sont présents sur toute réponse, erreurs comprises. |
+| T1.7 | Int | CORS : seule l'origine `WEB_ORIGIN` est autorisée, avec `credentials` ; une autre origine ne reçoit pas `Access-Control-Allow-Origin`. |
+| T1.8 | Int | Socket.IO répond sur le même port que HTTP ; une origine de navigateur étrangère est refusée ; l'arrêt du serveur est propre. |
+| T1.9 | Unit | Configuration invalide : le serveur refuse de démarrer, sans afficher la valeur fautive. |
+| T1.10 | Int | Aucune réponse d'erreur ne contient de stack trace ni de chemin de fichier. |
 
 ## Étape 2 — Comptes et sessions
 
