@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-12 | Runbook : dépannage de l'activation de Node/pnpm avec fnm sous PowerShell | 1 |
 | 2026-10-12 | Fin de l'étape 1 : [runbook de développement local](runbooks/local-development.md), section « Commandes » d'`AGENTS.md`, [retours d'expérience](lessons-learned/2026-10-etape-1-squelette.md) | 1 |
 | 2026-10-12 | CI GitHub Actions (`check` : lint, formatage, types, tests ; `e2e` : Playwright sur PR et `main`), actions épinglées par SHA ; test E2E T1.1 | 1 |
 | 2026-10-12 | Docker Compose : MongoDB 8.0 et Mailpit, ports liés à `127.0.0.1`, scripts `pnpm infra:up/down/logs` | 1 |
