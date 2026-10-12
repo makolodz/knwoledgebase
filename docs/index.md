@@ -1,5 +1,7 @@
 # Index de la documentation
 
+**Par où commencer : [roadmap.md](roadmap.md)** (étapes dans l'ordre et définition de « terminé »).
+
 ## Quel document lire ?
 
 | Tâche | Document |

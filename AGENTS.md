@@ -5,6 +5,7 @@ Plateforme d'enchères en direct pour une association : des vendeurs proposent d
 Stack : TypeScript strict · Node.js 22 LTS · Fastify + tRPC · Socket.IO 4 · MongoDB + Mongoose · Vue 3 + Vite + Pinia · Stripe Checkout · Brevo (SMTP) · photos sur disque + sharp · monorepo pnpm.
 
 ## Avant de coder
+Repère l'étape en cours dans [docs/roadmap.md](docs/roadmap.md) et respecte sa définition de « terminé ».
 Lis [docs/index.md](docs/index.md), puis les documents liés à ta tâche.
 En cas de conflit entre documents, [docs/domain/business-rules.md](docs/domain/business-rules.md) fait foi.
 
