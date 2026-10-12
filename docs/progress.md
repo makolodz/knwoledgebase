@@ -2,7 +2,7 @@
 
 > Document **tenu à jour par l'IA** à chaque modification (code, doc, roadmap). Source des cases : [roadmap.md](roadmap.md). Ne pas y recopier le contenu des étapes, seulement l'état.
 >
-> Dernière mise à jour : 2026-10-12 · Commit de référence : `d68b169`
+> Dernière mise à jour : 2026-10-12 · Commit de référence : `732e372`
 
 ## Vue d'ensemble
 
@@ -22,7 +22,8 @@
 
 ## État de la documentation
 
-- Documents présents : 27 fichiers dans `docs/` (architecture, domaine, technique, 12 ADR).
+- Documents présents : 31 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR).
+- Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
 - Documents annoncés mais absents : `architecture/modules.md`, `runbooks/local-development.md`, `runbooks/deployment.md`, `lessons-learned/`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
 
@@ -30,6 +31,8 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-12 | Scénarios de tests métier par étape (`business-tests.md`) | Préparation étapes 1–8 |
+| 2026-10-12 | Suivi GitHub : 8 jalons, labels, 8 issues et projet kanban « Encheres — Roadmap » | Toutes |
 | 2026-10-12 | Création du tableau de bord | — |
 | 2026-10-12 | Ajout de `screens.md` et ADR-012 (PrimeVue) | Préparation étapes 1–2 |
 | 2026-10-12 | Ajout de `security.md`, `testing.md`, ADR-011 | Préparation étapes 2, 4 |

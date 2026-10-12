@@ -15,6 +15,7 @@ Outils :
 - Chaque bug corrigé arrive avec un test qui le reproduit.
 
 ## Priorités (à couvrir avant tout le reste)
+Les scénarios détaillés par étape sont dans [business-tests.md](business-tests.md).
 1. **Offres simultanées** : N offres envoyées en parallèle sur la même enchère.
    - Une seule est acceptée par niveau de prix.
    - `nextMinBid` reste cohérent.
