@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-12 | Règles Claude Code par domaine (`.claude/rules/` : offres, cycle d'enchère, paiement, comptes, temps réel) | Préparation étapes 2, 4, 5, 6 |
 | 2026-10-12 | Outillage qualité : gabarit de PR, Dependabot, permissions Claude Code (`.claude/settings.json`), checklist dans `CLAUDE.md` | Préparation étape 1 |
 | 2026-10-12 | Scénarios de tests métier par étape (`business-tests.md`) | Préparation étapes 1–8 |
 | 2026-10-12 | Suivi GitHub : 8 jalons, labels, 8 issues et projet kanban « Encheres — Roadmap » | Toutes |
