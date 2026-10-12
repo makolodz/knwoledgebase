@@ -1,7 +1,7 @@
 # Comptes utilisateurs
 
 Inscription, connexion, vérification de l'email, rôles, suspension et suppression. Raisons des choix : [ADR-009](../../decisions/ADR-009-comptes.md).
-- Sessions, JWT et protection contre la force brute : `technical/security.md` (pas encore écrit).
+- Sessions, JWT et protection contre la force brute : [security.md](../../technical/security.md).
 - Modèle de données : [database.md](../../technical/database.md) (`users`, `authTokens`).
 
 ## Inscription

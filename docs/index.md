@@ -15,6 +15,8 @@
 | Procédures tRPC, routes HTTP, erreurs, pagination | [technical/api.md](technical/api.md) |
 | Événements Socket.IO | [technical/realtime.md](technical/realtime.md) |
 | Modèle de données, requête atomique d'offre, index | [technical/database.md](technical/database.md) |
+| Sessions, JWT, limites anti-abus, CORS, secrets | [technical/security.md](technical/security.md) |
+| Stratégie de tests, priorités, E2E | [technical/testing.md](technical/testing.md) |
 | Front Vue | [technical/frontend.md](technical/frontend.md) |
 | Comprendre pourquoi un choix a été fait | [decisions/](decisions/) |
 
@@ -32,11 +34,10 @@
 | [ADR-008](decisions/ADR-008-jobs-setinterval.md) | Tâches automatiques par `setInterval` |
 | [ADR-009](decisions/ADR-009-comptes.md) | Comptes par email et mot de passe, anonymisation à la suppression |
 | [ADR-010](decisions/ADR-010-api-trpc.md) | API en tRPC, sans OpenAPI |
+| [ADR-011](decisions/ADR-011-sessions-jwt-refresh.md) | Sessions : JWT 15 min + refresh token en base |
 
 ## Pas encore écrit
 Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander ou proposer de les rédiger.
-- `technical/testing.md` : stratégie de tests
-- `technical/security.md` : auth, rôles, rate limiting, secrets
 - `architecture/modules.md` : découpage des modules une fois le code en place
 - `runbooks/local-development.md` : lancer le projet en local
 - `lessons-learned/` : retours d'expérience

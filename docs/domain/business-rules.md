@@ -71,6 +71,7 @@ Codes de refus, renvoyés dans l'ack Socket.IO :
 | `OWN_AUCTION` | Le vendeur enchérit sur sa propre enchère |
 | `ALREADY_HIGHEST` | L'utilisateur est déjà le meilleur enchérisseur |
 | `BID_TOO_LOW` | `amount < nextMinBid`, y compris quand une autre offre est arrivée juste avant |
+| `RATE_LIMITED` | Trop d'offres en peu de temps ([security.md](../technical/security.md)) |
 | `INVALID_AMOUNT` | Montant non entier ou négatif |
 
 ## Anti-sniping

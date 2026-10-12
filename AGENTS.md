@@ -22,6 +22,8 @@ En cas de conflit entre documents, [docs/domain/business-rules.md](docs/domain/b
 - Aucune nouvelle dépendance sans justification. Si le choix est structurant, rédiger un ADR.
 - Ne pas contredire une décision de [docs/decisions/](docs/decisions/) sans le signaler explicitement.
 
+- Toute modification de logique critique arrive avec ses tests ([testing.md](docs/technical/testing.md)). Pas de mock de MongoDB.
+
 ## Tenir la doc à jour
 - Une règle métier change → mettre à jour `docs/domain/` dans le même commit.
 - Nouveau choix structurant → nouvel ADR dans `docs/decisions/` (format de [ADR-001](docs/decisions/ADR-001-stack-backend.md)).

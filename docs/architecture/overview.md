@@ -29,12 +29,12 @@ Règles détaillées : [business-rules.md](../domain/business-rules.md).
 | BDD | MongoDB 7+ via Mongoose | Imposé ; Mongoose apporte schémas et validation | [001](../decisions/ADR-001-stack-backend.md) |
 | Validation | Zod | Schémas partagés client/serveur | [001](../decisions/ADR-001-stack-backend.md) |
 | Front | Vue 3 + Vite (TS, Vue Router, Pinia) | Stack déjà maîtrisée, écosystème officiel cohérent | [002](../decisions/ADR-002-frontend-vue.md) |
-| Auth | JWT (cookie httpOnly) | Simple, compatible avec le handshake Socket.IO | — |
+| Auth | JWT 15 min + refresh token en base (cookies httpOnly) | Révocable, compatible avec le handshake Socket.IO | [011](../decisions/ADR-011-sessions-jwt-refresh.md) |
 | Paiement | Stripe (Checkout + webhooks) | Standard, données de carte gérées par Stripe, mode test | [003](../decisions/ADR-003-paiement-stripe.md) |
 | Emails | Brevo (SMTP) via Nodemailer + file d'envoi en base ; Mailpit en local | Données dans l'UE, fournisseur remplaçable | [006](../decisions/ADR-006-emails-brevo.md) |
 | Photos | Disque local (volume Docker) + sharp | Aucun service en plus | [007](../decisions/ADR-007-photos-disque-local.md) |
 | Jobs | `setInterval` qui interroge MongoDB | Aucune dépendance, rattrapage après redémarrage | [008](../decisions/ADR-008-jobs-setinterval.md) |
-| Tests | Vitest (+ Vue Test Utils) | Rapide, compatible TS/Vite | — |
+| Tests | Vitest (+ Vue Test Utils), mongodb-memory-server, Playwright | Rapide, base réelle, E2E temps réel | — |
 | Qualité | ESLint + Prettier | Cohérence du code | — |
 | Dev/infra | Docker Compose (Node + Mongo + Mailpit) | Environnement reproductible | — |
 | Monorepo | pnpm workspaces | Types partagés entre front et back | [001](../decisions/ADR-001-stack-backend.md) |

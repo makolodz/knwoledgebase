@@ -19,6 +19,8 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
   - historique des offres, index `{ auctionId: 1, createdAt: -1 }`
 - `payments` : `{ _id, auctionId, userId, amount, stripeSessionId, status: 'open'|'paid'|'expired'|'refunded', createdAt }`
   - index unique sur `stripeSessionId`
+- `sessions` : `{ _id, userId, refreshTokenHash, expiresAt, lastUsedAt, userAgent, createdAt }`
+  - index unique sur `refreshTokenHash`, index sur `userId`, TTL sur `expiresAt` ([security.md](security.md))
 - `emails` : `{ _id, to, template, data, status: 'pending'|'sent'|'failed', attempts, lastError, sendAfter, createdAt, sentAt }`
   - file d'envoi ([ADR-006](../decisions/ADR-006-emails-brevo.md)) ; `failed` après 5 tentatives
   - index `{ status: 1, sendAfter: 1 }`
