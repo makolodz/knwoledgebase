@@ -8,7 +8,7 @@
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
-| 1 | Squelette du monorepo | `████████░░` 88 % | 7 / 8 | 🟡 En cours |
+| 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟡 En revue |
 | 2 | Comptes et sessions | `░░░░░░░░░░` 0 % | 0 / 8 | ⚪ Pas commencée |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
@@ -16,21 +16,22 @@
 | 6 | Paiement | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 7 | Administration et RGPD | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
-| | **Total** | `█░░░░░░░░░` **15 %** | **7 / 47** | |
+| | **Total** | `█░░░░░░░░░` **17 %** | **8 / 47** | |
 
-**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier), `packages/shared`, `apps/api` (Fastify + tRPC + Socket.IO) et `apps/web` (Vue 3 : page `health` + indicateur temps réel) avec leurs tests, Docker Compose (MongoDB + Mailpit), le test E2E Playwright (T1.1) et la CI GitHub Actions. Reste : runbook, section « Commandes » d'AGENTS.md et vérification de la CI sur GitHub.
+**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier), `packages/shared`, `apps/api` (Fastify + tRPC + Socket.IO) et `apps/web` (Vue 3 : page `health` + indicateur temps réel) avec leurs tests, Docker Compose (MongoDB + Mailpit), le test E2E Playwright (T1.1) et la CI GitHub Actions. Runbook, section « Commandes » d'AGENTS.md et `.env.example` écrits : toutes les cases sont cochées. Reste : ouvrir la PR (`Closes #2`) et vérifier que la CI passe sur GitHub.
 
 ## État de la documentation
 
-- Documents présents : 32 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR).
+- Documents présents : 34 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
 - Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
-- Documents annoncés mais absents : `architecture/modules.md`, `runbooks/local-development.md`, `runbooks/deployment.md`, `lessons-learned/`.
+- Documents annoncés mais absents : `architecture/modules.md`, `runbooks/deployment.md`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
 
 ## Historique récent
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-12 | Fin de l'étape 1 : [runbook de développement local](runbooks/local-development.md), section « Commandes » d'`AGENTS.md`, [retours d'expérience](lessons-learned/2026-10-etape-1-squelette.md) | 1 |
 | 2026-10-12 | CI GitHub Actions (`check` : lint, formatage, types, tests ; `e2e` : Playwright sur PR et `main`), actions épinglées par SHA ; test E2E T1.1 | 1 |
 | 2026-10-12 | Docker Compose : MongoDB 8.0 et Mailpit, ports liés à `127.0.0.1`, scripts `pnpm infra:up/down/logs` | 1 |
 | 2026-10-12 | `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue 4 + Tailwind, mise en page, clients tRPC et Socket.IO, page `health` ; tests T1.11 à T1.13 ; addendum à l'ADR-012 (PrimeVue 5 sous licence propriétaire : on reste en 4.5.5 MIT) | 1 |

@@ -22,7 +22,9 @@
 | Stratégie de tests, priorités, E2E | [technical/testing.md](technical/testing.md) |
 | Écrans : routes, contenu, actions, états, wireframes | [technical/screens.md](technical/screens.md) |
 | Front Vue | [technical/frontend.md](technical/frontend.md) |
+| Lancer le projet en local, commandes, variables d'environnement, dépannage | [runbooks/local-development.md](runbooks/local-development.md) |
 | Comprendre pourquoi un choix a été fait | [decisions/](decisions/) |
+| Éviter un piège déjà rencontré (outils, dépendances, API) | [lessons-learned/](lessons-learned/2026-10-etape-1-squelette.md) |
 
 ## Décisions (ADR)
 
@@ -45,5 +47,4 @@
 ## Pas encore écrit
 Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander ou proposer de les rédiger.
 - `architecture/modules.md` : découpage des modules une fois le code en place
-- `runbooks/local-development.md` : lancer le projet en local
-- `lessons-learned/` : retours d'expérience
+- `runbooks/deployment.md` : mise en production (étape 8)

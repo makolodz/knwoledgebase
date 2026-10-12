@@ -7,6 +7,7 @@ Contraintes imposées par le sujet : **Node.js**, **Socket.IO**, **MongoDB**. Te
 ## Navigation
 - [AGENTS.md](AGENTS.md) : instructions pour les agents IA. [CLAUDE.md](CLAUDE.md) l'importe pour Claude Code.
 - [docs/index.md](docs/index.md) : sommaire et « quel document lire pour quelle tâche ».
+- [docs/runbooks/local-development.md](docs/runbooks/local-development.md) : lancer le projet en local (`pnpm install`, `pnpm infra:up`, `pnpm dev`).
 
 ## Écrire dans la doc
 - En français, avec des phrases courtes, des tableaux et des listes.
