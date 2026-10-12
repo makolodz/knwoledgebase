@@ -2,13 +2,13 @@
 
 > Document **tenu à jour par l'IA** à chaque modification (code, doc, roadmap). Source des cases : [roadmap.md](roadmap.md). Ne pas y recopier le contenu des étapes, seulement l'état.
 >
-> Dernière mise à jour : 2026-10-12 · Commit de référence : `732e372`
+> Dernière mise à jour : 2026-10-12 · Commit de référence : `e97e286`
 
 ## Vue d'ensemble
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
-| 1 | Squelette du monorepo | `░░░░░░░░░░` 0 % | 0 / 8 | ⚪ Pas commencée |
+| 1 | Squelette du monorepo | `░░░░░░░░░░` 0 % | 0 / 8 | 🟡 En cours |
 | 2 | Comptes et sessions | `░░░░░░░░░░` 0 % | 0 / 8 | ⚪ Pas commencée |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
@@ -18,11 +18,11 @@
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | | **Total** | `░░░░░░░░░░` **0 %** | **0 / 47** | |
 
-**Étape en cours** : aucune. Le dépôt ne contient encore que la documentation (`docs/`, `AGENTS.md`).
+**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier) et `packages/shared` avec ses tests. Reste : `apps/api`, `apps/web`, Docker Compose, CI et E2E, runbook.
 
 ## État de la documentation
 
-- Documents présents : 31 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR).
+- Documents présents : 32 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR).
 - Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
 - Documents annoncés mais absents : `architecture/modules.md`, `runbooks/local-development.md`, `runbooks/deployment.md`, `lessons-learned/`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-12 | Début de l'étape 1 : outillage racine, `packages/shared` (schémas Zod `health` et pagination, T1.4) et [ADR-013](decisions/ADR-013-outillage-monorepo.md) | 1 |
 | 2026-10-12 | Règles Claude Code par domaine (`.claude/rules/` : offres, cycle d'enchère, paiement, comptes, temps réel) | Préparation étapes 2, 4, 5, 6 |
 | 2026-10-12 | Outillage qualité : gabarit de PR, Dependabot, permissions Claude Code (`.claude/settings.json`), checklist dans `CLAUDE.md` | Préparation étape 1 |
 | 2026-10-12 | Scénarios de tests métier par étape (`business-tests.md`) | Préparation étapes 1–8 |

@@ -1,0 +1,23 @@
+node_modules/
+dist/
+coverage/
+.vite/
+*.tsbuildinfo
+*.log
+
+# Secrets : seul .env.example est versionné
+.env
+.env.*
+!.env.example
+
+# Tests
+playwright-report/
+test-results/
+
+# Photos uploadées en local (ADR-007)
+uploads/
+
+# Réglages locaux de Claude Code
+.claude/settings.local.json
+
+.DS_Store
