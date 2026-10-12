@@ -1,0 +1,5 @@
+/* Ordre des couches : PrimeVue passe après les styles de base de Tailwind (ADR-012). */
+@layer theme, base, primevue;
+
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';

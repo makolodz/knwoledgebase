@@ -31,5 +31,7 @@ catalog:
 # pnpm 12 propose d'installer les « skills » d'agents IA livrés par certaines dépendances.
 # Refusé : le projet n'accepte pas d'instructions venant de paquets tiers.
 permissions:
+  "@trpc/client":
+    skills: false
   "@trpc/server":
     skills: false

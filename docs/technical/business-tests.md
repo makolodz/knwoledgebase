@@ -25,6 +25,9 @@ Convention :
 | T1.8 | Int | Socket.IO répond sur le même port que HTTP ; une origine de navigateur étrangère est refusée ; l'arrêt du serveur est propre. |
 | T1.9 | Unit | Configuration invalide : le serveur refuse de démarrer, sans afficher la valeur fautive. |
 | T1.10 | Int | Aucune réponse d'erreur ne contient de stack trace ni de chemin de fichier. |
+| T1.11 | Comp | Le bloc `health` affiche un chargement, puis la réponse ; en cas d'échec, une erreur avec « Réessayer » qui relance l'appel. |
+| T1.12 | Comp | L'indicateur temps réel suit la connexion, la déconnexion et l'erreur du socket. |
+| T1.13 | Comp | La mise en page commune (en-tête, pied de page) entoure chaque page ; une route inconnue affiche la page 404. |
 
 ## Étape 2 — Comptes et sessions
 

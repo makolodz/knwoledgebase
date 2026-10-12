@@ -17,6 +17,7 @@ L'étape 1 de la [roadmap](../roadmap.md) pose le monorepo pnpm ([ADR-001](ADR-0
 - **Le front appelle l'API directement** (`VITE_API_URL`), sans proxy Vite : la configuration CORS (`WEB_ORIGIN`, `credentials`) de [security.md](../technical/security.md) est utilisée dès le développement.
 - **Tests de bout en bout (Playwright) dès l'étape 1**, avec un seul test de fumée, dans un job de CI séparé des tests rapides.
 - **Docker Compose** fournit MongoDB et Mailpit, ports liés à `127.0.0.1`. L'API et le front tournent sur la machine, pas en conteneur, tant qu'il n'y a rien à déployer.
+- **Chaîne d'approvisionnement** (pnpm 12) : aucun script d'installation n'est exécuté (`allowBuilds`), les « skills » d'agents IA livrés par des dépendances sont refusés (`permissions`), et pnpm refuse les versions trop récemment publiées (`minimumReleaseAge`) : on épingle alors la version précédente plutôt que d'ajouter une exception.
 - **Style** : Prettier (guillemets simples, sans point-virgule, 100 colonnes) ; ESLint 10 avec `typescript-eslint` en mode typé. `no-explicit-any` et `no-floating-promises` sont des erreurs. `docs/` et les fichiers Markdown ne sont pas reformatés.
 
 ## Conséquences

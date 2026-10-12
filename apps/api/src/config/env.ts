@@ -1,26 +1,13 @@
+import { originSchema } from '@encheres/shared'
 import { z } from 'zod'
 
 const LOG_LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'] as const
-
-/** Vrai pour une origine exacte (`https://hote:port`), telle qu'envoyée par les navigateurs. */
-function isOrigin(value: string): boolean {
-  try {
-    return new URL(value).origin === value
-  } catch {
-    return false
-  }
-}
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   HOST: z.string().min(1).default('localhost'),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
-  WEB_ORIGIN: z
-    .string()
-    .refine(isOrigin, {
-      message: 'doit être une origine (schéma, hôte et port éventuel), sans chemin ni barre finale',
-    })
-    .default('http://localhost:5173'),
+  WEB_ORIGIN: originSchema.default('http://localhost:5173'),
   LOG_LEVEL: z.enum(LOG_LEVELS).default('info'),
 })
 
