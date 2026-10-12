@@ -13,7 +13,12 @@ Un seul process Node.js qui héberge :
 - `sockets/` : handlers Socket.IO (validation + appel de service)
 - `services/` : **toute** la logique métier, partagée entre HTTP, Socket.IO et jobs
 - `models/` : modèles Mongoose ([database.md](database.md))
-- `jobs/` : tâches planifiées
+- `jobs/` : tâches planifiées par `setInterval` ([ADR-008](../decisions/ADR-008-jobs-setinterval.md))
+- `infra/` : accès aux services extérieurs derrière une interface
+  - `mailer.ts` : Nodemailer en SMTP (Brevo en production, Mailpit en local) ([ADR-006](../decisions/ADR-006-emails-brevo.md))
+  - `storage.ts` : photos sur disque, avec `put`, `delete` et `url` ([ADR-007](../decisions/ADR-007-photos-disque-local.md))
+  - client Stripe
+- `emails/` : modèles d'email (fonctions qui renvoient `{ subject, html, text }`)
 
 ## Règles
 - Node.js 22 LTS, ES modules, TypeScript strict.
@@ -22,3 +27,6 @@ Un seul process Node.js qui héberge :
 - Variables d'environnement validées au démarrage : le serveur refuse de démarrer si elles sont invalides.
 - Gestion d'erreurs centralisée ; logs structurés avec pino (intégré à Fastify) ; **jamais de secret ni de token dans les logs**.
 - Le webhook Stripe a besoin du **corps brut** de la requête pour vérifier la signature : configurer cette route pour ne pas parser le JSON.
+- Les services n'envoient **jamais** d'email directement : ils ajoutent un document à la file `emails`.
+- Le code métier n'accède **jamais** au disque ni au SMTP directement : il passe par `infra/`.
+- **Une seule instance** de l'API tant que les photos sont sur disque local ([ADR-007](../decisions/ADR-007-photos-disque-local.md)).

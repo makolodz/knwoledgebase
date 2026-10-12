@@ -9,10 +9,15 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
 - `auctions` : `{ _id, sellerId, title, description, images[], startingPrice, minIncrement, currentPrice, currentBidderId, nextMinBid, bidCount, startsAt, endsAt, status, winnerId, paymentDeadline, paymentReminderSentAt, cancelReason, createdAt }`
   - `status` : `'draft'|'scheduled'|'live'|'ended'|'paid'|'unpaid'|'cancelled'`
   - à la création : `currentPrice: null`, `currentBidderId: null`, `nextMinBid: startingPrice`, `bidCount: 0`
+  - `images[]` : clés (UUID) des photos stockées sur disque, jamais d'URL ni de nom de fichier fourni par l'utilisateur ([ADR-007](../decisions/ADR-007-photos-disque-local.md))
+  - `paymentReminderSentAt` : date d'envoi du rappel de paiement, `null` sinon (remis à `null` lors d'une réattribution)
 - `bids` : `{ _id, auctionId, userId, amount, createdAt }`
   - historique des offres, index `{ auctionId: 1, createdAt: -1 }`
 - `payments` : `{ _id, auctionId, userId, amount, stripeSessionId, status: 'open'|'paid'|'expired'|'refunded', createdAt }`
   - index unique sur `stripeSessionId`
+- `emails` : `{ _id, to, template, data, status: 'pending'|'sent'|'failed', attempts, lastError, sendAfter, createdAt, sentAt }`
+  - file d'envoi ([ADR-006](../decisions/ADR-006-emails-brevo.md)) ; `failed` après 5 tentatives
+  - index `{ status: 1, sendAfter: 1 }`
 - `settings` : document unique `{ _id: 'global', defaultMinIncrement, antiSnipingMs, paymentDelayMs, minDurationMs, maxDurationMs }`
   - valeurs par défaut dans [business-rules.md](../domain/business-rules.md), section « Paramètres globaux »
 

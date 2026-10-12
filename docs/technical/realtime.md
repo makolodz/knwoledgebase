@@ -24,4 +24,4 @@ Codes d'erreur de l'ack : [business-rules.md](../domain/business-rules.md), sect
 - Typer les événements avec les interfaces `ServerToClientEvents` / `ClientToServerEvents` de `packages/shared`.
 - Valider chaque payload entrant avec Zod.
 - Ne jamais diffuser d'email ni de donnée privée : uniquement `id` et `name`.
-- Pour plusieurs instances serveur : adapter Redis ou `@socket.io/mongo-adapter`.
+- Une seule instance serveur pour l'instant ([ADR-007](../decisions/ADR-007-photos-disque-local.md)), donc pas d'adapter. Si on passe à plusieurs instances : `@socket.io/mongo-adapter` (pas de Redis à ajouter).

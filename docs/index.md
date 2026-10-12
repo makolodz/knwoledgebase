@@ -10,7 +10,7 @@
 | Rôles, création d'enchère, offres, anti-sniping, paramètres, notifications | [domain/business-rules.md](domain/business-rules.md) |
 | Statuts d'une enchère, ouverture, clôture, remise en vente | [domain/workflows/auction-lifecycle.md](domain/workflows/auction-lifecycle.md) |
 | Paiement Stripe, impayés, remboursements | [domain/workflows/payment.md](domain/workflows/payment.md) |
-| Code serveur (Fastify, services, jobs, webhook) | [technical/backend.md](technical/backend.md) |
+| Code serveur (Fastify, services, jobs, webhook, emails, photos) | [technical/backend.md](technical/backend.md) |
 | Événements Socket.IO | [technical/realtime.md](technical/realtime.md) |
 | Modèle de données, requête atomique d'offre, index | [technical/database.md](technical/database.md) |
 | Front Vue | [technical/frontend.md](technical/frontend.md) |
@@ -25,6 +25,9 @@
 | [ADR-003](decisions/ADR-003-paiement-stripe.md) | Paiement par Stripe Checkout sur le compte de l'association |
 | [ADR-004](decisions/ADR-004-anti-sniping.md) | Anti-sniping à un seul paramètre |
 | [ADR-005](decisions/ADR-005-offre-atomique.md) | Offre atomique avec le champ `nextMinBid` |
+| [ADR-006](decisions/ADR-006-emails-brevo.md) | Emails via Brevo (SMTP) et file d'envoi en base |
+| [ADR-007](decisions/ADR-007-photos-disque-local.md) | Photos sur disque local, une seule instance d'API |
+| [ADR-008](decisions/ADR-008-jobs-setinterval.md) | Tâches automatiques par `setInterval` |
 
 ## Pas encore écrit
 Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander ou proposer de les rédiger.
@@ -33,5 +36,5 @@ Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander
 - `technical/security.md` : auth, rôles, rate limiting, secrets
 - `architecture/modules.md` : découpage des modules une fois le code en place
 - `runbooks/local-development.md` : lancer le projet en local
+- `domain/workflows/account.md` : inscription, vérification de l'email, mot de passe oublié, passage vendeur, suppression de compte (RGPD)
 - `lessons-learned/` : retours d'expérience
-- Choix du service d'envoi d'emails

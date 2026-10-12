@@ -30,9 +30,12 @@ Règles détaillées : [business-rules.md](../domain/business-rules.md).
 | Front | Vue 3 + Vite (TS, Vue Router, Pinia) | Stack déjà maîtrisée, écosystème officiel cohérent | [002](../decisions/ADR-002-frontend-vue.md) |
 | Auth | JWT (cookie httpOnly) | Simple, compatible avec le handshake Socket.IO | — |
 | Paiement | Stripe (Checkout + webhooks) | Standard, données de carte gérées par Stripe, mode test | [003](../decisions/ADR-003-paiement-stripe.md) |
+| Emails | Brevo (SMTP) via Nodemailer + file d'envoi en base ; Mailpit en local | Données dans l'UE, fournisseur remplaçable | [006](../decisions/ADR-006-emails-brevo.md) |
+| Photos | Disque local (volume Docker) + sharp | Aucun service en plus | [007](../decisions/ADR-007-photos-disque-local.md) |
+| Jobs | `setInterval` qui interroge MongoDB | Aucune dépendance, rattrapage après redémarrage | [008](../decisions/ADR-008-jobs-setinterval.md) |
 | Tests | Vitest (+ Vue Test Utils) | Rapide, compatible TS/Vite | — |
 | Qualité | ESLint + Prettier | Cohérence du code | — |
-| Dev/infra | Docker Compose (Node + Mongo) | Environnement reproductible | — |
+| Dev/infra | Docker Compose (Node + Mongo + Mailpit) | Environnement reproductible | — |
 | Monorepo | pnpm workspaces | Types partagés entre front et back | [001](../decisions/ADR-001-stack-backend.md) |
 
 ## Structure du monorepo
@@ -45,3 +48,4 @@ packages/
 ```
 
 Le front et l'API sont **deux applications séparées**. Le front parle à l'API en HTTP et en Socket.IO.
+L'API tourne en **une seule instance** tant que les photos sont sur disque local ([ADR-007](../decisions/ADR-007-photos-disque-local.md)).

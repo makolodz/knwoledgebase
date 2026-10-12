@@ -13,23 +13,22 @@ Comment les données traversent le système. Les règles qui décident du résul
 5. **API, diffusion** vers la room `auction:<id>` :
    - `bid:new` avec le nouveau `nextMinBid` ;
    - `auction:extended` si `endsAt` a changé (anti-sniping).
-6. **API, notification** : l'ancien meilleur enchérisseur est prévenu qu'il a été dépassé.
+6. **API, notification** : un email « offre dépassée » est ajouté à la file `emails` pour l'ancien meilleur enchérisseur. Il est envoyé plus tard par le job, jamais pendant le traitement de l'offre.
 7. **Front** : `useAuctionSocket` met à jour le store Pinia (prix, `nextMinBid`, `endsAt`).
 
 ## 2. Jobs planifiés
 
-Les jobs tournent dans `apps/api` (`jobs/`). Chaque transition est un `findOneAndUpdate` conditionné par le statut et la date :
+Les jobs sont des boucles `setInterval` dans `apps/api/src/jobs/` ([ADR-008](../decisions/ADR-008-jobs-setinterval.md)). Chaque transition est un `findOneAndUpdate` conditionné par le statut et la date :
 - elle est **idempotente** (un passage en double ne fait rien) ;
 - après un redémarrage, les enchères en retard sont **rattrapées** au passage suivant, car tout repose sur les dates en base.
 
-| Job | Sélection | Effet |
-|---|---|---|
-| Ouverture | `status: 'scheduled'`, `startsAt ≤ maintenant` | → `live` |
-| Clôture | `status: 'live'`, `endsAt ≤ maintenant` | → `ended`, fixe `winnerId` et `paymentDeadline`, émet `auction:ended`, notifie |
-| Rappel de paiement | `status: 'ended'`, `paymentDeadline − 24 h ≤ maintenant`, rappel non envoyé | Email au gagnant |
-| Expiration du paiement | `status: 'ended'`, `paymentDeadline ≤ maintenant` | → `unpaid`, notifie le vendeur et l'admin |
-
-La clôture doit tourner à **intervalle court** (de l'ordre de la seconde), car les utilisateurs regardent le compte à rebours. L'implémentation (simple `setInterval` ou librairie de jobs) reste à décider dans un ADR.
+| Job | Intervalle | Sélection | Effet |
+|---|---|---|---|
+| Ouverture | 1 s | `status: 'scheduled'`, `startsAt ≤ maintenant` | → `live` |
+| Clôture | 1 s | `status: 'live'`, `endsAt ≤ maintenant` | → `ended`, fixe `winnerId` et `paymentDeadline`, émet `auction:ended`, ajoute les emails à la file |
+| Envoi des emails | 5 s | `emails` : `status: 'pending'`, `sendAfter ≤ maintenant` | Envoi SMTP ; en cas d'échec, `attempts + 1` et `sendAfter` repoussé ; `failed` après 5 tentatives |
+| Rappel de paiement | 1 min | `status: 'ended'`, `paymentDeadline − 24 h ≤ maintenant`, `paymentReminderSentAt: null` | Fixe `paymentReminderSentAt`, ajoute l'email de rappel à la file |
+| Expiration du paiement | 1 min | `status: 'ended'`, `paymentDeadline ≤ maintenant` | → `unpaid`, ajoute les emails pour le vendeur et l'admin |
 
 ## 3. Payer une enchère gagnée
 

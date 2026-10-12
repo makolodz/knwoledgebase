@@ -17,7 +17,7 @@ Séquence technique : [data-flow.md](../../architecture/data-flow.md), section �
 
 ## Enchère impayée
 Pour une enchère `unpaid`, l'admin a deux possibilités :
-- **réattribuer** au 2e meilleur enchérisseur distinct, au montant de sa meilleure offre. L'enchère repasse `ended` avec un nouveau `winnerId`, un nouveau `paymentDeadline` et une notification au nouveau gagnant ;
+- **réattribuer** au 2e meilleur enchérisseur distinct, au montant de sa meilleure offre. L'enchère repasse `ended` avec un nouveau `winnerId`, un nouveau `paymentDeadline`, `paymentReminderSentAt` remis à `null`, et une notification au nouveau gagnant ;
 - **remettre en vente** ([auction-lifecycle.md](auction-lifecycle.md)).
 
 ## Cas limites

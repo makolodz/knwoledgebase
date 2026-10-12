@@ -2,7 +2,7 @@
 
 Plateforme d'enchères en direct pour une association : des vendeurs proposent des objets, des acheteurs enchérissent en temps réel, le gagnant paie via Stripe.
 
-Stack : TypeScript strict · Node.js 22 LTS · Fastify · Socket.IO 4 · MongoDB + Mongoose · Vue 3 + Vite + Pinia · Stripe Checkout · monorepo pnpm.
+Stack : TypeScript strict · Node.js 22 LTS · Fastify · Socket.IO 4 · MongoDB + Mongoose · Vue 3 + Vite + Pinia · Stripe Checkout · Brevo (SMTP) · photos sur disque + sharp · monorepo pnpm.
 
 ## Avant de coder
 Lis [docs/index.md](docs/index.md), puis les documents liés à ta tâche.
@@ -14,6 +14,8 @@ En cas de conflit entre documents, [docs/domain/business-rules.md](docs/domain/b
 - Une offre = **une seule opération atomique** MongoDB, prolongation anti-sniping comprise ([database.md](docs/technical/database.md)).
 - Une enchère passe à `paid` **uniquement** via le webhook Stripe, dont la signature est vérifiée.
 - **Jamais d'email** ni de donnée privée dans les événements Socket.IO.
+- Emails : toujours via la file `emails`, jamais d'envoi direct. Disque, SMTP et Stripe : toujours via `apps/api/src/infra/`.
+- Fichiers uploadés : nom généré par le serveur (UUID), type vérifié sur le contenu, EXIF supprimées.
 - Valider toute entrée (HTTP et Socket.IO) avec Zod. Types et schémas partagés dans `packages/shared`.
 - TypeScript strict, pas de `any`.
 - Aucune nouvelle dépendance sans justification. Si le choix est structurant, rédiger un ADR.

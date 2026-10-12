@@ -32,7 +32,7 @@ Chaque utilisateur a **un seul rôle**. Un nouvel inscrit est `buyer`. Seul l'ad
 |---|---|
 | `title` | Obligatoire, 3 à 120 caractères |
 | `description` | Obligatoire |
-| `images` | 1 à 5 photos |
+| `images` | 1 à 5 photos, jpeg/png/webp, 5 Mo max chacune ([ADR-007](../decisions/ADR-007-photos-disque-local.md)) |
 | `startingPrice` | Entier ≥ **100** (1 €) |
 | `minIncrement` | Entier ≥ **1** ; vaut `defaultMinIncrement` par défaut |
 | `startsAt` | Dans le futur |
@@ -104,19 +104,10 @@ Ils sont stockés dans la collection `settings` ([database.md](../technical/data
 | Enchère sans offre ou impayée | Vendeur | Email |
 | Enchère validée, refusée ou annulée | Vendeur (+ enchérisseurs si annulée en `live`) | Email |
 
-Confidentialité :
+Règles :
 - Les événements publics n'affichent que le **nom d'affichage** (`name`), **jamais l'email**.
-- Le service d'envoi d'emails reste à choisir.
+- Les emails passent **toujours** par la file d'envoi, jamais en direct ([ADR-006](../decisions/ADR-006-emails-brevo.md)).
 
 ## Hors scope
 
 Prix de réserve, achat immédiat, enchères automatiques (proxy bidding), enchères inversées, commission, Stripe Connect, multi-devises (EUR uniquement), livraison.
-
-## Valeurs par défaut à confirmer
-
-Ces choix ont été faits par défaut. Ils sont à valider ou à corriger :
-- l'admin ne peut ni enchérir ni vendre (neutralité) ;
-- un vendeur ne peut pas modifier une enchère `scheduled` sans repasser en validation ;
-- 1 à 5 photos, prix de départ ≥ 1 €, durée de 1 h à 14 j ;
-- paiement par carte uniquement, rappel 24 h avant l'échéance ;
-- remise en vente par duplication.

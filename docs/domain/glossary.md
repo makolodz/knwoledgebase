@@ -20,6 +20,8 @@ Le code utilise **exactement** ces noms de champs, de rôles et de statuts.
 | Délai de paiement | `paymentDeadline` | Date limite de paiement pour le gagnant |
 | Remise en vente | — | Copie d'une enchère dans un nouveau `draft`, sans offres |
 | Nom d'affichage | `name` | Seule identité publique d'un utilisateur (jamais l'email) |
+| File d'envoi (outbox) | `emails` | Emails en attente d'envoi, envoyés et retentés par un job |
+| Clé de photo | `images[]` | Identifiant (UUID) d'une photo stockée ; l'URL est construite par `storage` |
 
 ## Rôles (`users.role`)
 
