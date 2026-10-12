@@ -10,6 +10,7 @@ En cas de conflit entre documents, [docs/domain/business-rules.md](docs/domain/b
 
 ## Règles non négociables
 - **Le serveur est la source de vérité** : ne jamais faire confiance au client pour un prix, une heure ou un rôle.
+- Rôle, vérification de l'email et suspension : **toujours relus en base** avant une action sensible, jamais depuis le JWT seul.
 - Montants en **centimes (entiers)**, dates en **UTC**.
 - Une offre = **une seule opération atomique** MongoDB, prolongation anti-sniping comprise ([database.md](docs/technical/database.md)).
 - Une enchère passe à `paid` **uniquement** via le webhook Stripe, dont la signature est vérifiée.

@@ -20,6 +20,9 @@ Le code utilise **exactement** ces noms de champs, de rôles et de statuts.
 | Délai de paiement | `paymentDeadline` | Date limite de paiement pour le gagnant |
 | Remise en vente | — | Copie d'une enchère dans un nouveau `draft`, sans offres |
 | Nom d'affichage | `name` | Seule identité publique d'un utilisateur (jamais l'email) |
+| Compte vérifié | `emailVerifiedAt` | Email confirmé par lien ; obligatoire pour enchérir |
+| Compte suspendu | `suspendedAt` | Bloqué par l'admin : ni connexion ni offre |
+| Compte anonymisé | `deletedAt` | Compte supprimé : données personnelles effacées, offres et paiements conservés |
 | File d'envoi (outbox) | `emails` | Emails en attente d'envoi, envoyés et retentés par un job |
 | Clé de photo | `images[]` | Identifiant (UUID) d'une photo stockée ; l'URL est construite par `storage` |
 
@@ -29,7 +32,7 @@ Le code utilise **exactement** ces noms de champs, de rôles et de statuts.
 |---|---|---|
 | Visiteur | — (non connecté) | Consulte seulement |
 | Acheteur | `buyer` | Enchérit et paie |
-| Vendeur | `seller` | Comme l'acheteur, et crée des enchères |
+| Vendeur | `seller` | Comme l'acheteur, et crée des enchères ; rôle attribué par l'admin |
 | Admin | `admin` | Modère, gère les utilisateurs et les paramètres ; n'enchérit pas |
 
 Permissions détaillées : [business-rules.md](business-rules.md).

@@ -10,11 +10,13 @@ Voir aussi :
 
 ## Rôles et permissions
 
-Chaque utilisateur a **un seul rôle**. Un nouvel inscrit est `buyer`. Seul l'admin peut attribuer le rôle `seller` ou `admin`.
+Chaque utilisateur a **un seul rôle**. Un nouvel inscrit est `buyer`. Seul l'admin peut attribuer le rôle `seller` ou `admin`. Inscription, vérification, suspension et suppression : [account.md](workflows/account.md).
 
 | Action | Visiteur | Acheteur (`buyer`) | Vendeur (`seller`) | Admin (`admin`) |
 |---|---|---|---|---|
 | Consulter les enchères publiques et suivre les offres en direct | ✅ | ✅ | ✅ | ✅ |
+| S'inscrire | ✅ | — | — | — |
+| Modifier son profil, supprimer son compte | ❌ | ✅ | ✅ | ✅ |
 | Enchérir | ❌ | ✅ | ✅ (jamais sur ses propres enchères) | ❌ |
 | Payer une enchère gagnée | ❌ | ✅ | ✅ | ❌ |
 | Voir son historique (offres, gains, paiements) | ❌ | ✅ | ✅ | ✅ |
@@ -22,7 +24,7 @@ Chaque utilisateur a **un seul rôle**. Un nouvel inscrit est `buyer`. Seul l'ad
 | Modifier ou annuler sa propre enchère | ❌ | ❌ | ✅ (`draft` ou `scheduled` uniquement) | — |
 | Valider ou refuser une enchère | ❌ | ❌ | ❌ | ✅ |
 | Annuler n'importe quelle enchère (même `live`) | ❌ | ❌ | ❌ | ✅ |
-| Gérer les utilisateurs et les rôles | ❌ | ❌ | ❌ | ✅ |
+| Gérer les utilisateurs, les rôles et les suspensions | ❌ | ❌ | ❌ | ✅ |
 | Modifier les paramètres globaux | ❌ | ❌ | ❌ | ✅ |
 | Réattribuer une enchère impayée | ❌ | ❌ | ❌ | ✅ |
 
@@ -42,7 +44,7 @@ Chaque utilisateur a **un seul rôle**. Un nouvel inscrit est `buyer`. Seul l'ad
 
 Une offre est **acceptée seulement si toutes ces conditions sont vraies au moment où le serveur la traite** :
 
-1. L'utilisateur est connecté et a le rôle `buyer` ou `seller`.
+1. L'utilisateur est connecté, a le rôle `buyer` ou `seller`, a **vérifié son email** et **n'est pas suspendu**. Ces informations sont relues en base, pas dans le JWT.
 2. L'enchère est `live` et l'heure du serveur est **strictement avant** `endsAt`.
 3. L'utilisateur n'est **pas le vendeur** de l'enchère.
 4. L'utilisateur n'est **pas déjà le meilleur enchérisseur**.
@@ -63,6 +65,8 @@ Codes de refus, renvoyés dans l'ack Socket.IO :
 |---|---|
 | `NOT_AUTHENTICATED` | Utilisateur non connecté |
 | `FORBIDDEN` | Rôle non autorisé à enchérir (admin) |
+| `EMAIL_NOT_VERIFIED` | Email pas encore vérifié |
+| `ACCOUNT_SUSPENDED` | Compte suspendu par l'admin |
 | `AUCTION_NOT_LIVE` | Enchère qui n'est pas `live` (pas commencée, terminée, annulée) |
 | `OWN_AUCTION` | Le vendeur enchérit sur sa propre enchère |
 | `ALREADY_HIGHEST` | L'utilisateur est déjà le meilleur enchérisseur |
@@ -103,6 +107,9 @@ Ils sont stockés dans la collection `settings` ([database.md](../technical/data
 | Paiement reçu | Gagnant, vendeur, admin | Email |
 | Enchère sans offre ou impayée | Vendeur | Email |
 | Enchère validée, refusée ou annulée | Vendeur (+ enchérisseurs si annulée en `live`) | Email |
+| Vérification d'email, mot de passe oublié, changement d'email ou de mot de passe | Utilisateur concerné | Email |
+| Tentative d'inscription avec un email existant | Titulaire de l'email | Email |
+| Rôle vendeur attribué | Utilisateur concerné | Email |
 
 Règles :
 - Les événements publics n'affichent que le **nom d'affichage** (`name`), **jamais l'email**.

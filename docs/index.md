@@ -10,6 +10,7 @@
 | Rôles, création d'enchère, offres, anti-sniping, paramètres, notifications | [domain/business-rules.md](domain/business-rules.md) |
 | Statuts d'une enchère, ouverture, clôture, remise en vente | [domain/workflows/auction-lifecycle.md](domain/workflows/auction-lifecycle.md) |
 | Paiement Stripe, impayés, remboursements | [domain/workflows/payment.md](domain/workflows/payment.md) |
+| Inscription, connexion, vérification, mot de passe oublié, rôles, suspension, suppression (RGPD) | [domain/workflows/account.md](domain/workflows/account.md) |
 | Code serveur (Fastify, services, jobs, webhook, emails, photos) | [technical/backend.md](technical/backend.md) |
 | Événements Socket.IO | [technical/realtime.md](technical/realtime.md) |
 | Modèle de données, requête atomique d'offre, index | [technical/database.md](technical/database.md) |
@@ -28,6 +29,7 @@
 | [ADR-006](decisions/ADR-006-emails-brevo.md) | Emails via Brevo (SMTP) et file d'envoi en base |
 | [ADR-007](decisions/ADR-007-photos-disque-local.md) | Photos sur disque local, une seule instance d'API |
 | [ADR-008](decisions/ADR-008-jobs-setinterval.md) | Tâches automatiques par `setInterval` |
+| [ADR-009](decisions/ADR-009-comptes.md) | Comptes par email et mot de passe, anonymisation à la suppression |
 
 ## Pas encore écrit
 Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander ou proposer de les rédiger.
@@ -36,5 +38,4 @@ Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander
 - `technical/security.md` : auth, rôles, rate limiting, secrets
 - `architecture/modules.md` : découpage des modules une fois le code en place
 - `runbooks/local-development.md` : lancer le projet en local
-- `domain/workflows/account.md` : inscription, vérification de l'email, mot de passe oublié, passage vendeur, suppression de compte (RGPD)
 - `lessons-learned/` : retours d'expérience

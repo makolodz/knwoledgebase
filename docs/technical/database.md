@@ -4,8 +4,12 @@
 Stocke les utilisateurs, les enchères, les offres, les paiements et les paramètres. Accès uniquement via les modèles Mongoose de `apps/api/src/models/`.
 
 ## Modèle de données
-- `users` : `{ _id, email, passwordHash, name, role: 'admin'|'seller'|'buyer', createdAt }`
+- `users` : `{ _id, email, passwordHash, name, role: 'admin'|'seller'|'buyer', emailVerifiedAt, acceptedTermsAt, suspendedAt, deletedAt, createdAt }`
   - `name` est le nom d'affichage public. L'email n'est jamais exposé.
+  - `email` est normalisé (minuscules) et unique : index unique partiel sur `email` quand c'est une chaîne, car un compte anonymisé a `email: null` ([account.md](../domain/workflows/account.md)).
+- `authTokens` : `{ _id, userId, type: 'email_verification'|'password_reset'|'email_change', tokenHash, newEmail, expiresAt, usedAt, createdAt }`
+  - token **hashé**, à usage unique ; `newEmail` seulement pour `email_change`
+  - index `{ tokenHash: 1 }` unique, et index TTL sur `expiresAt` pour purger les tokens expirés
 - `auctions` : `{ _id, sellerId, title, description, images[], startingPrice, minIncrement, currentPrice, currentBidderId, nextMinBid, bidCount, startsAt, endsAt, status, winnerId, paymentDeadline, paymentReminderSentAt, cancelReason, createdAt }`
   - `status` : `'draft'|'scheduled'|'live'|'ended'|'paid'|'unpaid'|'cancelled'`
   - à la création : `currentPrice: null`, `currentBidderId: null`, `nextMinBid: startingPrice`, `bidCount: 0`
