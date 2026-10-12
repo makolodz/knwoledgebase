@@ -16,9 +16,11 @@ Vue 3 (Composition API, `<script setup lang="ts">`), Vite, TypeScript strict, Vu
 ## Temps réel
 Composable `useAuctionSocket(auctionId)` :
 - au montage : `emit('auction:join', { auctionId })`
-- écoute `bid:new` et `auction:ended`, met à jour le store Pinia
-- au démontage : retire les listeners et quitte la room
-- `bid:place` envoyé avec un ack pour afficher succès/erreur
+- écoute `bid:new`, `auction:extended` et `auction:ended`, et met à jour le store Pinia (prix, `nextMinBid`, `endsAt`, gagnant)
+- le compte à rebours se recalcule à chaque `auction:extended`
+- au démontage : retire les listeners et émet `auction:leave`
+- `bid:place` est envoyé avec un ack ; le code d'erreur (`metier.md` §5) est traduit en message lisible
+- le formulaire d'offre propose `nextMinBid` comme montant par défaut
 
 Une seule instance de socket pour toute l'app, typée avec `ServerToClientEvents` / `ClientToServerEvents` importés depuis `packages/shared`.
 
