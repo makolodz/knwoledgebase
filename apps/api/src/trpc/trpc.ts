@@ -1,11 +1,65 @@
+import type { ErrorCode } from '@encheres/shared'
 import { initTRPC } from '@trpc/server'
+import type { TRPC_ERROR_CODE_KEY } from '@trpc/server/rpc'
+import { z } from 'zod'
+import { AppError } from '../errors'
+import { authenticate } from '../services/auth'
+import { ACCESS_COOKIE } from './cookies'
 import type { Context } from './context'
+
+/** Erreurs de validation : les chemins et les types de problème, jamais les valeurs saisies. */
+function fieldErrors(error: z.ZodError): Record<string, string[]> {
+  const result: Record<string, string[]> = {}
+  for (const issue of error.issues) {
+    const path = issue.path.join('.')
+    ;(result[path] ??= []).push(issue.code)
+  }
+  return result
+}
+
+interface AppErrorData {
+  /** Code métier (`EMAIL_NOT_VERIFIED`…) quand il y en a un, sinon le code tRPC. */
+  code: TRPC_ERROR_CODE_KEY | ErrorCode
+  httpStatus: number
+  path?: string
+  /** Présent pour une entrée invalide : chemin du champ → types de problème. */
+  fieldErrors?: Record<string, string[]>
+}
 
 const t = initTRPC.context<Context>().create({
   // Jamais de stack trace dans une réponse (docs/technical/api.md, « Erreurs »).
   // Sans cette option, tRPC l'ajoute dès que NODE_ENV n'est pas « production ».
   isDev: false,
+  errorFormatter({ shape, error }) {
+    const data: AppErrorData = {
+      code: shape.data.code,
+      httpStatus: shape.data.httpStatus,
+      ...(shape.data.path === undefined ? {} : { path: shape.data.path }),
+    }
+    if (error instanceof AppError) {
+      return { ...shape, data: { ...data, code: error.appCode } }
+    }
+    if (error.cause instanceof z.ZodError) {
+      // Le message natif de tRPC est le JSON des erreurs Zod : on ne renvoie que l'essentiel.
+      return {
+        ...shape,
+        message: 'Données invalides.',
+        data: { ...data, fieldErrors: fieldErrors(error.cause) },
+      }
+    }
+    return { ...shape, data }
+  },
 })
 
 export const router = t.router
 export const publicProcedure = t.procedure
+
+/**
+ * Procédure réservée aux utilisateurs connectés. L'utilisateur est **relu en base** à chaque
+ * appel : le rôle, la suspension ou la suppression d'un compte s'appliquent immédiatement, sans
+ * attendre l'expiration du JWT (docs/domain/workflows/account.md, « Règles transverses »).
+ */
+export const authedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  const { user, sessionId } = await authenticate(ctx.config, ctx.req.cookies[ACCESS_COOKIE])
+  return next({ ctx: { user, sessionId } })
+})

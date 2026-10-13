@@ -38,6 +38,7 @@ Source : `.env.example` (valeurs par défaut entre parenthèses). L'API refuse d
 | `WEB_ORIGIN` (`http://localhost:5173`) | Seule origine autorisée par CORS et Socket.IO. Sans chemin ni barre finale. |
 | `LOG_LEVEL` (`info`) | Niveau des logs pino |
 | `MONGO_URL` (`mongodb://127.0.0.1:27017/encheres`) | Base MongoDB. Obligatoire en production. Jamais affichée (elle peut contenir un mot de passe). |
+| `JWT_SECRET` (aléatoire à chaque démarrage hors production) | Clé de signature des access tokens, 32 caractères au minimum, obligatoire en production. Sans `.env`, un secret aléatoire est généré : les access tokens sont invalidés à chaque redémarrage de l'API (le refresh token les renouvelle). Jamais commité ni journalisé. |
 | `SMTP_HOST` (`127.0.0.1`) / `SMTP_PORT` (`1025`) | Serveur SMTP : Mailpit en local, le relais de Brevo en production. `SMTP_HOST` est obligatoire en production. |
 | `SMTP_FROM` (`Enchères <no-reply@encheres.local>`) | Expéditeur des emails. Obligatoire en production. |
 | `SMTP_USER` / `SMTP_PASSWORD` (aucun) | Authentification SMTP, toutes deux ou aucune. Les identifiants ne partent jamais sans TLS. |

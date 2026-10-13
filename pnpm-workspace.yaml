@@ -10,6 +10,9 @@ allowBuilds:
   # Son script télécharge le binaire MongoDB à l'installation. Refusé : le binaire est
   # téléchargé au premier lancement des tests (voir apps/api/test/global-setup.ts).
   mongodb-memory-server: false
+  # Binaires précompilés livrés dans le paquet pour Windows, macOS et Linux : le script
+  # (node-gyp-build) ne sert qu'à les localiser, il ne compile rien d'utile ici.
+  argon2: false
 
 # Versions partagées entre les paquets (ADR-013).
 catalog:

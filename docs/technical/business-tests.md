@@ -35,7 +35,7 @@ Règles : [account.md](../domain/workflows/account.md).
 
 | ID | Niveau | Scénario |
 |---|---|---|
-| T2.1 | Int | Inscription : rôle `buyer`, `emailVerifiedAt` nul, mot de passe hashé (argon2id), utilisateur connecté. |
+| T2.1 | Int | Inscription : rôle `buyer`, `emailVerifiedAt` nul, mot de passe hashé (argon2id), **aucune session ouverte** (réponse identique que l'email existe ou non, voir [ADR-014](../decisions/ADR-014-implementation-authentification.md)). |
 | T2.2 | Int | Inscription sans case « majeur » ou sans CGU : refusée. |
 | T2.3 | Int | Mot de passe de 11 caractères refusé, 12 accepté. |
 | T2.4 | Int | Inscription avec un email existant : réponse identique à une inscription réussie, et un email « tentative » part dans la file. |
@@ -45,7 +45,7 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.8 | Int | Connexion : même message d'erreur pour un email inconnu et un mauvais mot de passe. |
 | T2.9 | Int | Un compte suspendu ou supprimé ne peut pas se connecter. |
 | T2.10 | Int | Réinitialisation du mot de passe : lien valable 1 h, usage unique, toutes les sessions fermées après coup. |
-| T2.11 | Int | Refresh token réutilisé après rotation : toutes les sessions de l'utilisateur sont révoquées. |
+| T2.11 | Int | Refresh token réutilisé après rotation : toutes les sessions de l'utilisateur sont révoquées. Réutilisé dans les 10 s (deux onglets) : simple conflit `REFRESH_CONFLICT`, rien n'est révoqué ; deux requêtes simultanées : une seule réussit. |
 | T2.12 | Int | Changement d'email : l'email ne change qu'après clic sur le lien envoyé à la nouvelle adresse. |
 | T2.13 | Int | Changement de mot de passe : demande le mot de passe actuel, ferme les autres sessions. |
 | T2.14 | Int | Procédure `seller` appelée par un `buyer` : refusée ; rôle relu en base (un JWT périmé ne suffit pas). |
@@ -54,7 +54,7 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.17 | Int | Le dernier admin ne peut ni perdre son rôle, ni être supprimé. |
 | T2.18 | Int | Limite anti-abus : après N échecs de connexion, la tentative est ralentie ou bloquée. |
 | T2.19 | E2E | Inscription → email lu dans Mailpit → clic → connexion. |
-| T2.20 *(ajout)* | Unit | Config : `MONGO_URL` obligatoire en production, défaut local sinon ; une valeur refusée n'apparaît jamais dans le message. |
+| T2.20 *(ajout)* | Unit | Config : `MONGO_URL`, `JWT_SECRET`, `SMTP_HOST` et `SMTP_FROM` obligatoires en production, défauts locaux sinon (secret JWT aléatoire) ; identifiant SMTP sans mot de passe refusé ; une valeur refusée n'apparaît jamais dans le message. |
 | T2.21 *(ajout)* | Int | Connexion MongoDB : échec avec un message clair, sans l'URL (mot de passe possible) ; base réelle vidée entre les tests. |
 | T2.22 *(ajout)* | Int | Modèle `users` : valeurs par défaut (`buyer`, non vérifié) ; email normalisé et unique sans tenir compte de la casse ; plusieurs comptes anonymisés (`email: null`) autorisés ; rôle inconnu refusé. |
 | T2.23 *(ajout)* | Int | Modèles `authTokens`, `sessions`, `emails` : `tokenHash` et `refreshTokenHash` uniques ; type et statut inconnus refusés ; index TTL sur `expiresAt` ; `data` vide conservé. |
@@ -63,6 +63,10 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.26 *(ajout)* | Int | Job d'envoi : email envoyé une seule fois (même avec des passages simultanés) ; `data` vidé après l'envoi ; réessais à 1, 5, 30 puis 120 min, `failed` à la 5e tentative ; modèle inconnu ou données invalides abandonnés tout de suite ; ni adresse ni token dans les logs. |
 | T2.27 *(ajout)* | Unit | Boucle des tâches : premier passage immédiat, pas de chevauchement, erreur journalisée sans arrêter la boucle, arrêt qui attend le passage en cours. |
 | T2.28 *(ajout)* | Unit | `mailer` : expéditeur configuré, destinataire, sujet, HTML et texte transmis ; l'échec SMTP est propagé pour que la file réessaie. |
+| T2.29 *(ajout)* | Int | Cookies : access token (`Path=/`, 15 min) et refresh token (`Path=/api/trpc/auth.refresh`, 30 j) `httpOnly`, `SameSite=Lax`, `Secure` en production ; le refresh token ne part que vers `auth.refresh` ; JWT limité à `sub` et `sid` ; hash seul stocké. |
+| T2.30 *(ajout)* | Int | `auth.me` : refuse token falsifié, d'un autre secret, expiré, sans signature (`alg: none`), au sujet invalide ; relit rôle, suspension et suppression en base. |
+| T2.31 *(ajout)* | Int | Déconnexion : ferme la session courante seulement, retire les cookies, le refresh token ne marche plus. |
+| T2.32 *(ajout)* | Int | Logs : ni mot de passe, ni token, ni hash après inscription, connexion, échec, `me` et refresh. |
 
 ## Étape 3 — Création et modération
 

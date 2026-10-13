@@ -16,7 +16,7 @@ Chaque procédure valide son entrée avec Zod et appelle un service ; aucune log
 
 | Routeur | Procédure | Type | Accès |
 |---|---|---|---|
-| `auth` | `register`, `login`, `logout`, `me` | mutation / query | public (`me`, `logout` : connecté) |
+| `auth` | `register`, `login`, `refresh`, `logout`, `me` | mutation / query | public (`logout`, `me` : connecté) |
 | `auth` | `verifyEmail`, `resendVerification` | mutation | public / connecté |
 | `auth` | `forgotPassword`, `resetPassword` | mutation | public |
 | `profile` | `update`, `changePassword`, `changeEmail`, `confirmEmailChange`, `delete` | mutation | connecté |
@@ -36,7 +36,8 @@ Middlewares tRPC : `publicProcedure`, `authedProcedure`, `sellerProcedure`, `adm
 
 ## Erreurs
 - Côté serveur : `TRPCError` avec le code tRPC adapté (`UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `BAD_REQUEST`, `CONFLICT`).
-- Le code métier est ajouté via l'`errorFormatter` : le client reçoit `error.data.code` (ex. `AUCTION_NOT_LIVE`, `EMAIL_NOT_VERIFIED`) et un `message` lisible.
+- Le code métier est ajouté via l'`errorFormatter` : le client reçoit `error.data.code` (ex. `AUCTION_NOT_LIVE`, `EMAIL_NOT_VERIFIED`) et un `message` lisible. Une erreur sans code métier garde le code tRPC (`BAD_REQUEST`…). Les codes sont dans `packages/shared/src/errors.ts` ; côté serveur, on lève `AppError(code)` (`apps/api/src/errors.ts`).
+- Une entrée invalide renvoie `BAD_REQUEST`, le message « Données invalides. » et `error.data.fieldErrors` (chemin du champ → types de problème). Les valeurs saisies n'y figurent jamais.
 - Mêmes codes que Socket.IO ([business-rules.md](../domain/business-rules.md)).
 - Routes Fastify classiques : `{ error: { code, message } }`.
 - Jamais de stack trace ni de détail interne dans une réponse.

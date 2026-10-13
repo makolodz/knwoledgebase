@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import { originSchema } from '@encheres/shared'
 import { z } from 'zod'
 
@@ -22,6 +23,8 @@ const envSchema = z
       .string()
       .regex(/^mongodb(\+srv)?:\/\/./, 'doit commencer par mongodb:// ou mongodb+srv://')
       .optional(),
+    // Au moins 32 caractères (docs/technical/security.md). Message fixe : jamais la valeur.
+    JWT_SECRET: z.string().min(32, 'doit faire au moins 32 caractères').optional(),
     SMTP_HOST: z.string().min(1).optional(),
     SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(1025),
     SMTP_USER: z.string().min(1).optional(),
@@ -36,6 +39,7 @@ const envSchema = z
     // et la base serait celle du poste.
     if (env.NODE_ENV === 'production') {
       if (env.MONGO_URL === undefined) missing('MONGO_URL', 'obligatoire en production')
+      if (env.JWT_SECRET === undefined) missing('JWT_SECRET', 'obligatoire en production')
       if (env.SMTP_HOST === undefined) missing('SMTP_HOST', 'obligatoire en production')
       if (env.SMTP_FROM === undefined) missing('SMTP_FROM', 'obligatoire en production')
     }
@@ -66,6 +70,11 @@ export interface Config {
   logLevel: (typeof LOG_LEVELS)[number]
   /** Peut contenir des identifiants : ne jamais le journaliser. */
   mongoUrl: string
+  /**
+   * Clé de signature des access tokens. Hors production, sans JWT_SECRET, un secret aléatoire est
+   * généré à chaque démarrage (ADR-014). Ne jamais le journaliser.
+   */
+  jwtSecret: string
   /** Contient un mot de passe éventuel : ne jamais le journaliser. */
   smtp: SmtpConfig
 }
@@ -93,6 +102,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     webOrigin: parsed.WEB_ORIGIN,
     logLevel: parsed.LOG_LEVEL,
     mongoUrl: parsed.MONGO_URL ?? DEFAULT_MONGO_URL,
+    jwtSecret: parsed.JWT_SECRET ?? randomBytes(32).toString('base64url'),
     smtp: {
       host: parsed.SMTP_HOST ?? DEFAULT_SMTP_HOST,
       port: parsed.SMTP_PORT,

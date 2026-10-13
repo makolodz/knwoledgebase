@@ -9,7 +9,10 @@ Raisons du choix des sessions : [ADR-011](../decisions/ADR-011-sessions-jwt-refr
 - **Refresh token** : aléatoire (≥ 32 octets), valable **30 j**, stocké **hashé** dans `sessions` ([database.md](database.md)).
   - **Rotation** à chaque utilisation : l'ancien est invalidé et un nouveau est émis.
   - Si un refresh token **déjà utilisé** est présenté de nouveau, c'est probablement un vol : toutes les sessions de l'utilisateur sont révoquées.
-- Cookies `httpOnly`, `Secure`, `SameSite=Lax`. Le cookie du refresh token a `Path=/api/trpc/auth.refresh`, pour n'être envoyé qu'à cette procédure.
+  - Exception : dans les **10 secondes** suivant la rotation, la présentation de l'ancien token (deux onglets qui rafraîchissent en même temps) renvoie seulement `REFRESH_CONFLICT` (HTTP 409), sans rien révoquer : le cookie est déjà renouvelé, le client réessaie une fois ([ADR-014](../decisions/ADR-014-implementation-authentification.md)).
+  - Le serveur garde, dans `sessions`, le hash du token précédent (`previousRefreshTokenHash`) pour reconnaître cette réutilisation.
+- Cookies `httpOnly`, `SameSite=Lax`, et `Secure` en production (le développement se fait en `http://localhost`). Le cookie du refresh token a `Path=/api/trpc/auth.refresh`, pour n'être envoyé qu'à cette procédure : le front doit donc appeler `auth.refresh` **seule**, jamais dans une requête groupée.
+- L'access token ne contient que `sub` et `sid`. Le serveur n'accepte que HS256 et le relit en base à chaque appel authentifié (rôle, suspension, suppression).
 - **Révocation** (suppression des documents `sessions`) :
   - déconnexion : la session courante ;
   - réinitialisation ou changement de mot de passe : toutes les autres sessions ;

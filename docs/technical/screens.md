@@ -90,7 +90,7 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 - **Route** : `/register` · **Accès** : non connecté
 - **Données** : `auth.register`
 - **Contenu** : email, nom d'affichage, mot de passe (indicateur de longueur ≥ 12), cases CGU et majorité.
-- **États** : succès → connecté + bandeau « Vérifiez votre email ». Même message si l'email existe déjà.
+- **États** : succès → redirection vers `/login` avec un message « Compte créé : consultez votre boîte mail pour vérifier votre adresse, puis connectez-vous ». Même message, sans session, si l'email existe déjà.
 
 ### Mot de passe oublié / réinitialisation
 - **Routes** : `/forgot-password`, `/reset-password?token=…` · **Accès** : public

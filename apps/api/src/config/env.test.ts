@@ -10,6 +10,7 @@ describe('T1.9 — loadConfig', () => {
       webOrigin: 'http://localhost:5173',
       logLevel: 'info',
       mongoUrl: 'mongodb://127.0.0.1:27017/encheres',
+      jwtSecret: expect.any(String) as string,
       smtp: {
         host: '127.0.0.1',
         port: 1025,
@@ -27,6 +28,7 @@ describe('T1.9 — loadConfig', () => {
       WEB_ORIGIN: 'https://encheres.example',
       LOG_LEVEL: 'warn',
       MONGO_URL: 'mongodb+srv://app:motdepasse@cluster.example/encheres',
+      JWT_SECRET: 'x'.repeat(40),
       SMTP_HOST: 'smtp-relay.example',
       SMTP_PORT: '587',
       SMTP_USER: 'utilisateur',
@@ -42,6 +44,7 @@ describe('T1.9 — loadConfig', () => {
       webOrigin: 'https://encheres.example',
       logLevel: 'warn',
       mongoUrl: 'mongodb+srv://app:motdepasse@cluster.example/encheres',
+      jwtSecret: 'x'.repeat(40),
       smtp: {
         host: 'smtp-relay.example',
         port: 587,
@@ -64,6 +67,7 @@ describe('T1.9 — loadConfig', () => {
     ['MONGO_URL', { MONGO_URL: 'http://localhost:27017' }],
     ['MONGO_URL', { MONGO_URL: 'mongodb://' }],
     ['MONGO_URL', { MONGO_URL: '' }],
+    ['JWT_SECRET', { JWT_SECRET: 'trop-court' }],
     ['SMTP_PORT', { SMTP_PORT: 'abc' }],
     ['SMTP_PORT', { SMTP_PORT: '70000' }],
     ['SMTP_FROM', { SMTP_FROM: 'sans adresse' }],
@@ -81,6 +85,7 @@ describe('T1.9 — loadConfig', () => {
       'NODE_ENV',
       'LOG_LEVEL',
       'MONGO_URL',
+      'JWT_SECRET',
       'SMTP_PORT',
       'SMTP_FROM',
     ]) {
@@ -94,18 +99,19 @@ describe('T1.9 — loadConfig', () => {
   })
 })
 
-describe('T2.20 — MONGO_URL et SMTP', () => {
+describe('T2.20 — MONGO_URL, JWT_SECRET et SMTP', () => {
   const production = {
     NODE_ENV: 'production',
     MONGO_URL: 'mongodb://127.0.0.1:27017/encheres',
+    JWT_SECRET: 'x'.repeat(40),
     SMTP_HOST: 'smtp-relay.example',
     SMTP_FROM: 'no-reply@encheres.example',
   }
 
-  it('exige MONGO_URL, SMTP_HOST et SMTP_FROM en production : pas de repli sur les services locaux', () => {
+  it('exige MONGO_URL, JWT_SECRET, SMTP_HOST et SMTP_FROM en production : pas de repli sur les services locaux', () => {
     expect(loadConfig(production).smtp.host).toBe('smtp-relay.example')
 
-    for (const name of ['MONGO_URL', 'SMTP_HOST', 'SMTP_FROM']) {
+    for (const name of ['MONGO_URL', 'JWT_SECRET', 'SMTP_HOST', 'SMTP_FROM']) {
       const env: Record<string, string> = { ...production }
       delete env[name]
       expect(() => loadConfig(env)).toThrow(new RegExp(`${name} : obligatoire`))
@@ -118,6 +124,19 @@ describe('T2.20 — MONGO_URL et SMTP', () => {
       expect(config.mongoUrl).toBe('mongodb://127.0.0.1:27017/encheres')
       expect(config.smtp).toMatchObject({ host: '127.0.0.1', port: 1025, auth: null })
     }
+  })
+
+  it('génère un secret JWT aléatoire hors production quand JWT_SECRET est absent', () => {
+    const first = loadConfig({ NODE_ENV: 'development' }).jwtSecret
+    const second = loadConfig({ NODE_ENV: 'test' }).jwtSecret
+
+    expect(first.length).toBeGreaterThanOrEqual(32)
+    expect(second.length).toBeGreaterThanOrEqual(32)
+    expect(first).not.toBe(second)
+  })
+
+  it('garde le secret JWT fourni', () => {
+    expect(loadConfig({ JWT_SECRET: 'y'.repeat(32) }).jwtSecret).toBe('y'.repeat(32))
   })
 
   it('refuse un identifiant SMTP sans mot de passe, et un mot de passe sans identifiant', () => {

@@ -1,4 +1,5 @@
 import type { Writable } from 'node:stream'
+import cookie from '@fastify/cookie'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import { fastifyTRPCPlugin, type FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify'
@@ -6,7 +7,7 @@ import Fastify, { type FastifyError, type FastifyInstance } from 'fastify'
 import type { Config } from './config/env'
 import { loggerOptions } from './config/logger'
 import { attachSocketIo } from './sockets'
-import { createContext } from './trpc/context'
+import { createContextFactory } from './trpc/context'
 import { appRouter, type AppRouter } from './trpc/router'
 
 export interface BuildAppOptions {
@@ -34,6 +35,7 @@ export async function buildApp(
 
   await app.register(helmet)
   await app.register(cors, { origin: [config.webOrigin], credentials: true })
+  await app.register(cookie)
 
   // Erreur renvoyée au client : un code stable et un message court, jamais de détail interne.
   app.setErrorHandler((error: FastifyError, request, reply) => {
@@ -54,7 +56,7 @@ export async function buildApp(
     prefix: '/api/trpc',
     trpcOptions: {
       router: appRouter,
-      createContext,
+      createContext: createContextFactory(config),
       // tRPC écrit ses en-têtes sur la réponse brute et remplace le `Vary: Origin` posé par CORS.
       // Sans `Origin` dans Vary, un cache pourrait resservir une réponse sans en-têtes CORS à
       // l'origine autorisée. On reprend donc les valeurs de tRPC en y ajoutant `Origin`.
