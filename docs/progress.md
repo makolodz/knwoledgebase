@@ -9,7 +9,7 @@
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
 | 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
-| 2 | Comptes et sessions | `███████░░░` 75 % | 6 / 8 | 🔵 En cours |
+| 2 | Comptes et sessions | `████████░░` 88 % | 7 / 8 | 🔵 En cours |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
 | 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
@@ -18,7 +18,7 @@
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | | **Total** | `██░░░░░░░░` **30 %** | **14 / 47** | |
 
-**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles, file d'envoi des emails, inscription, connexion, refresh avec rotation, déconnexion et `auth.me`. Reste : seed et pages. Fait aussi : vérification d'email, mot de passe oublié, profil, middlewares `authed`, `seller` et `admin`, limites anti-abus.
+**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles, file d'envoi des emails, inscription, connexion, refresh avec rotation, déconnexion et `auth.me`. Reste : les pages du front (inscription, connexion, vérification, mot de passe oublié, profil) et le test E2E. Fait côté API : vérification d'email, mot de passe oublié, profil, middlewares `authed`, `seller` et `admin`, limites anti-abus, seed.
 
 ## État de la documentation
 
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-13 | Script de seed `pnpm seed` : admin, vendeur et deux acheteurs (domaine `.test`), idempotent, refusé en production et sur une base non locale (T2.38) | 2 |
 | 2026-10-13 | Limites anti-abus : limiteur à fenêtre glissante en mémoire (connexion par IP et par email, inscription, mot de passe oublié, renvoi du lien, mot de passe actuel) et limite globale de 300 requêtes par minute (T2.18, T2.35 à T2.37) | 2 |
 | 2026-10-13 | Vérification d'email, mot de passe oublié et réinitialisation, `profile` (nom, mot de passe, changement d'email en deux temps) ; liens à usage unique consommés atomiquement (T2.6, T2.7, T2.10, T2.12, T2.13, T2.33, T2.34) | 2 |
 | 2026-10-13 | Procédures `authed`, `seller` et `admin` (rôle relu en base, T2.14) ; T2.15 à T2.17 reportés à l'étape 7 (T7.14 à T7.16) | 2, 7 |

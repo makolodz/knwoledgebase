@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "pnpm --parallel --filter @encheres/api --filter @encheres/web dev",
+    "seed": "pnpm --filter @encheres/api seed",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

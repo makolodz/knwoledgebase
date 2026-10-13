@@ -28,6 +28,17 @@ L'API se connecte à MongoDB au démarrage et refuse de démarrer s'il est injoi
 
 Les emails ne partent jamais directement : un service les ajoute à la file `emails` (MongoDB) et un job les envoie toutes les 5 secondes, avec des réessais (ADR-006). En local, Mailpit les capture tous : ouvrir http://localhost:8025.
 
+## Comptes de développement
+`pnpm seed` crée quatre comptes à l'adresse vérifiée, tous avec le mot de passe `mot-de-passe-de-dev-123` (public : il est dans le dépôt, ces comptes n'ont de sens qu'en local).
+
+| Rôle | Email |
+|---|---|
+| admin | `admin@example.test` |
+| vendeur (`seller`) | `vendeur@example.test` |
+| acheteur (`buyer`) | `acheteur1@example.test`, `acheteur2@example.test` |
+
+Le script est idempotent : le relancer remet ces comptes dans leur état d'origine (rôle, mot de passe, non suspendu) sans toucher aux autres. Il **refuse** de tourner si `NODE_ENV` vaut `production` ou si `MONGO_URL` ne désigne pas `localhost` ou `127.0.0.1`.
+
 ## Variables d'environnement
 Source : `.env.example` (valeurs par défaut entre parenthèses). L'API refuse de démarrer si une valeur est invalide, sans afficher la valeur.
 
@@ -50,6 +61,7 @@ Si le front change de port, `WEB_ORIGIN` doit suivre. Vite est configuré sans r
 | Commande | Effet |
 |---|---|
 | `pnpm dev` | Lance l'API (`tsx watch`, rechargement à chaud) et le front (Vite) |
+| `pnpm seed` | Crée ou remet à neuf les comptes de développement (voir ci-dessous). Demande `pnpm infra:up`. |
 | `pnpm infra:up` / `infra:down` / `infra:logs` | Démarre, arrête (les données sont conservées) ou suit les logs de MongoDB et Mailpit |
 | `pnpm lint` | ESLint (typé), `no-explicit-any` en erreur |
 | `pnpm format` / `pnpm format:check` | Prettier : corrige / vérifie |

@@ -69,6 +69,7 @@ Règles : [account.md](../domain/workflows/account.md). T2.15 à T2.17 (rôles, 
 | T2.35 *(ajout)* | Unit/Int | Limiteur en mémoire (fenêtre glissante, clés indépendantes, mémoire bornée, purge) ; inscription, mot de passe oublié et renvoi du lien : 5 par heure et par IP, vérifié avant la validation, reprise après une heure. |
 | T2.36 *(ajout)* | Int | Limite globale de 300 requêtes par minute et par IP : `RATE_LIMITED` avec `Retry-After` et en-têtes CORS ; les autres IP ne sont pas touchées. |
 | T2.37 *(ajout)* | Int | Changement de mot de passe ou d'email : 5 mots de passe actuels refusés en 15 min bloquent l'utilisateur même avec le bon ; autres utilisateurs épargnés ; un succès remet le compteur à zéro. |
+| T2.38 *(ajout)* | Int | Seed : un admin, un vendeur, deux acheteurs à l'email vérifié, connexion possible avec chacun ; idempotent, remet un compte modifié en état sans toucher aux autres ; refusé en production et sur une base non locale, sans afficher l'URL. |
 
 ## Étape 3 — Création et modération
 
