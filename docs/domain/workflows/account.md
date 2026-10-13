@@ -44,7 +44,7 @@ Inscription, connexion, vérification de l'email, rôles, suspension et suppress
 |---|---|
 | `name` | Modifiable librement |
 | `password` | Demande le mot de passe actuel. Ferme les autres sessions. |
-| `email` | Demande le mot de passe actuel. Un lien de confirmation est envoyé à la **nouvelle** adresse (`authTokens`, 24 h). L'email ne change qu'après le clic, et `emailVerifiedAt` est alors mis à jour. L'ancienne adresse reçoit une notification. |
+| `email` | Demande le mot de passe actuel. Un lien de confirmation est envoyé à la **nouvelle** adresse (`authTokens`, 24 h) ; si cette adresse a déjà un compte, la réponse est la même mais rien n'est envoyé. L'email ne change qu'après le clic (utilisateur connecté), et `emailVerifiedAt` est alors mis à jour. L'ancienne adresse reçoit une notification à ce moment-là. |
 
 ## Rôle vendeur
 - **Seul l'admin** attribue ou retire le rôle `seller`, depuis la gestion des utilisateurs.

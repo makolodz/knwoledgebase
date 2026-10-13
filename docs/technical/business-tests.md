@@ -64,6 +64,8 @@ Règles : [account.md](../domain/workflows/account.md). T2.15 à T2.17 (rôles, 
 | T2.30 *(ajout)* | Int | `auth.me` : refuse token falsifié, d'un autre secret, expiré, sans signature (`alg: none`), au sujet invalide ; relit rôle, suspension et suppression en base. |
 | T2.31 *(ajout)* | Int | Déconnexion : ferme la session courante seulement, retire les cookies, le refresh token ne marche plus. |
 | T2.32 *(ajout)* | Int | Logs : ni mot de passe, ni token, ni hash après inscription, connexion, échec, `me` et refresh. |
+| T2.33 *(ajout)* | Int | `profile.update` : nom de 2 à 30 caractères ; impossible de changer rôle, email ou vérification par ce chemin ; réservé aux utilisateurs connectés. |
+| T2.34 *(ajout)* | Int | Changement d'email vers une adresse déjà prise : même réponse qu'une adresse libre, aucun lien envoyé ; confirmation refusée si l'adresse est prise entre-temps ; lien destiné à un autre utilisateur refusé sans être consommé. |
 
 ## Étape 3 — Création et modération
 

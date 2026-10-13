@@ -1,4 +1,10 @@
-import { loginInputSchema, registerInputSchema } from '@encheres/shared'
+import {
+  forgotPasswordInputSchema,
+  loginInputSchema,
+  registerInputSchema,
+  resetPasswordInputSchema,
+  verifyEmailInputSchema,
+} from '@encheres/shared'
 import { AppError } from '../../errors'
 import {
   login,
@@ -8,6 +14,8 @@ import {
   toCurrentUser,
   type RequestMeta,
 } from '../../services/auth'
+import { requestPasswordReset, resetPassword } from '../../services/password-reset'
+import { resendVerification, verifyEmail } from '../../services/verification'
 import type { Context } from '../context'
 import { clearSessionCookies, REFRESH_COOKIE, setSessionCookies } from '../cookies'
 import { authedProcedure, publicProcedure, router } from '../trpc'
@@ -52,4 +60,29 @@ export const authRouter = router({
   }),
 
   me: authedProcedure.query(({ ctx }) => ({ user: toCurrentUser(ctx.user) })),
+
+  /** Public : le lien est cliqué depuis la boîte mail, souvent sans session. */
+  verifyEmail: publicProcedure.input(verifyEmailInputSchema).mutation(async ({ input }) => {
+    await verifyEmail(input.token)
+    return { status: 'ok' as const }
+  }),
+
+  /** Un lien par minute au plus ; `already_verified` quand il n'y a rien à vérifier. */
+  resendVerification: authedProcedure.mutation(async ({ ctx }) => ({
+    status: await resendVerification(ctx.config, ctx.user),
+  })),
+
+  /** Même réponse que l'email existe ou non. */
+  forgotPassword: publicProcedure
+    .input(forgotPasswordInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      await requestPasswordReset(ctx.config, input.email)
+      return { status: 'ok' as const }
+    }),
+
+  /** Ferme toutes les sessions et ne connecte pas l'utilisateur. */
+  resetPassword: publicProcedure.input(resetPasswordInputSchema).mutation(async ({ input }) => {
+    await resetPassword(input)
+    return { status: 'ok' as const }
+  }),
 })

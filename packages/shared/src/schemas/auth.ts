@@ -47,3 +47,36 @@ export const currentUserSchema = z.strictObject({
 export type RegisterInput = z.infer<typeof registerInputSchema>
 export type LoginInput = z.infer<typeof loginInputSchema>
 export type CurrentUser = z.infer<typeof currentUserSchema>
+
+/** Token d'un lien reçu par email (vérification, réinitialisation, changement d'adresse). */
+export const emailTokenSchema = z.string().min(20).max(200)
+
+export const verifyEmailInputSchema = z.strictObject({ token: emailTokenSchema })
+
+export const forgotPasswordInputSchema = z.strictObject({ email: emailSchema })
+
+export const resetPasswordInputSchema = z.strictObject({
+  token: emailTokenSchema,
+  password: passwordSchema,
+})
+
+export const updateProfileInputSchema = z.strictObject({ name: displayNameSchema })
+
+/** Le mot de passe actuel n'a pas de règle de longueur : on ne dit rien de ce qu'il doit être. */
+const currentPasswordSchema = z.string().min(1).max(PASSWORD_MAX_LENGTH)
+
+export const changePasswordInputSchema = z.strictObject({
+  currentPassword: currentPasswordSchema,
+  newPassword: passwordSchema,
+})
+
+export const changeEmailInputSchema = z.strictObject({
+  currentPassword: currentPasswordSchema,
+  newEmail: emailSchema,
+})
+
+export const confirmEmailChangeInputSchema = z.strictObject({ token: emailTokenSchema })
+
+export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>
+export type ChangePasswordInput = z.infer<typeof changePasswordInputSchema>
+export type ChangeEmailInput = z.infer<typeof changeEmailInputSchema>

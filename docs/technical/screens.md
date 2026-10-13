@@ -99,7 +99,7 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 
 ### Vérification de l'email
 - **Route** : `/verify-email?token=…` · **Accès** : public
-- **Données** : `auth.verifyEmail` (et `profile.confirmEmailChange` pour un changement d'email)
+- **Données** : `auth.verifyEmail` ; `profile.confirmEmailChange` quand le lien porte `kind=email-change` (changement d'email, utilisateur connecté)
 - **États** : succès, lien expiré (bouton « Renvoyer »), déjà vérifié.
 
 ---
