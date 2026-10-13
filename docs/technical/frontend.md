@@ -25,6 +25,7 @@ Description de chaque écran : [screens.md](screens.md).
 - **Renouvellement transparent** (`api/auth-fetch.ts`) : quand l'API répond `NOT_AUTHENTICATED`, le `fetch` du client appelle `auth.refresh` **une seule fois** pour toutes les requêtes en cours, puis rejoue la requête une fois. Un `REFRESH_CONFLICT` (autre onglet) est réessayé une fois. Si le renouvellement échoue, le store repasse en mode visiteur.
 - **Lectures groupées, écritures séparées** : les requêtes `query` sont groupées, les `mutation` partent une par une. `auth.refresh` doit arriver seule sur `/api/trpc/auth.refresh` pour recevoir son cookie, et une requête rejouée ne doit pas refaire une écriture réussie.
 - **Routes protégées** (`meta` des routes) : `requiresAuth` redirige vers `/login?redirect=…` ; `guestOnly` renvoie un utilisateur connecté à l'accueil ; `roles` affiche la page 404 à un autre rôle. Le paramètre `redirect` est **assaini** (`safeRedirect`) : un chemin interne seulement, jamais une adresse complète.
+- Un visiteur sans session provoque deux réponses 401 au chargement (`auth.me`, puis `auth.refresh`), que le navigateur signale en console : c'est normal. Un cookie « indicateur » lisible par le JavaScript éviterait ces appels, mais il ne serait pas visible du front si l'API est sur un autre sous-domaine : on ne le fait pas.
 - Les formulaires valident avec les schémas de `packages/shared` avant d'appeler l'API, qui revérifie tout. Les messages d'erreur du serveur ne sont jamais affichés tels quels : `i18n/errors.ts` les traduit.
 
 ## Temps réel

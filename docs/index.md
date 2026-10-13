@@ -24,7 +24,7 @@
 | Front Vue | [technical/frontend.md](technical/frontend.md) |
 | Lancer le projet en local, commandes, variables d'environnement, dépannage | [runbooks/local-development.md](runbooks/local-development.md) |
 | Comprendre pourquoi un choix a été fait | [decisions/](decisions/) |
-| Éviter un piège déjà rencontré (outils, dépendances, API) | [lessons-learned/](lessons-learned/2026-10-etape-1-squelette.md) |
+| Éviter un piège déjà rencontré (outils, dépendances, API, tests, sessions) | [étape 1](lessons-learned/2026-10-etape-1-squelette.md), [étape 2](lessons-learned/2026-10-etape-2-comptes-sessions.md) |
 
 ## Décisions (ADR)
 

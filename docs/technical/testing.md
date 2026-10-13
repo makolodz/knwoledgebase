@@ -52,7 +52,7 @@ Les scénarios détaillés par étape sont dans [business-tests.md](business-tes
 
 ## E2E (Playwright)
 Ils tournent sur la stack complète : API, front, MongoDB et Mailpit. Parcours couverts :
-- inscription → vérification de l'email (lien lu dans Mailpit) → connexion ;
+- inscription → vérification de l'email (lien lu dans Mailpit) → connexion → session renouvelée sans nouvelle saisie du mot de passe → déconnexion (`e2e/auth.spec.ts`, T2.19) ;
 - **enchère à plusieurs** : deux navigateurs sur la même enchère, offres croisées, mises à jour en direct et prolongations visibles des deux côtés ;
 - clôture → paiement Stripe **en mode test** (carte `4242 4242 4242 4242`) → statut `paid`. Le webhook est relayé par `stripe listen`, ou simulé par un événement signé ;
 - admin : validation d'une enchère.

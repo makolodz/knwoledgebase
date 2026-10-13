@@ -9,7 +9,7 @@
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
 | 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
-| 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🔵 En cours |
+| 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🟡 En revue |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
 | 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
@@ -18,11 +18,11 @@
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | | **Total** | `██░░░░░░░░` **30 %** | **14 / 47** | |
 
-**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles, file d'envoi des emails, inscription, connexion, refresh avec rotation, déconnexion et `auth.me`. Reste : le test E2E (T2.19, job `e2e` de la CI) et le runbook. Fait : API (inscription, sessions, vérification, mot de passe oublié, profil, rôles, limites anti-abus, seed) et pages du front.
+**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles, file d'envoi des emails, inscription, connexion, refresh avec rotation, déconnexion et `auth.me`. Toutes les cases sont cochées : API (inscription, sessions, vérification, mot de passe oublié, profil, rôles, limites anti-abus, seed), pages du front, test E2E T2.19 et runbook. Reste : ouvrir la PR (`Closes #3`) et vérifier que la CI passe, en particulier le job `e2e` avec le vrai Mailpit.
 
 ## État de la documentation
 
-- Documents présents : 35 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
+- Documents présents : 36 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
 - Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
 - Documents annoncés mais absents : `architecture/modules.md`, `runbooks/deployment.md`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-13 | Test E2E T2.19 (inscription, email lu dans Mailpit, vérification, connexion, session renouvelée, déconnexion), base `encheres-e2e`, [retours d'expérience de l'étape 2](lessons-learned/2026-10-etape-2-comptes-sessions.md), procédure de vérification manuelle du runbook | 2 |
 | 2026-10-13 | Front de l'étape 2 : pages de connexion, d'inscription, de vérification, de mot de passe oublié et « Mon compte » ; store `auth`, renouvellement transparent de la session (`fetch` partagé entre onglets), gardes de routes avec redirection assainie, en-tête selon la session (T2.39 à T2.47) | 2 |
 | 2026-10-13 | Script de seed `pnpm seed` : admin, vendeur et deux acheteurs (domaine `.test`), idempotent, refusé en production et sur une base non locale (T2.38) | 2 |
 | 2026-10-13 | Limites anti-abus : limiteur à fenêtre glissante en mémoire (connexion par IP et par email, inscription, mot de passe oublié, renvoi du lien, mot de passe actuel) et limite globale de 300 requêtes par minute (T2.18, T2.35 à T2.37) | 2 |
