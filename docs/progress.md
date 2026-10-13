@@ -9,16 +9,16 @@
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
 | 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
-| 2 | Comptes et sessions | `█░░░░░░░░░` 13 % | 1 / 8 | 🔵 En cours |
+| 2 | Comptes et sessions | `██░░░░░░░░` 25 % | 2 / 8 | 🔵 En cours |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
 | 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 6 | Paiement | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 7 | Administration et RGPD | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
-| | **Total** | `█░░░░░░░░░` **19 %** | **9 / 47** | |
+| | **Total** | `██░░░░░░░░` **21 %** | **10 / 47** | |
 
-**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles `users`, `authTokens`, `sessions` et `emails`. Reste : file d'envoi d'emails, inscription et sessions, vérification d'email, mot de passe oublié, profil, middlewares de rôle, limites anti-abus, seed et pages.
+**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles `users`, `authTokens`, `sessions` et `emails`, file d'envoi des emails avec son job et le `mailer`. Reste : inscription et sessions, vérification d'email, mot de passe oublié, profil, middlewares de rôle, limites anti-abus, seed et pages.
 
 ## État de la documentation
 
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-13 | File d'envoi des emails : `mailer` Nodemailer (Mailpit en local), modèles d'email (HTML échappé), job d'envoi toutes les 5 s avec réessais, `enqueueEmail` (T2.24 à T2.28) ; variables `SMTP_*` | 2 |
 | 2026-10-13 | Modèles `users`, `authTokens`, `sessions` et `emails` avec leurs index (T2.22, T2.23), rôles dans `packages/shared` | 2 |
 | 2026-10-13 | Début de l'étape 2 : `mongoose`, connexion MongoDB au démarrage, banc de test `mongodb-memory-server` (T2.20, T2.21), `MONGO_URL`, job `e2e` avec Docker Compose, [ADR-014](decisions/ADR-014-implementation-authentification.md) | 2 |
 | 2026-10-13 | `.claude/launch.json` (configuration des serveurs de prévisualisation, propre à chaque machine) ajouté au `.gitignore` | — |

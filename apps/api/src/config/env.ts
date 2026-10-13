@@ -6,6 +6,10 @@ const LOG_LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'
 /** Base MongoDB de développement : celle de docker-compose.yml. */
 const DEFAULT_MONGO_URL = 'mongodb://127.0.0.1:27017/encheres'
 
+/** Serveur SMTP de développement : Mailpit, dans docker-compose.yml. */
+const DEFAULT_SMTP_HOST = '127.0.0.1'
+const DEFAULT_SMTP_FROM = 'Enchères <no-reply@encheres.local>'
+
 const envSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -18,17 +22,40 @@ const envSchema = z
       .string()
       .regex(/^mongodb(\+srv)?:\/\/./, 'doit commencer par mongodb:// ou mongodb+srv://')
       .optional(),
+    SMTP_HOST: z.string().min(1).optional(),
+    SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(1025),
+    SMTP_USER: z.string().min(1).optional(),
+    SMTP_PASSWORD: z.string().min(1).optional(),
+    SMTP_FROM: z.string().regex(/@/, 'doit contenir une adresse email').optional(),
   })
   .superRefine((env, context) => {
-    // En production, pas de repli silencieux sur la base locale.
-    if (env.NODE_ENV === 'production' && env.MONGO_URL === undefined) {
-      context.addIssue({
-        code: 'custom',
-        path: ['MONGO_URL'],
-        message: 'obligatoire en production',
-      })
+    const missing = (name: string, message: string) =>
+      context.addIssue({ code: 'custom', path: [name], message })
+
+    // En production, pas de repli silencieux sur les services locaux : les emails seraient perdus
+    // et la base serait celle du poste.
+    if (env.NODE_ENV === 'production') {
+      if (env.MONGO_URL === undefined) missing('MONGO_URL', 'obligatoire en production')
+      if (env.SMTP_HOST === undefined) missing('SMTP_HOST', 'obligatoire en production')
+      if (env.SMTP_FROM === undefined) missing('SMTP_FROM', 'obligatoire en production')
+    }
+    // Un identifiant sans mot de passe (ou l'inverse) est une erreur de saisie, pas un SMTP ouvert.
+    if ((env.SMTP_USER === undefined) !== (env.SMTP_PASSWORD === undefined)) {
+      missing(
+        env.SMTP_USER === undefined ? 'SMTP_USER' : 'SMTP_PASSWORD',
+        'SMTP_USER et SMTP_PASSWORD vont ensemble',
+      )
     }
   })
+
+export interface SmtpConfig {
+  host: string
+  port: number
+  /** Expéditeur des emails, par exemple `Enchères <no-reply@exemple.fr>`. */
+  from: string
+  /** `null` pour un serveur sans authentification (Mailpit). */
+  auth: { user: string; password: string } | null
+}
 
 export interface Config {
   nodeEnv: 'development' | 'test' | 'production'
@@ -39,6 +66,8 @@ export interface Config {
   logLevel: (typeof LOG_LEVELS)[number]
   /** Peut contenir des identifiants : ne jamais le journaliser. */
   mongoUrl: string
+  /** Contient un mot de passe éventuel : ne jamais le journaliser. */
+  smtp: SmtpConfig
 }
 
 /** Erreur de configuration : le message liste les variables en cause, jamais leurs valeurs. */
@@ -64,5 +93,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     webOrigin: parsed.WEB_ORIGIN,
     logLevel: parsed.LOG_LEVEL,
     mongoUrl: parsed.MONGO_URL ?? DEFAULT_MONGO_URL,
+    smtp: {
+      host: parsed.SMTP_HOST ?? DEFAULT_SMTP_HOST,
+      port: parsed.SMTP_PORT,
+      from: parsed.SMTP_FROM ?? DEFAULT_SMTP_FROM,
+      auth:
+        parsed.SMTP_USER !== undefined && parsed.SMTP_PASSWORD !== undefined
+          ? { user: parsed.SMTP_USER, password: parsed.SMTP_PASSWORD }
+          : null,
+    },
   }
 }

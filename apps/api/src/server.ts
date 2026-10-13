@@ -1,6 +1,8 @@
 import { buildApp } from './app'
 import { ConfigError, loadConfig } from './config/env'
 import { connectDb, DbConnectionError, disconnectDb } from './infra/db'
+import { createSmtpMailer } from './infra/mailer'
+import { startJobs } from './jobs'
 // Enregistre les modèles avant la connexion, pour que `connectDb` crée leurs index.
 import './models'
 
@@ -26,9 +28,12 @@ try {
 }
 
 const app = await buildApp(config)
+const jobs = startJobs({ mailer: createSmtpMailer(config.smtp), log: app.log })
 
 async function shutdown(signal: string) {
   app.log.info({ signal }, 'Arrêt demandé')
+  // Les tâches d'abord : elles utilisent la base, qui doit rester ouverte jusqu'à leur fin.
+  await jobs.stop()
   await app.close()
   await disconnectDb()
   process.exit(0)

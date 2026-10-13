@@ -58,6 +58,11 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.21 *(ajout)* | Int | Connexion MongoDB : échec avec un message clair, sans l'URL (mot de passe possible) ; base réelle vidée entre les tests. |
 | T2.22 *(ajout)* | Int | Modèle `users` : valeurs par défaut (`buyer`, non vérifié) ; email normalisé et unique sans tenir compte de la casse ; plusieurs comptes anonymisés (`email: null`) autorisés ; rôle inconnu refusé. |
 | T2.23 *(ajout)* | Int | Modèles `authTokens`, `sessions`, `emails` : `tokenHash` et `refreshTokenHash` uniques ; type et statut inconnus refusés ; index TTL sur `expiresAt` ; `data` vide conservé. |
+| T2.24 *(ajout)* | Unit | Modèles d'email : sujet, HTML et texte ; durée de validité des liens ; nom d'affichage échappé dans le HTML ; aucune donnée utilisateur dans le sujet ; lien `javascript:` ou non http refusé. |
+| T2.25 *(ajout)* | Int | File d'envoi : un email en attente avec des paramètres validés ; paramètres invalides refusés, rien n'est stocké. |
+| T2.26 *(ajout)* | Int | Job d'envoi : email envoyé une seule fois (même avec des passages simultanés) ; `data` vidé après l'envoi ; réessais à 1, 5, 30 puis 120 min, `failed` à la 5e tentative ; modèle inconnu ou données invalides abandonnés tout de suite ; ni adresse ni token dans les logs. |
+| T2.27 *(ajout)* | Unit | Boucle des tâches : premier passage immédiat, pas de chevauchement, erreur journalisée sans arrêter la boucle, arrêt qui attend le passage en cours. |
+| T2.28 *(ajout)* | Unit | `mailer` : expéditeur configuré, destinataire, sujet, HTML et texte transmis ; l'échec SMTP est propagé pour que la file réessaie. |
 
 ## Étape 3 — Création et modération
 

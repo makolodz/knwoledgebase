@@ -26,6 +26,8 @@ Le fichier `.env` est **optionnel** : tous les réglages ont une valeur par déf
 
 L'API se connecte à MongoDB au démarrage et refuse de démarrer s'il est injoignable : lancer d'abord `pnpm infra:up`.
 
+Les emails ne partent jamais directement : un service les ajoute à la file `emails` (MongoDB) et un job les envoie toutes les 5 secondes, avec des réessais (ADR-006). En local, Mailpit les capture tous : ouvrir http://localhost:8025.
+
 ## Variables d'environnement
 Source : `.env.example` (valeurs par défaut entre parenthèses). L'API refuse de démarrer si une valeur est invalide, sans afficher la valeur.
 
@@ -36,6 +38,9 @@ Source : `.env.example` (valeurs par défaut entre parenthèses). L'API refuse d
 | `WEB_ORIGIN` (`http://localhost:5173`) | Seule origine autorisée par CORS et Socket.IO. Sans chemin ni barre finale. |
 | `LOG_LEVEL` (`info`) | Niveau des logs pino |
 | `MONGO_URL` (`mongodb://127.0.0.1:27017/encheres`) | Base MongoDB. Obligatoire en production. Jamais affichée (elle peut contenir un mot de passe). |
+| `SMTP_HOST` (`127.0.0.1`) / `SMTP_PORT` (`1025`) | Serveur SMTP : Mailpit en local, le relais de Brevo en production. `SMTP_HOST` est obligatoire en production. |
+| `SMTP_FROM` (`Enchères <no-reply@encheres.local>`) | Expéditeur des emails. Obligatoire en production. |
+| `SMTP_USER` / `SMTP_PASSWORD` (aucun) | Authentification SMTP, toutes deux ou aucune. Les identifiants ne partent jamais sans TLS. |
 | `VITE_API_URL` (`http://localhost:3000`) | Adresse de l'API vue du navigateur. Visible de tous : jamais de secret dans une variable `VITE_*`. |
 
 Si le front change de port, `WEB_ORIGIN` doit suivre. Vite est configuré sans repli (`strictPort`) pour que l'API ne refuse pas silencieusement un autre port.

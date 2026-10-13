@@ -30,7 +30,7 @@ Règles :
 Docs : [account.md](domain/workflows/account.md), [security.md](technical/security.md), [ADR-009](decisions/ADR-009-comptes.md), [ADR-011](decisions/ADR-011-sessions-jwt-refresh.md).
 - [x] Modèles `users`, `authTokens`, `sessions`.
 - [ ] Inscription, connexion, déconnexion, refresh avec rotation, `me`.
-- [ ] File d'envoi `emails` + job d'envoi + `mailer` (Mailpit) ([ADR-006](decisions/ADR-006-emails-brevo.md)).
+- [x] File d'envoi `emails` + job d'envoi + `mailer` (Mailpit) ([ADR-006](decisions/ADR-006-emails-brevo.md)).
 - [ ] Vérification d'email, mot de passe oublié, modification du profil.
 - [ ] Middlewares tRPC `authed` / `seller` / `admin`, rôles relus en base.
 - [ ] Limites anti-abus sur l'authentification.

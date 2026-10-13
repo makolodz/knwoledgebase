@@ -14,6 +14,7 @@ export function testConfig(overrides: Partial<Config> = {}): Config {
     webOrigin: WEB_ORIGIN,
     logLevel: 'silent',
     mongoUrl: 'mongodb://127.0.0.1:27017/encheres-test',
+    smtp: { host: '127.0.0.1', port: 1025, from: 'Enchères <no-reply@encheres.test>', auth: null },
     ...overrides,
   }
 }
