@@ -23,6 +23,8 @@ export default defineConfig({
     {
       command: 'pnpm --filter @encheres/api dev',
       cwd: '..',
+      // Base à part : les comptes créés par les tests ne se mêlent pas à ceux du développement.
+      env: { MONGO_URL: 'mongodb://127.0.0.1:27017/encheres-e2e' },
       url: API_HEALTH_URL,
       reuseExistingServer,
       timeout: 120_000,

@@ -31,11 +31,11 @@ Convention :
 
 ## Étape 2 — Comptes et sessions
 
-Règles : [account.md](../domain/workflows/account.md).
+Règles : [account.md](../domain/workflows/account.md). T2.15 à T2.17 (rôles, dernier admin) sont reportés à l'étape 7 (T7.14 à T7.16) : ils demandent les procédures `admin` et des enchères.
 
 | ID | Niveau | Scénario |
 |---|---|---|
-| T2.1 | Int | Inscription : rôle `buyer`, `emailVerifiedAt` nul, mot de passe hashé (argon2id), utilisateur connecté. |
+| T2.1 | Int | Inscription : rôle `buyer`, `emailVerifiedAt` nul, mot de passe hashé (argon2id), **aucune session ouverte** (réponse identique que l'email existe ou non, voir [ADR-014](../decisions/ADR-014-implementation-authentification.md)). |
 | T2.2 | Int | Inscription sans case « majeur » ou sans CGU : refusée. |
 | T2.3 | Int | Mot de passe de 11 caractères refusé, 12 accepté. |
 | T2.4 | Int | Inscription avec un email existant : réponse identique à une inscription réussie, et un email « tentative » part dans la file. |
@@ -45,15 +45,40 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.8 | Int | Connexion : même message d'erreur pour un email inconnu et un mauvais mot de passe. |
 | T2.9 | Int | Un compte suspendu ou supprimé ne peut pas se connecter. |
 | T2.10 | Int | Réinitialisation du mot de passe : lien valable 1 h, usage unique, toutes les sessions fermées après coup. |
-| T2.11 | Int | Refresh token réutilisé après rotation : toutes les sessions de l'utilisateur sont révoquées. |
+| T2.11 | Int | Refresh token réutilisé après rotation : toutes les sessions de l'utilisateur sont révoquées. Réutilisé dans les 10 s (deux onglets) : simple conflit `REFRESH_CONFLICT`, rien n'est révoqué ; deux requêtes simultanées : une seule réussit. |
 | T2.12 | Int | Changement d'email : l'email ne change qu'après clic sur le lien envoyé à la nouvelle adresse. |
 | T2.13 | Int | Changement de mot de passe : demande le mot de passe actuel, ferme les autres sessions. |
-| T2.14 | Int | Procédure `seller` appelée par un `buyer` : refusée ; rôle relu en base (un JWT périmé ne suffit pas). |
-| T2.15 | Int | Attribution du rôle `seller` ou `admin` : seul un admin y arrive. |
-| T2.16 | Int | Retrait du rôle `seller` : refusé si une enchère est `scheduled` ou `live` ; les `draft` passent `cancelled`. |
-| T2.17 | Int | Le dernier admin ne peut ni perdre son rôle, ni être supprimé. |
-| T2.18 | Int | Limite anti-abus : après N échecs de connexion, la tentative est ralentie ou bloquée. |
+| T2.14 | Int | Procédures `authed`, `seller` et `admin` : refusées aux autres rôles (un admin ne vend pas) et aux visiteurs ; rôle relu en base à chaque appel (JWT valide + rôle changé, promotion appliquée sans reconnexion, compte suspendu ou supprimé refusé). |
+| T2.18 | Int | Connexion : après 5 échecs en 15 min (par IP **et** par email, y compris pour un email inconnu), la tentative suivante est refusée avec `RATE_LIMITED` même avec le bon mot de passe ; reprise après la fenêtre ; échecs anciens oubliés ; une connexion réussie remet à zéro l'email mais pas l'IP ; le bon mot de passe d'un compte suspendu ne compte pas. |
 | T2.19 | E2E | Inscription → email lu dans Mailpit → clic → connexion. |
+| T2.20 *(ajout)* | Unit | Config : `MONGO_URL`, `JWT_SECRET`, `SMTP_HOST` et `SMTP_FROM` obligatoires en production, défauts locaux sinon (secret JWT aléatoire) ; identifiant SMTP sans mot de passe refusé ; une valeur refusée n'apparaît jamais dans le message. |
+| T2.21 *(ajout)* | Int | Connexion MongoDB : échec avec un message clair, sans l'URL (mot de passe possible) ; base réelle vidée entre les tests. |
+| T2.22 *(ajout)* | Int | Modèle `users` : valeurs par défaut (`buyer`, non vérifié) ; email normalisé et unique sans tenir compte de la casse ; plusieurs comptes anonymisés (`email: null`) autorisés ; rôle inconnu refusé. |
+| T2.23 *(ajout)* | Int | Modèles `authTokens`, `sessions`, `emails` : `tokenHash` et `refreshTokenHash` uniques ; type et statut inconnus refusés ; index TTL sur `expiresAt` ; `data` vide conservé. |
+| T2.24 *(ajout)* | Unit | Modèles d'email : sujet, HTML et texte ; durée de validité des liens ; nom d'affichage échappé dans le HTML ; aucune donnée utilisateur dans le sujet ; lien `javascript:` ou non http refusé. |
+| T2.25 *(ajout)* | Int | File d'envoi : un email en attente avec des paramètres validés ; paramètres invalides refusés, rien n'est stocké. |
+| T2.26 *(ajout)* | Int | Job d'envoi : email envoyé une seule fois (même avec des passages simultanés) ; `data` vidé après l'envoi ; réessais à 1, 5, 30 puis 120 min, `failed` à la 5e tentative ; modèle inconnu ou données invalides abandonnés tout de suite ; ni adresse ni token dans les logs. |
+| T2.27 *(ajout)* | Unit | Boucle des tâches : premier passage immédiat, pas de chevauchement, erreur journalisée sans arrêter la boucle, arrêt qui attend le passage en cours. |
+| T2.28 *(ajout)* | Unit | `mailer` : expéditeur configuré, destinataire, sujet, HTML et texte transmis ; l'échec SMTP est propagé pour que la file réessaie. |
+| T2.29 *(ajout)* | Int | Cookies : access token (`Path=/`, 15 min) et refresh token (`Path=/api/trpc/auth.refresh`, 30 j) `httpOnly`, `SameSite=Lax`, `Secure` en production ; le refresh token ne part que vers `auth.refresh` ; JWT limité à `sub` et `sid` ; hash seul stocké. |
+| T2.30 *(ajout)* | Int | `auth.me` : refuse token falsifié, d'un autre secret, expiré, sans signature (`alg: none`), au sujet invalide ; relit rôle, suspension et suppression en base. |
+| T2.31 *(ajout)* | Int | Déconnexion : ferme la session courante seulement, retire les cookies, le refresh token ne marche plus. |
+| T2.32 *(ajout)* | Int | Logs : ni mot de passe, ni token, ni hash après inscription, connexion, échec, `me` et refresh. |
+| T2.33 *(ajout)* | Int | `profile.update` : nom de 2 à 30 caractères ; impossible de changer rôle, email ou vérification par ce chemin ; réservé aux utilisateurs connectés. |
+| T2.34 *(ajout)* | Int | Changement d'email vers une adresse déjà prise : même réponse qu'une adresse libre, aucun lien envoyé ; confirmation refusée si l'adresse est prise entre-temps ; lien destiné à un autre utilisateur refusé sans être consommé. |
+| T2.35 *(ajout)* | Unit/Int | Limiteur en mémoire (fenêtre glissante, clés indépendantes, mémoire bornée, purge) ; inscription, mot de passe oublié et renvoi du lien : 5 par heure et par IP, vérifié avant la validation, reprise après une heure. |
+| T2.36 *(ajout)* | Int | Limite globale de 300 requêtes par minute et par IP : `RATE_LIMITED` avec `Retry-After` et en-têtes CORS ; les autres IP ne sont pas touchées. |
+| T2.37 *(ajout)* | Int | Changement de mot de passe ou d'email : 5 mots de passe actuels refusés en 15 min bloquent l'utilisateur même avec le bon ; autres utilisateurs épargnés ; un succès remet le compteur à zéro. |
+| T2.38 *(ajout)* | Int | Seed : un admin, un vendeur, deux acheteurs à l'email vérifié, connexion possible avec chacun ; idempotent, remet un compte modifié en état sans toucher aux autres ; refusé en production et sur une base non locale, sans afficher l'URL. |
+| T2.39 *(ajout)* | Unit | Front, `fetch` de session : renouvellement unique pour plusieurs requêtes simultanées, rejeu une fois, réponse groupée (207), `REFRESH_CONFLICT` réessayé une fois, pas de boucle, session perdue signalée, panne réseau tolérée. |
+| T2.40 *(ajout)* | Comp | Front, store `auth` : session restaurée une seule fois, visiteur sans session ou sans serveur, connexion, inscription sans session, déconnexion même serveur injoignable, session perdue. |
+| T2.41 *(ajout)* | Comp | Front, routeur : `requiresAuth` (redirection avec la page demandée), `guestOnly`, `roles` (404), liens email ouverts connecté ou non ; `safeRedirect` refuse adresses complètes, `//`, `/\`, caractères de contrôle. |
+| T2.42 *(ajout)* | Comp | Front, connexion : validation, redirection assainie, message unique « Identifiants invalides », `RATE_LIMITED`, `ACCOUNT_SUSPENDED`, serveur injoignable, bandeaux après inscription ou réinitialisation. |
+| T2.43 *(ajout)* | Comp | Front, inscription : les deux cases obligatoires, mot de passe de 11 caractères refusé et 12 accepté, compteur de longueur, parcours identique que l'adresse existe ou non, personne n'est connecté. |
+| T2.44 *(ajout)* | Comp | Front, mot de passe oublié et réinitialisation : message identique que le compte existe ou non, lien sans token ou refusé, onglet déconnecté après la réinitialisation. |
+| T2.45 *(ajout)* | Comp | Front, vérification : succès, lien invalide / déjà utilisé, nouveau lien (limite d'une par minute), adresse déjà vérifiée, confirmation d'un changement d'adresse (connexion demandée d'abord). |
+| T2.46 *(ajout)* | Comp | Front, navigation : Connexion / S'inscrire pour un visiteur, nom et Déconnexion pour un utilisateur, déconnexion même serveur injoignable. |
+| T2.47 *(ajout)* | Comp | Front, page « Mon compte » : redirection d'un visiteur, statut de vérification, renvoi du lien, nom, changement d'adresse et de mot de passe (mot de passe actuel incorrect, limite). |
 
 ## Étape 3 — Création et modération
 
@@ -187,6 +212,9 @@ Règles : [business-rules.md](../domain/business-rules.md) (« Rôles »), [acco
 | T7.11 | Int | Après suppression : `bids` et `payments` conservés et toujours liés à `userId`. |
 | T7.12 | Int | Après suppression : brouillons du vendeur supprimés avec leurs photos ; autres enchères conservées avec vendeur « Utilisateur supprimé ». |
 | T7.13 | E2E | Parcours admin complet : suspension, annulation d'une enchère `live`, modification d'un paramètre. |
+| T7.14 *(reporté de T2.15)* | Int | Attribution du rôle `seller` ou `admin` : seul un admin y arrive. |
+| T7.15 *(reporté de T2.16)* | Int | Retrait du rôle `seller` : refusé si une enchère est `scheduled` ou `live` ; les `draft` passent `cancelled`. |
+| T7.16 *(reporté de T2.17)* | Int | Le dernier admin ne peut ni perdre son rôle, ni être supprimé (voir aussi T7.3). |
 
 ## Étape 8 — Finitions et mise en production
 

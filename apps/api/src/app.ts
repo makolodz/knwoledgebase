@@ -1,17 +1,35 @@
 import type { Writable } from 'node:stream'
+import cookie from '@fastify/cookie'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
+import rateLimit from '@fastify/rate-limit'
 import { fastifyTRPCPlugin, type FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify'
 import Fastify, { type FastifyError, type FastifyInstance } from 'fastify'
 import type { Config } from './config/env'
 import { loggerOptions } from './config/logger'
+import { createRateLimits, type RateLimits } from './services/rate-limits'
 import { attachSocketIo } from './sockets'
-import { createContext } from './trpc/context'
+import { createContextFactory } from './trpc/context'
 import { appRouter, type AppRouter } from './trpc/router'
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    /** Limites anti-abus par action (connexion, inscription…), en mémoire. */
+    rateLimits: RateLimits
+  }
+}
+
+/** Limite globale de l'API (docs/technical/security.md, « Limites anti-abus »). */
+export const GLOBAL_RATE_LIMIT_PER_MINUTE = 300
 
 export interface BuildAppOptions {
   /** Destination des logs (les tests y branchent un flux en mémoire). */
   logStream?: Writable
+  /** Réglages réservés aux tests : une limite globale plus basse, une horloge simulée. */
+  rateLimit?: {
+    globalMax?: number
+    now?: () => number
+  }
 }
 
 const CLIENT_ERRORS: Record<number, { code: string; message: string }> = {
@@ -32,8 +50,17 @@ export async function buildApp(
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger: loggerOptions(config, options.logStream) })
 
+  const rateLimits = createRateLimits(options.rateLimit?.now)
+  app.decorate('rateLimits', rateLimits)
+
   await app.register(helmet)
   await app.register(cors, { origin: [config.webOrigin], credentials: true })
+  await app.register(cookie)
+  // Après CORS : une réponse 429 garde ses en-têtes CORS, le navigateur peut donc la lire.
+  await app.register(rateLimit, {
+    max: options.rateLimit?.globalMax ?? GLOBAL_RATE_LIMIT_PER_MINUTE,
+    timeWindow: '1 minute',
+  })
 
   // Erreur renvoyée au client : un code stable et un message court, jamais de détail interne.
   app.setErrorHandler((error: FastifyError, request, reply) => {
@@ -54,7 +81,7 @@ export async function buildApp(
     prefix: '/api/trpc',
     trpcOptions: {
       router: appRouter,
-      createContext,
+      createContext: createContextFactory(config, rateLimits),
       // tRPC écrit ses en-têtes sur la réponse brute et remplace le `Vary: Origin` posé par CORS.
       // Sans `Origin` dans Vary, un cache pourrait resservir une réponse sans en-têtes CORS à
       // l'origine autorisée. On reprend donc les valeurs de tRPC en y ajoutant `Origin`.

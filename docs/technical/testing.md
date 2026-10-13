@@ -9,7 +9,8 @@ Outils :
 ## Principes
 - Tester le comportement, pas l'implémentation.
 - **Pas de mock de MongoDB** : la logique critique (offres atomiques, changements de statut) n'a de sens que sur une vraie base.
-  - Une base mongodb-memory-server par fichier de test, vidée entre les tests.
+  - Un seul `mongod` (mongodb-memory-server) par exécution de Vitest, une **base par fichier de test**, vidée entre les tests : `useTestDb()` dans `apps/api/test/db.ts` ([ADR-014](../decisions/ADR-014-implementation-authentification.md)).
+  - Le binaire MongoDB est téléchargé au premier `pnpm test` (environ 740 Mo sous Windows) puis mis en cache.
 - Mocks autorisés uniquement aux frontières : Stripe, SMTP (`mailer`) et l'horloge.
 - **Horloge contrôlée** (`vi.useFakeTimers()` ou horloge injectée) pour tout ce qui dépend de `endsAt`, des délais ou des jobs.
 - Chaque bug corrigé arrive avec un test qui le reproduit.
@@ -51,7 +52,7 @@ Les scénarios détaillés par étape sont dans [business-tests.md](business-tes
 
 ## E2E (Playwright)
 Ils tournent sur la stack complète : API, front, MongoDB et Mailpit. Parcours couverts :
-- inscription → vérification de l'email (lien lu dans Mailpit) → connexion ;
+- inscription → vérification de l'email (lien lu dans Mailpit) → connexion → session renouvelée sans nouvelle saisie du mot de passe → déconnexion (`e2e/auth.spec.ts`, T2.19) ;
 - **enchère à plusieurs** : deux navigateurs sur la même enchère, offres croisées, mises à jour en direct et prolongations visibles des deux côtés ;
 - clôture → paiement Stripe **en mode test** (carte `4242 4242 4242 4242`) → statut `paid`. Le webhook est relayé par `stripe listen`, ou simulé par un événement signé ;
 - admin : validation d'une enchère.

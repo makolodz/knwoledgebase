@@ -52,6 +52,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @encheres/e2e exec playwright install --with-deps chromium
+      # MongoDB et Mailpit (docker-compose.yml) : l'API se connecte à la base au démarrage.
+      - run: pnpm infra:up
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()

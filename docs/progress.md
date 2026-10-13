@@ -2,27 +2,27 @@
 
 > Document **tenu à jour par l'IA** à chaque modification (code, doc, roadmap). Source des cases : [roadmap.md](roadmap.md). Ne pas y recopier le contenu des étapes, seulement l'état.
 >
-> Dernière mise à jour : 2026-10-12 · Commit de référence : `e97e286`
+> Dernière mise à jour : 2026-10-13 · Commit de référence : `43f88f0`
 
 ## Vue d'ensemble
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
-| 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟡 En revue |
-| 2 | Comptes et sessions | `░░░░░░░░░░` 0 % | 0 / 8 | ⚪ Pas commencée |
+| 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
+| 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🟡 En revue |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
 | 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 6 | Paiement | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 7 | Administration et RGPD | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
-| | **Total** | `█░░░░░░░░░` **17 %** | **8 / 47** | |
+| | **Total** | `██░░░░░░░░` **30 %** | **14 / 47** | |
 
-**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier), `packages/shared`, `apps/api` (Fastify + tRPC + Socket.IO) et `apps/web` (Vue 3 : page `health` + indicateur temps réel) avec leurs tests, Docker Compose (MongoDB + Mailpit), le test E2E Playwright (T1.1) et la CI GitHub Actions. Runbook, section « Commandes » d'AGENTS.md et `.env.example` écrits : toutes les cases sont cochées. Reste : ouvrir la PR (`Closes #2`) et vérifier que la CI passe sur GitHub.
+**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles, file d'envoi des emails, inscription, connexion, refresh avec rotation, déconnexion et `auth.me`. Toutes les cases sont cochées : API (inscription, sessions, vérification, mot de passe oublié, profil, rôles, limites anti-abus, seed), pages du front, test E2E T2.19 et runbook. Reste : ouvrir la PR (`Closes #3`) et vérifier que la CI passe, en particulier le job `e2e` avec le vrai Mailpit.
 
 ## État de la documentation
 
-- Documents présents : 34 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
+- Documents présents : 36 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
 - Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
 - Documents annoncés mais absents : `architecture/modules.md`, `runbooks/deployment.md`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
@@ -31,6 +31,16 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-13 | Test E2E T2.19 (inscription, email lu dans Mailpit, vérification, connexion, session renouvelée, déconnexion), base `encheres-e2e`, [retours d'expérience de l'étape 2](lessons-learned/2026-10-etape-2-comptes-sessions.md), procédure de vérification manuelle du runbook | 2 |
+| 2026-10-13 | Front de l'étape 2 : pages de connexion, d'inscription, de vérification, de mot de passe oublié et « Mon compte » ; store `auth`, renouvellement transparent de la session (`fetch` partagé entre onglets), gardes de routes avec redirection assainie, en-tête selon la session (T2.39 à T2.47) | 2 |
+| 2026-10-13 | Script de seed `pnpm seed` : admin, vendeur et deux acheteurs (domaine `.test`), idempotent, refusé en production et sur une base non locale (T2.38) | 2 |
+| 2026-10-13 | Limites anti-abus : limiteur à fenêtre glissante en mémoire (connexion par IP et par email, inscription, mot de passe oublié, renvoi du lien, mot de passe actuel) et limite globale de 300 requêtes par minute (T2.18, T2.35 à T2.37) | 2 |
+| 2026-10-13 | Vérification d'email, mot de passe oublié et réinitialisation, `profile` (nom, mot de passe, changement d'email en deux temps) ; liens à usage unique consommés atomiquement (T2.6, T2.7, T2.10, T2.12, T2.13, T2.33, T2.34) | 2 |
+| 2026-10-13 | Procédures `authed`, `seller` et `admin` (rôle relu en base, T2.14) ; T2.15 à T2.17 reportés à l'étape 7 (T7.14 à T7.16) | 2, 7 |
+| 2026-10-13 | Inscription (sans connexion automatique, ADR-009 complété), connexion, refresh avec rotation et délai de grâce, déconnexion, `auth.me` ; cookies httpOnly, JWT HS256 relu en base, `errorFormatter` (T2.29 à T2.32) ; `JWT_SECRET` | 2 |
+| 2026-10-13 | File d'envoi des emails : `mailer` Nodemailer (Mailpit en local), modèles d'email (HTML échappé), job d'envoi toutes les 5 s avec réessais, `enqueueEmail` (T2.24 à T2.28) ; variables `SMTP_*` | 2 |
+| 2026-10-13 | Modèles `users`, `authTokens`, `sessions` et `emails` avec leurs index (T2.22, T2.23), rôles dans `packages/shared` | 2 |
+| 2026-10-13 | Début de l'étape 2 : `mongoose`, connexion MongoDB au démarrage, banc de test `mongodb-memory-server` (T2.20, T2.21), `MONGO_URL`, job `e2e` avec Docker Compose, [ADR-014](decisions/ADR-014-implementation-authentification.md) | 2 |
 | 2026-10-13 | `.claude/launch.json` (configuration des serveurs de prévisualisation, propre à chaque machine) ajouté au `.gitignore` | — |
 | 2026-10-13 | Runbook : `pnpm test` rouge dans `apps/api` (`require() of ES Module`) quand le terminal utilise un Node < 22.12 | 1 |
 | 2026-10-12 | Runbook : dépannage de l'activation de Node/pnpm avec fnm sous PowerShell | 1 |

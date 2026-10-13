@@ -29,3 +29,6 @@ Détail des règles : [account.md](../domain/workflows/account.md).
 - **Demande de rôle vendeur dans l'application** : plus traçable, mais un écran et un statut en plus pour un volume faible.
 - **Suppression totale** : casse l'historique et les obligations comptables.
 - **Désactivation seule** : non conforme si l'utilisateur demande l'effacement.
+
+## Addendum (2026-10-13) : pas de connexion automatique après l'inscription
+Connecter l'utilisateur dès l'inscription contredisait « on ne révèle jamais qu'un email existe » : pour une adresse déjà utilisée, aucune session ne peut être ouverte, et l'absence de session trahit le compte. L'inscription renvoie donc la même réponse dans tous les cas, **sans ouvrir de session** ; l'utilisateur se connecte ensuite (la vérification de l'email n'est pas nécessaire pour cela). Voir [ADR-014](ADR-014-implementation-authentification.md).

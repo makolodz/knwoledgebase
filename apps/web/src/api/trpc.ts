@@ -1,14 +1,36 @@
 import type { AppRouter } from '@encheres/api'
-import { createTRPCClient, httpBatchLink } from '@trpc/client'
+import { createTRPCClient, httpBatchLink, httpLink, splitLink } from '@trpc/client'
 import { env } from '../env'
+import { createAuthFetch } from './auth-fetch'
 
-/** Client tRPC typé par le routeur de l'API (ADR-010). */
+/**
+ * Appelée quand la session ne peut plus être renouvelée. Le store d'authentification s'y inscrit :
+ * ce module ne l'importe pas, pour éviter une dépendance circulaire.
+ */
+let sessionLostHandler: () => void = () => {}
+export function onSessionLost(handler: () => void): void {
+  sessionLostHandler = handler
+}
+
+const url = `${env.VITE_API_URL}/api/trpc`
+const fetchWithSession = createAuthFetch({
+  apiUrl: env.VITE_API_URL,
+  onSessionLost: () => sessionLostHandler(),
+})
+
+/**
+ * Client tRPC typé par le routeur de l'API (ADR-010).
+ *
+ * Les lectures sont groupées, les écritures partent **une par requête** : `auth.refresh` doit
+ * arriver seule sur `/api/trpc/auth.refresh` pour recevoir son cookie (security.md), et une
+ * requête rejouée après un renouvellement de session ne doit jamais refaire une écriture réussie.
+ */
 export const trpc = createTRPCClient<AppRouter>({
   links: [
-    httpBatchLink({
-      url: `${env.VITE_API_URL}/api/trpc`,
-      // L'API est sur une autre origine : les cookies de session (étape 2) doivent suivre.
-      fetch: (url, options) => fetch(url, { ...options, credentials: 'include' }),
+    splitLink({
+      condition: (operation) => operation.type === 'query',
+      true: httpBatchLink({ url, fetch: fetchWithSession }),
+      false: httpLink({ url, fetch: fetchWithSession }),
     }),
   ],
 })

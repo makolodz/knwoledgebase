@@ -41,6 +41,7 @@ Node ≥ 22.22.2 et pnpm 12 ([ADR-013](docs/decisions/ADR-013-outillage-monorepo
 | `pnpm install` | Installe les dépendances (aucun script d'installation n'est exécuté) |
 | `pnpm infra:up` / `pnpm infra:down` | Démarre / arrête MongoDB et Mailpit (Docker Compose) |
 | `pnpm dev` | Lance l'API (`:3000`) et le front (`:5173`) |
+| `pnpm seed` | Crée (ou remet à neuf) les comptes de développement : admin, vendeur, deux acheteurs. Refuse de tourner en production ou sur une base non locale |
 | `pnpm lint` | ESLint |
 | `pnpm format:check` (`pnpm format` pour corriger) | Prettier |
 | `pnpm typecheck` | `tsc` et `vue-tsc` |

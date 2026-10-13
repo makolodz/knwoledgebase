@@ -14,8 +14,8 @@ Inscription, connexion, vérification de l'email, rôles, suspension et suppress
 - À la création :
   - `role: 'buyer'`, `emailVerifiedAt: null`, `acceptedTermsAt` = maintenant ;
   - l'email de vérification est ajouté à la file d'envoi ;
-  - l'utilisateur est **connecté immédiatement**.
-- Si l'email existe déjà : afficher **le même message** que pour une inscription réussie, et envoyer à cette adresse un email « quelqu'un a tenté de créer un compte ». On ne révèle jamais qu'un email existe.
+  - **aucune session n'est ouverte** : l'utilisateur se connecte ensuite (la connexion ne demande pas d'email vérifié). Si l'inscription connectait, l'absence de session trahirait un compte existant ([ADR-014](../../decisions/ADR-014-implementation-authentification.md)).
+- Si l'email existe déjà : renvoyer **exactement la même réponse** que pour une inscription réussie, et envoyer à cette adresse un email « quelqu'un a tenté de créer un compte ». On ne révèle jamais qu'un email existe.
 
 ## Vérification de l'email
 - Elle est **obligatoire pour enchérir**. Sans elle, l'utilisateur peut se connecter, consulter et suivre les enchères. Une offre est refusée avec `EMAIL_NOT_VERIFIED` ([business-rules.md](../business-rules.md)).
@@ -25,7 +25,7 @@ Inscription, connexion, vérification de l'email, rôles, suspension et suppress
 - Un nouveau lien peut être demandé depuis le profil, au maximum **1 par minute**. Demander un nouveau lien invalide le précédent.
 
 ## Connexion et déconnexion
-- Connexion par email et mot de passe. Un compte non vérifié peut se connecter.
+- Connexion par email et mot de passe. Un compte non vérifié peut se connecter. Un compte suspendu reçoit `ACCOUNT_SUSPENDED` seulement s'il a donné le bon mot de passe.
 - En cas d'échec, le message est **toujours le même** (« identifiants invalides »), que l'email existe ou non.
 - Un compte **suspendu** ou **supprimé** ne peut pas se connecter.
 - La déconnexion invalide la session courante.
@@ -44,7 +44,7 @@ Inscription, connexion, vérification de l'email, rôles, suspension et suppress
 |---|---|
 | `name` | Modifiable librement |
 | `password` | Demande le mot de passe actuel. Ferme les autres sessions. |
-| `email` | Demande le mot de passe actuel. Un lien de confirmation est envoyé à la **nouvelle** adresse (`authTokens`, 24 h). L'email ne change qu'après le clic, et `emailVerifiedAt` est alors mis à jour. L'ancienne adresse reçoit une notification. |
+| `email` | Demande le mot de passe actuel. Un lien de confirmation est envoyé à la **nouvelle** adresse (`authTokens`, 24 h) ; si cette adresse a déjà un compte, la réponse est la même mais rien n'est envoyé. L'email ne change qu'après le clic (utilisateur connecté), et `emailVerifiedAt` est alors mis à jour. L'ancienne adresse reçoit une notification à ce moment-là. |
 
 ## Rôle vendeur
 - **Seul l'admin** attribue ou retire le rôle `seller`, depuis la gestion des utilisateurs.

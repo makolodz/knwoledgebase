@@ -90,7 +90,7 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 - **Route** : `/register` · **Accès** : non connecté
 - **Données** : `auth.register`
 - **Contenu** : email, nom d'affichage, mot de passe (indicateur de longueur ≥ 12), cases CGU et majorité.
-- **États** : succès → connecté + bandeau « Vérifiez votre email ». Même message si l'email existe déjà.
+- **États** : succès → redirection vers `/login` avec un message « Compte créé : consultez votre boîte mail pour vérifier votre adresse, puis connectez-vous ». Même message, sans session, si l'email existe déjà.
 
 ### Mot de passe oublié / réinitialisation
 - **Routes** : `/forgot-password`, `/reset-password?token=…` · **Accès** : public
@@ -99,7 +99,7 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 
 ### Vérification de l'email
 - **Route** : `/verify-email?token=…` · **Accès** : public
-- **Données** : `auth.verifyEmail` (et `profile.confirmEmailChange` pour un changement d'email)
+- **Données** : `auth.verifyEmail` ; `profile.confirmEmailChange` quand le lien porte `kind=email-change` (changement d'email, utilisateur connecté)
 - **États** : succès, lien expiré (bouton « Renvoyer »), déjà vérifié.
 
 ---
@@ -109,8 +109,8 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 ### Profil
 - **Route** : `/account` · **Accès** : connecté
 - **Données** : `auth.me`, `profile.update`, `profile.changePassword`, `profile.changeEmail`, `profile.delete`
-- **Contenu** : nom d'affichage, email (+ statut vérifié, bouton renvoyer), rôle, changement de mot de passe, changement d'email, zone « Supprimer mon compte ».
-- **États** : suppression bloquée → liste des raisons (enchère en cours, paiement en attente…).
+- **Contenu** : nom d'affichage, email (+ statut vérifié, bouton renvoyer), rôle, changement de mot de passe, changement d'email, zone « Supprimer mon compte » (**étape 7** : absente tant que `profile.delete` n'existe pas).
+- **États** : suppression bloquée → liste des raisons (enchère en cours, paiement en attente…). Mot de passe actuel incorrect : message sur le champ ; `RATE_LIMITED` après 5 refus en 15 min.
 
 ### Mes offres
 - **Route** : `/account/bids` · **Accès** : connecté

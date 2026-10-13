@@ -28,14 +28,14 @@ Règles :
 
 ## Étape 2 — Comptes et sessions
 Docs : [account.md](domain/workflows/account.md), [security.md](technical/security.md), [ADR-009](decisions/ADR-009-comptes.md), [ADR-011](decisions/ADR-011-sessions-jwt-refresh.md).
-- [ ] Modèles `users`, `authTokens`, `sessions`.
-- [ ] Inscription, connexion, déconnexion, refresh avec rotation, `me`.
-- [ ] File d'envoi `emails` + job d'envoi + `mailer` (Mailpit) ([ADR-006](decisions/ADR-006-emails-brevo.md)).
-- [ ] Vérification d'email, mot de passe oublié, modification du profil.
-- [ ] Middlewares tRPC `authed` / `seller` / `admin`, rôles relus en base.
-- [ ] Limites anti-abus sur l'authentification.
-- [ ] Script de seed : un admin, un vendeur, deux acheteurs.
-- [ ] Pages : inscription, connexion, vérification, mot de passe oublié, profil.
+- [x] Modèles `users`, `authTokens`, `sessions`.
+- [x] Inscription, connexion, déconnexion, refresh avec rotation, `me`.
+- [x] File d'envoi `emails` + job d'envoi + `mailer` (Mailpit) ([ADR-006](decisions/ADR-006-emails-brevo.md)).
+- [x] Vérification d'email, mot de passe oublié, modification du profil.
+- [x] Middlewares tRPC `authed` / `seller` / `admin`, rôles relus en base.
+- [x] Limites anti-abus sur l'authentification.
+- [x] Script de seed : un admin, un vendeur, deux acheteurs.
+- [x] Pages : inscription, connexion, vérification, mot de passe oublié, profil.
 
 **Fini quand** : un utilisateur s'inscrit, vérifie son email via Mailpit, se connecte, et sa session survit au rafraîchissement du token.
 

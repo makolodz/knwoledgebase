@@ -3,6 +3,7 @@ import type { AddressInfo } from 'node:net'
 import type { FastifyInstance } from 'fastify'
 import { buildApp, type BuildAppOptions } from '../src/app'
 import type { Config } from '../src/config/env'
+import { rateLimitClock } from './clock'
 
 export const WEB_ORIGIN = 'http://localhost:5173'
 
@@ -13,6 +14,9 @@ export function testConfig(overrides: Partial<Config> = {}): Config {
     port: 0,
     webOrigin: WEB_ORIGIN,
     logLevel: 'silent',
+    mongoUrl: 'mongodb://127.0.0.1:27017/encheres-test',
+    jwtSecret: 'secret-de-test-'.padEnd(48, 'x'),
+    smtp: { host: '127.0.0.1', port: 1025, from: 'Enchères <no-reply@encheres.test>', auth: null },
     ...overrides,
   }
 }
@@ -47,7 +51,10 @@ interface TestAppOptions extends BuildAppOptions {
 
 export async function createTestApp(options: TestAppOptions = {}): Promise<FastifyInstance> {
   const { config, routes, ...buildOptions } = options
-  const app = await buildApp(testConfig(config), buildOptions)
+  const app = await buildApp(testConfig(config), {
+    ...buildOptions,
+    rateLimit: { now: () => rateLimitClock.now, ...buildOptions.rateLimit },
+  })
   routes?.(app)
   await app.ready()
   return app

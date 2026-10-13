@@ -13,6 +13,14 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(createAppRouter())
 app.use(PrimeVue, {
+  // Textes de PrimeVue lus par les lecteurs d'écran : en français, comme le reste de l'interface.
+  locale: {
+    passwordPrompt: 'Saisissez un mot de passe',
+    weak: 'Faible',
+    medium: 'Moyen',
+    strong: 'Fort',
+    aria: { close: 'Fermer' },
+  },
   theme: {
     preset: Aura,
     options: {

@@ -1,5 +1,10 @@
 import { buildApp } from './app'
 import { ConfigError, loadConfig } from './config/env'
+import { connectDb, DbConnectionError, disconnectDb } from './infra/db'
+import { createSmtpMailer } from './infra/mailer'
+import { startJobs } from './jobs'
+// Enregistre les modèles avant la connexion, pour que `connectDb` crée leurs index.
+import './models'
 
 let config
 try {
@@ -12,11 +17,29 @@ try {
   throw error
 }
 
+try {
+  await connectDb(config.mongoUrl)
+} catch (error) {
+  if (error instanceof DbConnectionError) {
+    console.error(error.message)
+    process.exit(1)
+  }
+  throw error
+}
+
 const app = await buildApp(config)
+const jobs = startJobs({
+  mailer: createSmtpMailer(config.smtp),
+  rateLimits: app.rateLimits,
+  log: app.log,
+})
 
 async function shutdown(signal: string) {
   app.log.info({ signal }, 'Arrêt demandé')
+  // Les tâches d'abord : elles utilisent la base, qui doit rester ouverte jusqu'à leur fin.
+  await jobs.stop()
   await app.close()
+  await disconnectDb()
   process.exit(0)
 }
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

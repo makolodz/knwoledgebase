@@ -9,7 +9,10 @@ Raisons du choix des sessions : [ADR-011](../decisions/ADR-011-sessions-jwt-refr
 - **Refresh token** : aléatoire (≥ 32 octets), valable **30 j**, stocké **hashé** dans `sessions` ([database.md](database.md)).
   - **Rotation** à chaque utilisation : l'ancien est invalidé et un nouveau est émis.
   - Si un refresh token **déjà utilisé** est présenté de nouveau, c'est probablement un vol : toutes les sessions de l'utilisateur sont révoquées.
-- Cookies `httpOnly`, `Secure`, `SameSite=Lax`. Le cookie du refresh token a `Path=/api/trpc/auth.refresh`, pour n'être envoyé qu'à cette procédure.
+  - Exception : dans les **10 secondes** suivant la rotation, la présentation de l'ancien token (deux onglets qui rafraîchissent en même temps) renvoie seulement `REFRESH_CONFLICT` (HTTP 409), sans rien révoquer : le cookie est déjà renouvelé, le client réessaie une fois ([ADR-014](../decisions/ADR-014-implementation-authentification.md)).
+  - Le serveur garde, dans `sessions`, le hash du token précédent (`previousRefreshTokenHash`) pour reconnaître cette réutilisation.
+- Cookies `httpOnly`, `SameSite=Lax`, et `Secure` en production (le développement se fait en `http://localhost`). Le cookie du refresh token a `Path=/api/trpc/auth.refresh`, pour n'être envoyé qu'à cette procédure : le front doit donc appeler `auth.refresh` **seule**, jamais dans une requête groupée.
+- L'access token ne contient que `sub` et `sid`. Le serveur n'accepte que HS256 et le relit en base à chaque appel authentifié (rôle, suspension, suppression).
 - **Révocation** (suppression des documents `sessions`) :
   - déconnexion : la session courante ;
   - réinitialisation ou changement de mot de passe : toutes les autres sessions ;
@@ -27,18 +30,22 @@ Raisons du choix des sessions : [ADR-011](../decisions/ADR-011-sessions-jwt-refr
 - Au moins 12 caractères.
 - Jamais loggés ni renvoyés dans une réponse.
 
-## Limites anti-abus (`@fastify/rate-limit`)
+## Limites anti-abus
 Les compteurs sont gardés en mémoire. C'est suffisant tant que l'API tourne en une seule instance ([ADR-007](../decisions/ADR-007-photos-disque-local.md)).
+- La limite globale par IP vient de `@fastify/rate-limit`.
+- Les limites par action passent par un limiteur à fenêtre glissante écrit pour le projet (`services/rate-limiter.ts`, [ADR-014](../decisions/ADR-014-implementation-authentification.md)) : tout tRPC passe par une seule route Fastify, le plugin ne sait pas distinguer les procédures.
+- L'adresse IP est celle de la connexion. Derrière un proxy, `trustProxy` devra être réglé (étape 8, déploiement), sinon toutes les requêtes auraient la même IP.
 
 | Action | Limite |
 |---|---|
-| `auth.login` | 5 échecs par 15 min, par IP **et** par email |
+| `auth.login` | 5 échecs par 15 min, par IP **et** par email. Le contrôle précède le calcul du hash. Un bon mot de passe n'est jamais compté (compte suspendu compris) et remet à zéro le compteur de l'email, pas celui de l'IP. |
+| `profile.changePassword`, `profile.changeEmail` | 5 mots de passe actuels refusés par 15 min, par utilisateur (une session volée ne doit pas permettre de deviner le mot de passe) |
 | `auth.register`, `auth.forgotPassword`, `auth.resendVerification` | 5 par heure, par IP |
 | `bid:place` (Socket.IO) | 5 par seconde, par utilisateur (compteur codé dans le handler) |
 | Upload d'images | 20 par heure, par utilisateur |
 | Reste de l'API | 300 par minute, par IP |
 
-En cas de dépassement : code `RATE_LIMITED` (HTTP 429).
+En cas de dépassement : code `RATE_LIMITED` (HTTP 429). Une réponse de la limite globale est une erreur Fastify classique (`{ error: { code, message } }`, avec `Retry-After` et les en-têtes CORS), pas une réponse tRPC.
 
 ## Entrées et sorties
 - Toute entrée (tRPC, Socket.IO, routes Fastify) est validée par Zod. Les champs inconnus sont rejetés (`.strict()`).
