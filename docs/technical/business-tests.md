@@ -31,7 +31,7 @@ Convention :
 
 ## Étape 2 — Comptes et sessions
 
-Règles : [account.md](../domain/workflows/account.md).
+Règles : [account.md](../domain/workflows/account.md). T2.15 à T2.17 (rôles, dernier admin) sont reportés à l'étape 7 (T7.14 à T7.16) : ils demandent les procédures `admin` et des enchères.
 
 | ID | Niveau | Scénario |
 |---|---|---|
@@ -48,10 +48,7 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.11 | Int | Refresh token réutilisé après rotation : toutes les sessions de l'utilisateur sont révoquées. Réutilisé dans les 10 s (deux onglets) : simple conflit `REFRESH_CONFLICT`, rien n'est révoqué ; deux requêtes simultanées : une seule réussit. |
 | T2.12 | Int | Changement d'email : l'email ne change qu'après clic sur le lien envoyé à la nouvelle adresse. |
 | T2.13 | Int | Changement de mot de passe : demande le mot de passe actuel, ferme les autres sessions. |
-| T2.14 | Int | Procédure `seller` appelée par un `buyer` : refusée ; rôle relu en base (un JWT périmé ne suffit pas). |
-| T2.15 | Int | Attribution du rôle `seller` ou `admin` : seul un admin y arrive. |
-| T2.16 | Int | Retrait du rôle `seller` : refusé si une enchère est `scheduled` ou `live` ; les `draft` passent `cancelled`. |
-| T2.17 | Int | Le dernier admin ne peut ni perdre son rôle, ni être supprimé. |
+| T2.14 | Int | Procédures `authed`, `seller` et `admin` : refusées aux autres rôles (un admin ne vend pas) et aux visiteurs ; rôle relu en base à chaque appel (JWT valide + rôle changé, promotion appliquée sans reconnexion, compte suspendu ou supprimé refusé). |
 | T2.18 | Int | Limite anti-abus : après N échecs de connexion, la tentative est ralentie ou bloquée. |
 | T2.19 | E2E | Inscription → email lu dans Mailpit → clic → connexion. |
 | T2.20 *(ajout)* | Unit | Config : `MONGO_URL`, `JWT_SECRET`, `SMTP_HOST` et `SMTP_FROM` obligatoires en production, défauts locaux sinon (secret JWT aléatoire) ; identifiant SMTP sans mot de passe refusé ; une valeur refusée n'apparaît jamais dans le message. |
@@ -200,6 +197,9 @@ Règles : [business-rules.md](../domain/business-rules.md) (« Rôles »), [acco
 | T7.11 | Int | Après suppression : `bids` et `payments` conservés et toujours liés à `userId`. |
 | T7.12 | Int | Après suppression : brouillons du vendeur supprimés avec leurs photos ; autres enchères conservées avec vendeur « Utilisateur supprimé ». |
 | T7.13 | E2E | Parcours admin complet : suspension, annulation d'une enchère `live`, modification d'un paramètre. |
+| T7.14 *(reporté de T2.15)* | Int | Attribution du rôle `seller` ou `admin` : seul un admin y arrive. |
+| T7.15 *(reporté de T2.16)* | Int | Retrait du rôle `seller` : refusé si une enchère est `scheduled` ou `live` ; les `draft` passent `cancelled`. |
+| T7.16 *(reporté de T2.17)* | Int | Le dernier admin ne peut ni perdre son rôle, ni être supprimé (voir aussi T7.3). |
 
 ## Étape 8 — Finitions et mise en production
 

@@ -63,3 +63,21 @@ export const authedProcedure = t.procedure.use(async ({ ctx, next }) => {
   const { user, sessionId } = await authenticate(ctx.config, ctx.req.cookies[ACCESS_COOKIE])
   return next({ ctx: { user, sessionId } })
 })
+
+/**
+ * Procédure réservée aux vendeurs (`seller`). Un admin ne vend pas : il valide et modère
+ * (docs/domain/business-rules.md). Le rôle vient de la base, relu à chaque appel par `authed`.
+ */
+export const sellerProcedure = authedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.role !== 'seller') throw new AppError('FORBIDDEN')
+  return next()
+})
+
+/** Procédure réservée aux administrateurs (`admin`), rôle relu en base. */
+export const adminProcedure = authedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.role !== 'admin') throw new AppError('FORBIDDEN')
+  return next()
+})
+
+/** Appelle les procédures sans HTTP : réservé aux tests d'intégration. */
+export const createCallerFactory = t.createCallerFactory
