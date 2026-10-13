@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-13 | `.claude/launch.json` (configuration des serveurs de prévisualisation, propre à chaque machine) ajouté au `.gitignore` | — |
 | 2026-10-13 | Runbook : `pnpm test` rouge dans `apps/api` (`require() of ES Module`) quand le terminal utilise un Node < 22.12 | 1 |
 | 2026-10-12 | Runbook : dépannage de l'activation de Node/pnpm avec fnm sous PowerShell | 1 |
 | 2026-10-12 | Fin de l'étape 1 : [runbook de développement local](runbooks/local-development.md), section « Commandes » d'`AGENTS.md`, [retours d'expérience](lessons-learned/2026-10-etape-1-squelette.md) | 1 |

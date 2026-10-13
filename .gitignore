@@ -19,5 +19,6 @@ uploads/
 
 # Réglages locaux de Claude Code
 .claude/settings.local.json
+.claude/launch.json
 
 .DS_Store
