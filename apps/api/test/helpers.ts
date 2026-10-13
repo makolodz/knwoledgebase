@@ -13,6 +13,7 @@ export function testConfig(overrides: Partial<Config> = {}): Config {
     port: 0,
     webOrigin: WEB_ORIGIN,
     logLevel: 'silent',
+    mongoUrl: 'mongodb://127.0.0.1:27017/encheres-test',
     ...overrides,
   }
 }

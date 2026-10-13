@@ -54,6 +54,8 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.17 | Int | Le dernier admin ne peut ni perdre son rôle, ni être supprimé. |
 | T2.18 | Int | Limite anti-abus : après N échecs de connexion, la tentative est ralentie ou bloquée. |
 | T2.19 | E2E | Inscription → email lu dans Mailpit → clic → connexion. |
+| T2.20 *(ajout)* | Unit | Config : `MONGO_URL` obligatoire en production, défaut local sinon ; une valeur refusée n'apparaît jamais dans le message. |
+| T2.21 *(ajout)* | Int | Connexion MongoDB : échec avec un message clair, sans l'URL (mot de passe possible) ; base réelle vidée entre les tests. |
 
 ## Étape 3 — Création et modération
 

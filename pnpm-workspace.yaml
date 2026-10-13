@@ -7,6 +7,9 @@ packages:
 # un paquet optionnel par plateforme).
 allowBuilds:
   esbuild: false
+  # Son script télécharge le binaire MongoDB à l'installation. Refusé : le binaire est
+  # téléchargé au premier lancement des tests (voir apps/api/test/global-setup.ts).
+  mongodb-memory-server: false
 
 # Versions partagées entre les paquets (ADR-013).
 catalog:

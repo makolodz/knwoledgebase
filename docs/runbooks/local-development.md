@@ -24,7 +24,7 @@ Le fichier `.env` est **optionnel** : tous les réglages ont une valeur par déf
 | Interface Mailpit (emails capturés) | http://localhost:8025 |
 | MongoDB | `mongodb://127.0.0.1:27017` (liée à la machine locale uniquement, sans mot de passe) |
 
-À l'étape 1, l'API ne se connecte pas encore à MongoDB et n'envoie aucun email : les deux services sont prêts pour l'étape 2.
+L'API se connecte à MongoDB au démarrage et refuse de démarrer s'il est injoignable : lancer d'abord `pnpm infra:up`.
 
 ## Variables d'environnement
 Source : `.env.example` (valeurs par défaut entre parenthèses). L'API refuse de démarrer si une valeur est invalide, sans afficher la valeur.
@@ -35,6 +35,7 @@ Source : `.env.example` (valeurs par défaut entre parenthèses). L'API refuse d
 | `HOST` (`localhost`) / `PORT` (`3000`) | Adresse d'écoute de l'API |
 | `WEB_ORIGIN` (`http://localhost:5173`) | Seule origine autorisée par CORS et Socket.IO. Sans chemin ni barre finale. |
 | `LOG_LEVEL` (`info`) | Niveau des logs pino |
+| `MONGO_URL` (`mongodb://127.0.0.1:27017/encheres`) | Base MongoDB. Obligatoire en production. Jamais affichée (elle peut contenir un mot de passe). |
 | `VITE_API_URL` (`http://localhost:3000`) | Adresse de l'API vue du navigateur. Visible de tous : jamais de secret dans une variable `VITE_*`. |
 
 Si le front change de port, `WEB_ORIGIN` doit suivre. Vite est configuré sans repli (`strictPort`) pour que l'API ne refuse pas silencieusement un autre port.
@@ -47,11 +48,13 @@ Si le front change de port, `WEB_ORIGIN` doit suivre. Vite est configuré sans r
 | `pnpm lint` | ESLint (typé), `no-explicit-any` en erreur |
 | `pnpm format` / `pnpm format:check` | Prettier : corrige / vérifie |
 | `pnpm typecheck` | `tsc` (API, `shared`, E2E) et `vue-tsc` (front) |
-| `pnpm test` | Tests Vitest de tous les paquets : unitaires, intégration, composants |
-| `pnpm test:e2e` | Test E2E Playwright : lance l'API et le front tout seul |
+| `pnpm test` | Tests Vitest de tous les paquets : unitaires, intégration, composants. Ils n'ont pas besoin de Docker : `mongodb-memory-server` lance son propre MongoDB. |
+| `pnpm test:e2e` | Test E2E Playwright : lance l'API et le front tout seul. Demande `pnpm infra:up` (l'API se connecte à MongoDB). |
 | `pnpm --filter @encheres/api test` | Tests d'un seul paquet (`@encheres/web`, `@encheres/shared`) |
 
 Premier lancement des E2E : `pnpm --filter @encheres/e2e exec playwright install chromium` (téléchargement d'environ 150 Mo).
+
+Premier `pnpm test` : `mongodb-memory-server` télécharge un binaire MongoDB 8.0 (environ **740 Mo** sous Windows, moins sous Linux), puis le garde en cache : compter plusieurs minutes, et accepter l'éventuelle fenêtre du pare-feu Windows pour `mongod`. Les lancements suivants prennent quelques secondes.
 
 Avant un commit : `pnpm lint`, `pnpm format:check`, `pnpm typecheck` et `pnpm test` doivent passer, comme en CI ([testing.md](../technical/testing.md)).
 
@@ -70,6 +73,7 @@ Avant un commit : `pnpm lint`, `pnpm format:check`, `pnpm typecheck` et `pnpm te
 | `Unsupported engine` à `pnpm install` | Node trop ancien : installer la version de `.nvmrc`. |
 | `pnpm` introuvable, ou `node --version` affiche une vieille version, alors que Node est géré par fnm | fnm n'active aucune version tout seul. Dans PowerShell : `fnm env --use-on-cd --shell powershell \| Out-String \| Invoke-Expression`, puis `fnm use` (il lit `.nvmrc`). Pour l'automatiser, ajouter la première ligne au profil PowerShell (`notepad $PROFILE`). Si `fnm` lui-même est introuvable, rouvrir le terminal : le `PATH` n'est mis à jour qu'à l'ouverture. |
 | `pnpm test` : des dizaines d'échecs dans `apps/api` avec `require() of ES Module …/cookie/dist/index.js … light-my-request` | Le terminal exécute les tests avec Node < 22.12 (souvent le Node système, alors que `pnpm` a été trouvé via fnm). `engine-strict` ne contrôle que `pnpm install`. Vérifier avec `node --version`, puis `fnm use` (voir ligne précédente) et relancer. Aucun test ne doit être modifié. |
+| « Impossible de joindre MongoDB » au démarrage de l'API | MongoDB n'est pas lancé : `pnpm infra:up` (Docker Desktop doit tourner), puis relancer. Si `MONGO_URL` est défini dans `.env`, vérifier sa valeur. |
 | `EADDRINUSE` sur le port 3000 ou 5173 | Un ancien serveur tourne encore (souvent un `tsx watch` oublié : il relance le serveur à chaque modification de fichier). Trouver le processus avec `netstat -ano \| findstr :3000` (Windows) ou `lsof -i :3000`, puis l'arrêter. |
 | Le front affiche « Impossible de joindre le serveur » | L'API n'est pas démarrée, ou `VITE_API_URL` / `WEB_ORIGIN` ne correspondent pas (CORS). |
 | Vite ne démarre pas quand `pnpm dev` est lancé avec une entrée standard en pipe (certaines tâches d'IDE, Playwright) | Lancer `pnpm dev` dans un vrai terminal, ou démarrer les deux paquets séparément avec `pnpm --filter … dev`. Voir [lessons-learned](../lessons-learned/2026-10-etape-1-squelette.md). |

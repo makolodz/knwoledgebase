@@ -2,14 +2,14 @@
 
 > Document **tenu à jour par l'IA** à chaque modification (code, doc, roadmap). Source des cases : [roadmap.md](roadmap.md). Ne pas y recopier le contenu des étapes, seulement l'état.
 >
-> Dernière mise à jour : 2026-10-12 · Commit de référence : `e97e286`
+> Dernière mise à jour : 2026-10-13 · Commit de référence : `43f88f0`
 
 ## Vue d'ensemble
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
-| 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟡 En revue |
-| 2 | Comptes et sessions | `░░░░░░░░░░` 0 % | 0 / 8 | ⚪ Pas commencée |
+| 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
+| 2 | Comptes et sessions | `░░░░░░░░░░` 0 % | 0 / 8 | 🔵 En cours |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
 | 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
@@ -18,11 +18,11 @@
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | | **Total** | `█░░░░░░░░░` **17 %** | **8 / 47** | |
 
-**Étape en cours** : 1 — Squelette du monorepo (branche `feat/etape-1-squelette`, [issue #2](https://github.com/makolodz/knwoledgebase/issues/2)). Fait : outillage racine (pnpm, TypeScript strict, ESLint, Prettier), `packages/shared`, `apps/api` (Fastify + tRPC + Socket.IO) et `apps/web` (Vue 3 : page `health` + indicateur temps réel) avec leurs tests, Docker Compose (MongoDB + Mailpit), le test E2E Playwright (T1.1) et la CI GitHub Actions. Runbook, section « Commandes » d'AGENTS.md et `.env.example` écrits : toutes les cases sont cochées. Reste : ouvrir la PR (`Closes #2`) et vérifier que la CI passe sur GitHub.
+**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : dépendances (`mongoose`, `mongodb-memory-server`), connexion MongoDB au démarrage de l'API (`MONGO_URL`), banc de test sur base réelle (un `mongod` par exécution, une base par fichier) et [ADR-014](decisions/ADR-014-implementation-authentification.md). Reste : modèles, file d'envoi d'emails, inscription et sessions, vérification d'email, mot de passe oublié, profil, middlewares de rôle, limites anti-abus, seed et pages.
 
 ## État de la documentation
 
-- Documents présents : 34 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
+- Documents présents : 35 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
 - Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
 - Documents annoncés mais absents : `architecture/modules.md`, `runbooks/deployment.md`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-13 | Début de l'étape 2 : `mongoose`, connexion MongoDB au démarrage, banc de test `mongodb-memory-server` (T2.20, T2.21), `MONGO_URL`, job `e2e` avec Docker Compose, [ADR-014](decisions/ADR-014-implementation-authentification.md) | 2 |
 | 2026-10-13 | `.claude/launch.json` (configuration des serveurs de prévisualisation, propre à chaque machine) ajouté au `.gitignore` | — |
 | 2026-10-13 | Runbook : `pnpm test` rouge dans `apps/api` (`require() of ES Module`) quand le terminal utilise un Node < 22.12 | 1 |
 | 2026-10-12 | Runbook : dépannage de l'activation de Node/pnpm avec fnm sous PowerShell | 1 |

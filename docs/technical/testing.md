@@ -9,7 +9,8 @@ Outils :
 ## Principes
 - Tester le comportement, pas l'implémentation.
 - **Pas de mock de MongoDB** : la logique critique (offres atomiques, changements de statut) n'a de sens que sur une vraie base.
-  - Une base mongodb-memory-server par fichier de test, vidée entre les tests.
+  - Un seul `mongod` (mongodb-memory-server) par exécution de Vitest, une **base par fichier de test**, vidée entre les tests : `useTestDb()` dans `apps/api/test/db.ts` ([ADR-014](../decisions/ADR-014-implementation-authentification.md)).
+  - Le binaire MongoDB est téléchargé au premier `pnpm test` (environ 740 Mo sous Windows) puis mis en cache.
 - Mocks autorisés uniquement aux frontières : Stripe, SMTP (`mailer`) et l'horloge.
 - **Horloge contrôlée** (`vi.useFakeTimers()` ou horloge injectée) pour tout ce qui dépend de `endsAt`, des délais ou des jobs.
 - Chaque bug corrigé arrive avec un test qui le reproduit.

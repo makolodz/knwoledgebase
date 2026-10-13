@@ -1,5 +1,6 @@
 import { buildApp } from './app'
 import { ConfigError, loadConfig } from './config/env'
+import { connectDb, DbConnectionError, disconnectDb } from './infra/db'
 
 let config
 try {
@@ -12,11 +13,22 @@ try {
   throw error
 }
 
+try {
+  await connectDb(config.mongoUrl)
+} catch (error) {
+  if (error instanceof DbConnectionError) {
+    console.error(error.message)
+    process.exit(1)
+  }
+  throw error
+}
+
 const app = await buildApp(config)
 
 async function shutdown(signal: string) {
   app.log.info({ signal }, 'Arrêt demandé')
   await app.close()
+  await disconnectDb()
   process.exit(0)
 }
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

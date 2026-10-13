@@ -3,13 +3,32 @@ import { z } from 'zod'
 
 const LOG_LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'] as const
 
-const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  HOST: z.string().min(1).default('localhost'),
-  PORT: z.coerce.number().int().min(1).max(65535).default(3000),
-  WEB_ORIGIN: originSchema.default('http://localhost:5173'),
-  LOG_LEVEL: z.enum(LOG_LEVELS).default('info'),
-})
+/** Base MongoDB de développement : celle de docker-compose.yml. */
+const DEFAULT_MONGO_URL = 'mongodb://127.0.0.1:27017/encheres'
+
+const envSchema = z
+  .object({
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    HOST: z.string().min(1).default('localhost'),
+    PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+    WEB_ORIGIN: originSchema.default('http://localhost:5173'),
+    LOG_LEVEL: z.enum(LOG_LEVELS).default('info'),
+    // Le message est fixe : l'URL peut contenir un mot de passe, elle ne doit jamais être affichée.
+    MONGO_URL: z
+      .string()
+      .regex(/^mongodb(\+srv)?:\/\/./, 'doit commencer par mongodb:// ou mongodb+srv://')
+      .optional(),
+  })
+  .superRefine((env, context) => {
+    // En production, pas de repli silencieux sur la base locale.
+    if (env.NODE_ENV === 'production' && env.MONGO_URL === undefined) {
+      context.addIssue({
+        code: 'custom',
+        path: ['MONGO_URL'],
+        message: 'obligatoire en production',
+      })
+    }
+  })
 
 export interface Config {
   nodeEnv: 'development' | 'test' | 'production'
@@ -18,6 +37,8 @@ export interface Config {
   /** Seule origine autorisée par CORS, HTTP et Socket.IO (docs/technical/security.md). */
   webOrigin: string
   logLevel: (typeof LOG_LEVELS)[number]
+  /** Peut contenir des identifiants : ne jamais le journaliser. */
+  mongoUrl: string
 }
 
 /** Erreur de configuration : le message liste les variables en cause, jamais leurs valeurs. */
@@ -42,5 +63,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     port: parsed.PORT,
     webOrigin: parsed.WEB_ORIGIN,
     logLevel: parsed.LOG_LEVEL,
+    mongoUrl: parsed.MONGO_URL ?? DEFAULT_MONGO_URL,
   }
 }

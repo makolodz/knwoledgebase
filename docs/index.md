@@ -43,6 +43,7 @@
 | [ADR-011](decisions/ADR-011-sessions-jwt-refresh.md) | Sessions : JWT 15 min + refresh token en base |
 | [ADR-012](decisions/ADR-012-ui-primevue.md) | Interface avec PrimeVue + Tailwind |
 | [ADR-013](decisions/ADR-013-outillage-monorepo.md) | Outillage du monorepo : Node, TypeScript 6, `shared` en source, `.env` unique |
+| [ADR-014](decisions/ADR-014-implementation-authentification.md) | Authentification : bibliothèques, limiteur, rotation du refresh token, tests sur base réelle |
 
 ## Pas encore écrit
 Ces documents **n'existent pas encore**. Ne pas supposer leur contenu ; demander ou proposer de les rédiger.
