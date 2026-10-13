@@ -109,8 +109,8 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 ### Profil
 - **Route** : `/account` · **Accès** : connecté
 - **Données** : `auth.me`, `profile.update`, `profile.changePassword`, `profile.changeEmail`, `profile.delete`
-- **Contenu** : nom d'affichage, email (+ statut vérifié, bouton renvoyer), rôle, changement de mot de passe, changement d'email, zone « Supprimer mon compte ».
-- **États** : suppression bloquée → liste des raisons (enchère en cours, paiement en attente…).
+- **Contenu** : nom d'affichage, email (+ statut vérifié, bouton renvoyer), rôle, changement de mot de passe, changement d'email, zone « Supprimer mon compte » (**étape 7** : absente tant que `profile.delete` n'existe pas).
+- **États** : suppression bloquée → liste des raisons (enchère en cours, paiement en attente…). Mot de passe actuel incorrect : message sur le champ ; `RATE_LIMITED` après 5 refus en 15 min.
 
 ### Mes offres
 - **Route** : `/account/bids` · **Accès** : connecté

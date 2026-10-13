@@ -35,7 +35,7 @@ Docs : [account.md](domain/workflows/account.md), [security.md](technical/securi
 - [x] Middlewares tRPC `authed` / `seller` / `admin`, rôles relus en base.
 - [x] Limites anti-abus sur l'authentification.
 - [x] Script de seed : un admin, un vendeur, deux acheteurs.
-- [ ] Pages : inscription, connexion, vérification, mot de passe oublié, profil.
+- [x] Pages : inscription, connexion, vérification, mot de passe oublié, profil.
 
 **Fini quand** : un utilisateur s'inscrit, vérifie son email via Mailpit, se connecte, et sa session survit au rafraîchissement du token.
 

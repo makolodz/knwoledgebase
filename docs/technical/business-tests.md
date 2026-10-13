@@ -70,6 +70,15 @@ Règles : [account.md](../domain/workflows/account.md). T2.15 à T2.17 (rôles, 
 | T2.36 *(ajout)* | Int | Limite globale de 300 requêtes par minute et par IP : `RATE_LIMITED` avec `Retry-After` et en-têtes CORS ; les autres IP ne sont pas touchées. |
 | T2.37 *(ajout)* | Int | Changement de mot de passe ou d'email : 5 mots de passe actuels refusés en 15 min bloquent l'utilisateur même avec le bon ; autres utilisateurs épargnés ; un succès remet le compteur à zéro. |
 | T2.38 *(ajout)* | Int | Seed : un admin, un vendeur, deux acheteurs à l'email vérifié, connexion possible avec chacun ; idempotent, remet un compte modifié en état sans toucher aux autres ; refusé en production et sur une base non locale, sans afficher l'URL. |
+| T2.39 *(ajout)* | Unit | Front, `fetch` de session : renouvellement unique pour plusieurs requêtes simultanées, rejeu une fois, réponse groupée (207), `REFRESH_CONFLICT` réessayé une fois, pas de boucle, session perdue signalée, panne réseau tolérée. |
+| T2.40 *(ajout)* | Comp | Front, store `auth` : session restaurée une seule fois, visiteur sans session ou sans serveur, connexion, inscription sans session, déconnexion même serveur injoignable, session perdue. |
+| T2.41 *(ajout)* | Comp | Front, routeur : `requiresAuth` (redirection avec la page demandée), `guestOnly`, `roles` (404), liens email ouverts connecté ou non ; `safeRedirect` refuse adresses complètes, `//`, `/\`, caractères de contrôle. |
+| T2.42 *(ajout)* | Comp | Front, connexion : validation, redirection assainie, message unique « Identifiants invalides », `RATE_LIMITED`, `ACCOUNT_SUSPENDED`, serveur injoignable, bandeaux après inscription ou réinitialisation. |
+| T2.43 *(ajout)* | Comp | Front, inscription : les deux cases obligatoires, mot de passe de 11 caractères refusé et 12 accepté, compteur de longueur, parcours identique que l'adresse existe ou non, personne n'est connecté. |
+| T2.44 *(ajout)* | Comp | Front, mot de passe oublié et réinitialisation : message identique que le compte existe ou non, lien sans token ou refusé, onglet déconnecté après la réinitialisation. |
+| T2.45 *(ajout)* | Comp | Front, vérification : succès, lien invalide / déjà utilisé, nouveau lien (limite d'une par minute), adresse déjà vérifiée, confirmation d'un changement d'adresse (connexion demandée d'abord). |
+| T2.46 *(ajout)* | Comp | Front, navigation : Connexion / S'inscrire pour un visiteur, nom et Déconnexion pour un utilisateur, déconnexion même serveur injoignable. |
+| T2.47 *(ajout)* | Comp | Front, page « Mon compte » : redirection d'un visiteur, statut de vérification, renvoi du lien, nom, changement d'adresse et de mot de passe (mot de passe actuel incorrect, limite). |
 
 ## Étape 3 — Création et modération
 
