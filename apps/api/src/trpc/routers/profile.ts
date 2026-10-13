@@ -21,13 +21,13 @@ export const profileRouter = router({
   changePassword: authedProcedure
     .input(changePasswordInputSchema)
     .mutation(async ({ ctx, input }) => {
-      await changePassword(ctx.user, ctx.sessionId, input)
+      await changePassword(ctx.user, ctx.sessionId, input, ctx.rateLimits)
       return { status: 'ok' as const }
     }),
 
   /** Même réponse que la nouvelle adresse soit libre ou non. */
   changeEmail: authedProcedure.input(changeEmailInputSchema).mutation(async ({ ctx, input }) => {
-    await requestEmailChange(ctx.config, ctx.user, input)
+    await requestEmailChange(ctx.config, ctx.user, input, ctx.rateLimits)
     return { status: 'ok' as const }
   }),
 

@@ -51,6 +51,8 @@ export class TestClient {
   constructor(
     private readonly app: FastifyInstance,
     private readonly headers: Record<string, string> = {},
+    /** Adresse IP source des requêtes (127.0.0.1 par défaut), pour les limites par IP. */
+    private readonly remoteAddress?: string,
   ) {}
 
   mutate<Data = unknown>(procedure: string, input?: unknown): Promise<CallResult<Data>> {
@@ -94,6 +96,7 @@ export class TestClient {
 
     const hasInput = input !== undefined
     const response = await this.app.inject({
+      ...(this.remoteAddress === undefined ? {} : { remoteAddress: this.remoteAddress }),
       method,
       url:
         method === 'GET' && hasInput

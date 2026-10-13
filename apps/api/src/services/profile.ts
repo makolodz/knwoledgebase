@@ -6,17 +6,32 @@ import { consumeAuthToken, discardPendingAuthTokens, issueAuthToken } from './au
 import { enqueueEmail } from './email-queue'
 import { buildWebLink } from './links'
 import { hashPassword, verifyPassword } from './password'
+import type { RateLimits } from './rate-limits'
 import { revokeAllSessions } from './sessions'
 
 function isDuplicateKeyError(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'code' in error && error.code === 11000
 }
 
-/** Une opération sensible redemande le mot de passe actuel (docs/domain/workflows/account.md). */
-async function requireCurrentPassword(user: UserDocument, password: string): Promise<void> {
+type PasswordLimits = Pick<RateLimits, 'passwordCheck'>
+
+/**
+ * Une opération sensible redemande le mot de passe actuel (docs/domain/workflows/account.md).
+ * Les mots de passe refusés sont limités par utilisateur : une session volée ne doit pas
+ * permettre de deviner le mot de passe.
+ */
+async function requireCurrentPassword(
+  user: UserDocument,
+  password: string,
+  limits: PasswordLimits,
+): Promise<void> {
+  const key = user._id.toString()
+  limits.passwordCheck.assertAllowed(key)
   if (!(await verifyPassword(user.passwordHash, password))) {
+    limits.passwordCheck.record(key)
     throw new AppError('INVALID_CREDENTIALS')
   }
+  limits.passwordCheck.reset(key)
 }
 
 export async function updateName(user: UserDocument, name: string): Promise<UserDocument> {
@@ -32,8 +47,9 @@ export async function changePassword(
   user: UserDocument,
   sessionId: string,
   input: ChangePasswordInput,
+  limits: PasswordLimits,
 ): Promise<void> {
-  await requireCurrentPassword(user, input.currentPassword)
+  await requireCurrentPassword(user, input.currentPassword, limits)
 
   await User.updateOne(
     { _id: user._id },
@@ -53,8 +69,9 @@ export async function requestEmailChange(
   config: Config,
   user: UserDocument,
   input: ChangeEmailInput,
+  limits: PasswordLimits,
 ): Promise<void> {
-  await requireCurrentPassword(user, input.currentPassword)
+  await requireCurrentPassword(user, input.currentPassword, limits)
 
   if (input.newEmail === user.email) return
   if ((await User.exists({ email: input.newEmail })) !== null) return

@@ -18,21 +18,24 @@ import { requestPasswordReset, resetPassword } from '../../services/password-res
 import { resendVerification, verifyEmail } from '../../services/verification'
 import type { Context } from '../context'
 import { clearSessionCookies, REFRESH_COOKIE, setSessionCookies } from '../cookies'
-import { authedProcedure, publicProcedure, router } from '../trpc'
+import { authedProcedure, limitByIp, publicProcedure, router } from '../trpc'
 
 function requestMeta(ctx: Context): RequestMeta {
-  return { userAgent: ctx.req.headers['user-agent'] ?? null }
+  return { userAgent: ctx.req.headers['user-agent'] ?? null, ip: ctx.req.ip }
 }
 
 export const authRouter = router({
   /** Même réponse que l'email existe ou non, et aucune session (ADR-014). */
-  register: publicProcedure.input(registerInputSchema).mutation(async ({ ctx, input }) => {
-    await register(ctx.config, input)
-    return { status: 'ok' as const }
-  }),
+  register: publicProcedure
+    .use(limitByIp((limits) => limits.register))
+    .input(registerInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      await register(ctx.config, input)
+      return { status: 'ok' as const }
+    }),
 
   login: publicProcedure.input(loginInputSchema).mutation(async ({ ctx, input }) => {
-    const { user, ...tokens } = await login(ctx.config, input, requestMeta(ctx))
+    const { user, ...tokens } = await login(ctx.config, input, requestMeta(ctx), ctx.rateLimits)
     setSessionCookies(ctx.res, ctx.config, tokens)
     return { user }
   }),
@@ -68,12 +71,15 @@ export const authRouter = router({
   }),
 
   /** Un lien par minute au plus ; `already_verified` quand il n'y a rien à vérifier. */
-  resendVerification: authedProcedure.mutation(async ({ ctx }) => ({
-    status: await resendVerification(ctx.config, ctx.user),
-  })),
+  resendVerification: authedProcedure
+    .use(limitByIp((limits) => limits.resendVerification))
+    .mutation(async ({ ctx }) => ({
+      status: await resendVerification(ctx.config, ctx.user),
+    })),
 
   /** Même réponse que l'email existe ou non. */
   forgotPassword: publicProcedure
+    .use(limitByIp((limits) => limits.forgotPassword))
     .input(forgotPasswordInputSchema)
     .mutation(async ({ ctx, input }) => {
       await requestPasswordReset(ctx.config, input.email)

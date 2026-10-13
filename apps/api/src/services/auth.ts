@@ -8,11 +8,14 @@ import { enqueueEmail } from './email-queue'
 import { signAccessToken, verifyAccessToken } from './jwt'
 import { buildWebLink } from './links'
 import { hashPassword, verifyPassword } from './password'
+import type { RateLimits } from './rate-limits'
 import { createSession, revokeAllSessions, revokeSession, rotateSession } from './sessions'
 
 /** Ce que le contexte HTTP apprend au service sur la requête. */
 export interface RequestMeta {
   userAgent: string | null
+  /** Adresse IP de la requête, pour les limites anti-abus. */
+  ip: string
 }
 
 /** Jetons à poser dans les cookies, avec l'utilisateur à renvoyer au front. */
@@ -91,17 +94,29 @@ export async function register(config: Config, input: RegisterInput): Promise<vo
  * Connexion. Un email inconnu et un mauvais mot de passe donnent la même erreur, un compte
  * supprimé est traité comme inconnu, et un compte suspendu n'est signalé qu'à qui connaît le mot
  * de passe. Un compte dont l'email n'est pas vérifié peut se connecter.
+ *
+ * Limite anti-abus (docs/technical/security.md) : 5 échecs par 15 min, par IP **et** par email.
+ * Le contrôle passe avant le calcul du hash, pour qu'une tentative bloquée ne coûte rien. Une
+ * connexion réussie remet à zéro le compteur de l'email, jamais celui de l'IP.
  */
 export async function login(
   config: Config,
   input: LoginInput,
   meta: RequestMeta,
+  limits: Pick<RateLimits, 'loginByIp' | 'loginByEmail'>,
 ): Promise<SessionTokens> {
+  limits.loginByIp.assertAllowed(meta.ip)
+  limits.loginByEmail.assertAllowed(input.email)
+
   const user = await User.findOne({ email: input.email })
   const passwordMatches = await verifyPassword(user?.passwordHash ?? null, input.password)
   if (user === null || !passwordMatches || user.deletedAt !== null) {
+    limits.loginByIp.record(meta.ip)
+    limits.loginByEmail.record(input.email)
     throw new AppError('INVALID_CREDENTIALS')
   }
+  // Le bon mot de passe a été donné : ce n'est pas une devinette, l'échec n'est pas compté.
+  limits.loginByEmail.reset(input.email)
   if (user.suspendedAt !== null) throw new AppError('ACCOUNT_SUSPENDED')
 
   const { session, refreshToken } = await createSession(user._id, meta.userAgent)

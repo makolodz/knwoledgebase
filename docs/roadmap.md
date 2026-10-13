@@ -33,7 +33,7 @@ Docs : [account.md](domain/workflows/account.md), [security.md](technical/securi
 - [x] File d'envoi `emails` + job d'envoi + `mailer` (Mailpit) ([ADR-006](decisions/ADR-006-emails-brevo.md)).
 - [x] Vérification d'email, mot de passe oublié, modification du profil.
 - [x] Middlewares tRPC `authed` / `seller` / `admin`, rôles relus en base.
-- [ ] Limites anti-abus sur l'authentification.
+- [x] Limites anti-abus sur l'authentification.
 - [ ] Script de seed : un admin, un vendeur, deux acheteurs.
 - [ ] Pages : inscription, connexion, vérification, mot de passe oublié, profil.
 

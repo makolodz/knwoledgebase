@@ -39,6 +39,7 @@ L'étape 2 de la [roadmap](../roadmap.md) code les comptes et les sessions déci
 - ➖ Premier `pnpm test` long : le binaire MongoDB pèse environ 740 Mo sous Windows (moins sous Linux). Il est ensuite en cache.
 - ➖ Une réutilisation de refresh token dans les 10 s après la rotation n'est pas détectée comme un vol.
 - ➖ Le limiteur est local au processus : il faudra un stockage partagé si l'API passe à plusieurs instances.
+- ➖ Derrière un proxy, l'adresse IP vue par l'API est celle du proxy tant que `trustProxy` n'est pas réglé : à faire avec le déploiement (étape 8).
 - ➖ L'utilisateur doit se connecter après son inscription (une saisie de mot de passe de plus).
 - ➖ En production, le front et l'API doivent partager le même site pour que les cookies `SameSite=Lax` suivent ([ADR-013](ADR-013-outillage-monorepo.md)).
 

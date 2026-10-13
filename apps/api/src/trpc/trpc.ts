@@ -4,6 +4,8 @@ import type { TRPC_ERROR_CODE_KEY } from '@trpc/server/rpc'
 import { z } from 'zod'
 import { AppError } from '../errors'
 import { authenticate } from '../services/auth'
+import type { RateLimiter } from '../services/rate-limiter'
+import type { RateLimits } from '../services/rate-limits'
 import { ACCESS_COOKIE } from './cookies'
 import type { Context } from './context'
 
@@ -53,6 +55,18 @@ const t = initTRPC.context<Context>().create({
 
 export const router = t.router
 export const publicProcedure = t.procedure
+
+/**
+ * Limite le nombre d'appels par adresse IP, qu'ils réussissent ou non (inscription, mot de passe
+ * oublié, renvoi du lien de vérification). À placer avec `.use()` avant la validation de
+ * l'entrée : un appel refusé ne coûte ni validation ni accès à la base.
+ */
+export function limitByIp(select: (limits: RateLimits) => RateLimiter) {
+  return t.middleware(({ ctx, next }) => {
+    select(ctx.rateLimits).consume(ctx.req.ip)
+    return next()
+  })
+}
 
 /**
  * Procédure réservée aux utilisateurs connectés. L'utilisateur est **relu en base** à chaque

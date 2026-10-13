@@ -49,7 +49,7 @@ Règles : [account.md](../domain/workflows/account.md). T2.15 à T2.17 (rôles, 
 | T2.12 | Int | Changement d'email : l'email ne change qu'après clic sur le lien envoyé à la nouvelle adresse. |
 | T2.13 | Int | Changement de mot de passe : demande le mot de passe actuel, ferme les autres sessions. |
 | T2.14 | Int | Procédures `authed`, `seller` et `admin` : refusées aux autres rôles (un admin ne vend pas) et aux visiteurs ; rôle relu en base à chaque appel (JWT valide + rôle changé, promotion appliquée sans reconnexion, compte suspendu ou supprimé refusé). |
-| T2.18 | Int | Limite anti-abus : après N échecs de connexion, la tentative est ralentie ou bloquée. |
+| T2.18 | Int | Connexion : après 5 échecs en 15 min (par IP **et** par email, y compris pour un email inconnu), la tentative suivante est refusée avec `RATE_LIMITED` même avec le bon mot de passe ; reprise après la fenêtre ; échecs anciens oubliés ; une connexion réussie remet à zéro l'email mais pas l'IP ; le bon mot de passe d'un compte suspendu ne compte pas. |
 | T2.19 | E2E | Inscription → email lu dans Mailpit → clic → connexion. |
 | T2.20 *(ajout)* | Unit | Config : `MONGO_URL`, `JWT_SECRET`, `SMTP_HOST` et `SMTP_FROM` obligatoires en production, défauts locaux sinon (secret JWT aléatoire) ; identifiant SMTP sans mot de passe refusé ; une valeur refusée n'apparaît jamais dans le message. |
 | T2.21 *(ajout)* | Int | Connexion MongoDB : échec avec un message clair, sans l'URL (mot de passe possible) ; base réelle vidée entre les tests. |
@@ -66,6 +66,9 @@ Règles : [account.md](../domain/workflows/account.md). T2.15 à T2.17 (rôles, 
 | T2.32 *(ajout)* | Int | Logs : ni mot de passe, ni token, ni hash après inscription, connexion, échec, `me` et refresh. |
 | T2.33 *(ajout)* | Int | `profile.update` : nom de 2 à 30 caractères ; impossible de changer rôle, email ou vérification par ce chemin ; réservé aux utilisateurs connectés. |
 | T2.34 *(ajout)* | Int | Changement d'email vers une adresse déjà prise : même réponse qu'une adresse libre, aucun lien envoyé ; confirmation refusée si l'adresse est prise entre-temps ; lien destiné à un autre utilisateur refusé sans être consommé. |
+| T2.35 *(ajout)* | Unit/Int | Limiteur en mémoire (fenêtre glissante, clés indépendantes, mémoire bornée, purge) ; inscription, mot de passe oublié et renvoi du lien : 5 par heure et par IP, vérifié avant la validation, reprise après une heure. |
+| T2.36 *(ajout)* | Int | Limite globale de 300 requêtes par minute et par IP : `RATE_LIMITED` avec `Retry-After` et en-têtes CORS ; les autres IP ne sont pas touchées. |
+| T2.37 *(ajout)* | Int | Changement de mot de passe ou d'email : 5 mots de passe actuels refusés en 15 min bloquent l'utilisateur même avec le bon ; autres utilisateurs épargnés ; un succès remet le compteur à zéro. |
 
 ## Étape 3 — Création et modération
 

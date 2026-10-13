@@ -28,7 +28,11 @@ try {
 }
 
 const app = await buildApp(config)
-const jobs = startJobs({ mailer: createSmtpMailer(config.smtp), log: app.log })
+const jobs = startJobs({
+  mailer: createSmtpMailer(config.smtp),
+  rateLimits: app.rateLimits,
+  log: app.log,
+})
 
 async function shutdown(signal: string) {
   app.log.info({ signal }, 'Arrêt demandé')
