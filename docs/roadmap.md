@@ -15,14 +15,14 @@ Règles :
 - [ ] Le parcours de l'étape fonctionne en local de bout en bout.
 
 ## Étape 1 — Squelette du monorepo
-- [ ] pnpm workspaces : `apps/api`, `apps/web`, `packages/shared`, TypeScript strict partagé.
-- [ ] ESLint + Prettier, Vitest configuré dans chaque paquet.
-- [ ] Docker Compose : MongoDB + Mailpit.
-- [ ] `apps/api` : Fastify + tRPC (`/api/trpc`) + Socket.IO sur le même serveur, config Zod, logs pino avec `redact`, `@fastify/helmet`, CORS.
-- [ ] `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue + Tailwind, mise en page commune ([screens.md](technical/screens.md)), client tRPC typé, client Socket.IO.
-- [ ] Procédure `health` appelée depuis le front.
-- [ ] CI : lint, typecheck, tests.
-- [ ] Écrire `docs/runbooks/local-development.md`, la section « Commandes » d'[AGENTS.md](../AGENTS.md) et `.env.example`.
+- [x] pnpm workspaces : `apps/api`, `apps/web`, `packages/shared`, TypeScript strict partagé.
+- [x] ESLint + Prettier, Vitest configuré dans chaque paquet.
+- [x] Docker Compose : MongoDB + Mailpit.
+- [x] `apps/api` : Fastify + tRPC (`/api/trpc`) + Socket.IO sur le même serveur, config Zod, logs pino avec `redact`, `@fastify/helmet`, CORS.
+- [x] `apps/web` : Vue 3 + Vite + Router + Pinia + PrimeVue + Tailwind, mise en page commune ([screens.md](technical/screens.md)), client tRPC typé, client Socket.IO.
+- [x] Procédure `health` appelée depuis le front.
+- [x] CI : lint, typecheck, tests.
+- [x] Écrire `docs/runbooks/local-development.md`, la section « Commandes » d'[AGENTS.md](../AGENTS.md) et `.env.example`.
 
 **Fini quand** : `pnpm dev` lance API + front, le front affiche la réponse de `health`.
 

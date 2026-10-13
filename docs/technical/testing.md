@@ -59,5 +59,7 @@ Ils tournent sur la stack complète : API, front, MongoDB et Mailpit. Parcours c
 Pour garder les tests rapides, les durées sont raccourcies par les paramètres (`antiSnipingMs`, durée des enchères).
 
 ## CI
-- À chaque push : lint, vérification des types, tests unitaires et d'intégration.
-- Sur la branche principale et les PR : en plus, les tests E2E (Stripe en clés test uniquement).
+Workflow : [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
+- À chaque push (job `check`) : lint, formatage (Prettier), vérification des types, tests unitaires et d'intégration.
+- Sur la branche principale et les PR (job `e2e`, après `check`) : en plus, les tests E2E (Stripe en clés test uniquement). En cas d'échec, le rapport Playwright est publié en artefact.
+- Les actions GitHub sont épinglées par SHA ; Dependabot les met à jour.

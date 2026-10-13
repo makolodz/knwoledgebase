@@ -1,0 +1,41 @@
+packages:
+  - apps/*
+  - packages/*
+  - e2e
+
+# Scripts d'installation : aucun n'est exécuté. esbuild fonctionne sans (binaire fourni par
+# un paquet optionnel par plateforme).
+allowBuilds:
+  esbuild: false
+
+# Versions partagées entre les paquets (ADR-013).
+catalog:
+  "@eslint/js": ^10.0.1
+  # Client et serveur tRPC doivent avoir exactement la même version.
+  "@trpc/client": 11.19.0
+  "@trpc/server": 11.19.0
+  "@types/node": ^22.20.5
+  eslint: ^10.12.0
+  eslint-config-prettier: ^10.1.8
+  eslint-plugin-vue: ^10.11.1
+  globals: ^17.13.0
+  prettier: ^3.9.10
+  socket.io: ^4.8.4
+  socket.io-client: ^4.8.4
+  # TypeScript reste en 6.0 : typescript-eslint 8.x déclare typescript < 6.1.
+  typescript: ~6.0.3
+  typescript-eslint: ^8.71.1
+  # Épinglés sur la version précédente : pnpm 12 refuse les versions trop récentes (minimumReleaseAge).
+  vitest: 5.0.3
+  zod: 4.6.5
+
+# pnpm 12 propose d'installer les « skills » d'agents IA livrés par certaines dépendances.
+# Refusé : le projet n'accepte pas d'instructions venant de paquets tiers.
+permissions:
+  "@playwright/test":
+    build: false
+    skills: false
+  "@trpc/client":
+    skills: false
+  "@trpc/server":
+    skills: false

@@ -15,11 +15,19 @@ Convention :
 
 | ID | Niveau | Scénario |
 |---|---|---|
-| T1.1 | E2E | `pnpm dev` lance l'API et le front ; le front affiche la réponse de `health`. |
+| T1.1 | E2E | L'API et le front démarrent (scripts `dev`, lancés par Playwright) ; le front affiche la réponse de `health`. `pnpm dev` lui-même se vérifie à la main ([runbook](../runbooks/local-development.md)). |
 | T1.2 | Int | `health` répond sans authentification. |
 | T1.3 | Int | Une requête sans `Content-Type` ou au mauvais format est refusée proprement (pas de 500). |
 | T1.4 | Unit | Une entrée invalide est rejetée par son schéma Zod, dans `packages/shared`. |
 | T1.5 | Int | Les logs n'affichent jamais les champs `password`, `token`, `authorization` (`redact`). |
+| T1.6 | Int | Les en-têtes de sécurité Helmet sont présents sur toute réponse, erreurs comprises. |
+| T1.7 | Int | CORS : seule l'origine `WEB_ORIGIN` est autorisée, avec `credentials` ; une autre origine ne reçoit pas `Access-Control-Allow-Origin`. |
+| T1.8 | Int | Socket.IO répond sur le même port que HTTP ; une origine de navigateur étrangère est refusée ; l'arrêt du serveur est propre. |
+| T1.9 | Unit | Configuration invalide : le serveur refuse de démarrer, sans afficher la valeur fautive. |
+| T1.10 | Int | Aucune réponse d'erreur ne contient de stack trace ni de chemin de fichier. |
+| T1.11 | Comp | Le bloc `health` affiche un chargement, puis la réponse ; en cas d'échec, une erreur avec « Réessayer » qui relance l'appel. |
+| T1.12 | Comp | L'indicateur temps réel suit la connexion, la déconnexion et l'erreur du socket. |
+| T1.13 | Comp | La mise en page commune (en-tête, pied de page) entoure chaque page ; une route inconnue affiche la page 404. |
 
 ## Étape 2 — Comptes et sessions
 

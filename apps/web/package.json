@@ -1,0 +1,37 @@
+{
+  "name": "@encheres/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@encheres/shared": "workspace:*",
+    "@primeuix/themes": "^2.0.3",
+    "@trpc/client": "catalog:",
+    "pinia": "^4.0.3",
+    "primevue": "~4.5.5",
+    "socket.io-client": "catalog:",
+    "vue": "^3.5.43",
+    "vue-router": "^5.4.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@encheres/api": "workspace:*",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "catalog:",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/test-utils": "^2.5.1",
+    "jsdom": "^30.1.2",
+    "tailwindcss": "^4.3.3",
+    "tailwindcss-primeui": "^0.6.1",
+    "typescript": "catalog:",
+    "vite": "^8.3.4",
+    "vitest": "catalog:",
+    "vue-tsc": "^3.3.13"
+  }
+}

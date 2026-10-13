@@ -34,4 +34,18 @@ En cas de conflit entre documents, [docs/domain/business-rules.md](docs/domain/b
 - Avancement : à chaque modification, mettre à jour [docs/progress.md](docs/progress.md) (cases de la roadmap, tableau, historique) dans le même commit.
 
 ## Commandes
-Pas encore de code : les commandes (install, dev, test, lint) seront ajoutées ici.
+Node ≥ 22.22.2 et pnpm 12 ([ADR-013](docs/decisions/ADR-013-outillage-monorepo.md)). Procédure complète : [docs/runbooks/local-development.md](docs/runbooks/local-development.md).
+
+| Commande | Effet |
+|---|---|
+| `pnpm install` | Installe les dépendances (aucun script d'installation n'est exécuté) |
+| `pnpm infra:up` / `pnpm infra:down` | Démarre / arrête MongoDB et Mailpit (Docker Compose) |
+| `pnpm dev` | Lance l'API (`:3000`) et le front (`:5173`) |
+| `pnpm lint` | ESLint |
+| `pnpm format:check` (`pnpm format` pour corriger) | Prettier |
+| `pnpm typecheck` | `tsc` et `vue-tsc` |
+| `pnpm test` | Vitest dans tous les paquets (unitaires, intégration, composants) |
+| `pnpm test:e2e` | Playwright (lance l'API et le front tout seul) |
+| `pnpm --filter @encheres/api test` | Tests d'un seul paquet |
+
+Avant de conclure une tâche : `pnpm lint`, `pnpm format:check`, `pnpm typecheck` et `pnpm test` passent. Les variables d'environnement sont dans `.env.example` ; ne jamais lire ni écrire `.env`.

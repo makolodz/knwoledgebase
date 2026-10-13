@@ -4,16 +4,18 @@
 SPA qui affiche les enchères, permet d'enchérir et montre les nouvelles offres en temps réel. Elle parle à l'API Fastify en HTTP et au serveur Socket.IO en temps réel. Raisons du choix : [ADR-002](../decisions/ADR-002-frontend-vue.md).
 
 ## Stack
-Vue 3 (Composition API, `<script setup lang="ts">`), Vite, TypeScript strict, Vue Router, Pinia, socket.io-client, **PrimeVue + Tailwind** ([ADR-012](../decisions/ADR-012-ui-primevue.md)).
+Vue 3 (Composition API, `<script setup lang="ts">`), Vite, TypeScript strict, Vue Router, Pinia, socket.io-client, **PrimeVue 4 (MIT) + Tailwind** ([ADR-012](../decisions/ADR-012-ui-primevue.md)). Ne pas passer à PrimeVue 5 : licence propriétaire (voir l'addendum de l'ADR).
 
 Description de chaque écran : [screens.md](screens.md).
 
 ## Structure (`apps/web/src`)
 - `views/` : pages (liste des enchères, détail d'une enchère, connexion, espace vendeur, admin)
-- `components/` : composants réutilisables (carte d'enchère, compte à rebours, formulaire d'offre)
-- `stores/` : stores Pinia (`auth`, `auctions`)
+- `components/` : composants réutilisables (mise en page `AppLayout`, carte d'enchère, compte à rebours, formulaire d'offre)
+- `stores/` : stores Pinia (`realtime`, puis `auth`, `auctions`)
 - `composables/` : logique réutilisable (`useAuctionSocket`, `useCountdown`)
-- `api/` : client tRPC typé avec `AppRouter` ([api.md](api.md))
+- `api/` : client tRPC typé avec `AppRouter` ([api.md](api.md)) et instance unique du socket
+- `router/` : routes (`createAppRouter`, historique injectable pour les tests)
+- `env.ts` : variables `VITE_*` validées par Zod (`VITE_API_URL`) ; le `.env` est celui de la racine ([ADR-013](../decisions/ADR-013-outillage-monorepo.md))
 
 ## Temps réel
 Composable `useAuctionSocket(auctionId)` :

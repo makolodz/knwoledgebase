@@ -1,0 +1,31 @@
+{
+  "name": "encheres",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=22.22.2 <23"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @encheres/api --filter @encheres/web dev",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @encheres/e2e test:e2e",
+    "infra:up": "docker compose up -d --wait",
+    "infra:down": "docker compose down",
+    "infra:logs": "docker compose logs -f"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-vue": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}

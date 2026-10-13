@@ -7,6 +7,12 @@ updates:
     groups:
       dependances-mineures:
         update-types: ["minor", "patch"]
+    ignore:
+      # PrimeVue 5 est sous licence propriétaire : voir l'addendum de docs/decisions/ADR-012-ui-primevue.md.
+      - dependency-name: "primevue"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@primeuix/themes"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"

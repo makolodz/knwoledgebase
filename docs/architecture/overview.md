@@ -28,7 +28,7 @@ Règles détaillées : [business-rules.md](../domain/business-rules.md).
 | Temps réel | Socket.IO v4 | Imposé | — |
 | BDD | MongoDB 7+ via Mongoose | Imposé ; Mongoose apporte schémas et validation | [001](../decisions/ADR-001-stack-backend.md) |
 | Validation | Zod | Schémas partagés client/serveur | [001](../decisions/ADR-001-stack-backend.md) |
-| Composants UI | PrimeVue + Tailwind | Composants riches pour admin et formulaires | [012](../decisions/ADR-012-ui-primevue.md) |
+| Composants UI | PrimeVue 4 (MIT) + Tailwind | Composants riches pour admin et formulaires ; la v5 est sous licence propriétaire | [012](../decisions/ADR-012-ui-primevue.md) |
 | Front | Vue 3 + Vite (TS, Vue Router, Pinia) | Stack déjà maîtrisée, écosystème officiel cohérent | [002](../decisions/ADR-002-frontend-vue.md) |
 | Auth | JWT 15 min + refresh token en base (cookies httpOnly) | Révocable, compatible avec le handshake Socket.IO | [011](../decisions/ADR-011-sessions-jwt-refresh.md) |
 | Paiement | Stripe (Checkout + webhooks) | Standard, données de carte gérées par Stripe, mode test | [003](../decisions/ADR-003-paiement-stripe.md) |
@@ -37,7 +37,7 @@ Règles détaillées : [business-rules.md](../domain/business-rules.md).
 | Jobs | `setInterval` qui interroge MongoDB | Aucune dépendance, rattrapage après redémarrage | [008](../decisions/ADR-008-jobs-setinterval.md) |
 | Tests | Vitest (+ Vue Test Utils), mongodb-memory-server, Playwright | Rapide, base réelle, E2E temps réel | — |
 | Qualité | ESLint + Prettier | Cohérence du code | — |
-| Dev/infra | Docker Compose (Node + Mongo + Mailpit) | Environnement reproductible | — |
+| Dev/infra | Docker Compose (Mongo + Mailpit) ; l'API et le front tournent sur la machine | Environnement reproductible, rechargement à chaud | [013](../decisions/ADR-013-outillage-monorepo.md) |
 | Monorepo | pnpm workspaces | Types partagés entre front et back | [001](../decisions/ADR-001-stack-backend.md) |
 
 ## Structure du monorepo
