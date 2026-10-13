@@ -9,7 +9,7 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
   - `email` est normalisé (minuscules) et unique : index unique partiel sur `email` quand c'est une chaîne, car un compte anonymisé a `email: null` ([account.md](../domain/workflows/account.md)).
 - `authTokens` : `{ _id, userId, type: 'email_verification'|'password_reset'|'email_change', tokenHash, newEmail, expiresAt, usedAt, createdAt }`
   - token **hashé**, à usage unique ; `newEmail` seulement pour `email_change`
-  - index `{ tokenHash: 1 }` unique, et index TTL sur `expiresAt` pour purger les tokens expirés
+  - index `{ tokenHash: 1 }` unique, index TTL sur `expiresAt` pour purger les tokens expirés (la validité est toujours revérifiée par la requête : la purge est lente), et index `{ userId: 1, type: 1, createdAt: -1 }` pour retrouver le dernier token
 - `auctions` : `{ _id, sellerId, title, description, images[], startingPrice, minIncrement, currentPrice, currentBidderId, nextMinBid, bidCount, startsAt, endsAt, status, winnerId, paymentDeadline, paymentReminderSentAt, cancelReason, createdAt }`
   - `status` : `'draft'|'scheduled'|'live'|'ended'|'paid'|'unpaid'|'cancelled'`
   - à la création : `currentPrice: null`, `currentBidderId: null`, `nextMinBid: startingPrice`, `bidCount: 0`
@@ -19,10 +19,13 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
   - historique des offres, index `{ auctionId: 1, createdAt: -1 }`
 - `payments` : `{ _id, auctionId, userId, amount, stripeSessionId, status: 'open'|'paid'|'expired'|'refunded', createdAt }`
   - index unique sur `stripeSessionId`
-- `sessions` : `{ _id, userId, refreshTokenHash, expiresAt, lastUsedAt, userAgent, createdAt }`
-  - index unique sur `refreshTokenHash`, index sur `userId`, TTL sur `expiresAt` ([security.md](security.md))
+- `sessions` : `{ _id, userId, refreshTokenHash, previousRefreshTokenHash, expiresAt, lastUsedAt, userAgent, createdAt }`
+  - `previousRefreshTokenHash` : refresh token remplacé par la dernière rotation, `null` avant la première ; sa présentation signale une réutilisation. `lastUsedAt` est la date de cette rotation ([ADR-014](../decisions/ADR-014-implementation-authentification.md))
+  - index unique sur `refreshTokenHash`, index sur `userId`, TTL sur `expiresAt`, index partiel sur `previousRefreshTokenHash` ([security.md](security.md))
 - `emails` : `{ _id, to, template, data, status: 'pending'|'sent'|'failed', attempts, lastError, sendAfter, createdAt, sentAt }`
-  - file d'envoi ([ADR-006](../decisions/ADR-006-emails-brevo.md)) ; `failed` après 5 tentatives
+  - file d'envoi ([ADR-006](../decisions/ADR-006-emails-brevo.md)) ; `failed` après 5 tentatives (réessais à 1 min, 5 min, 30 min, 2 h)
+  - `data` peut contenir un lien avec un token en clair : il est **vidé dès que l'email est `sent`** ([ADR-014](../decisions/ADR-014-implementation-authentification.md))
+  - `sendAfter` est repoussé quand le job prend un email en charge, ce qui évite un double envoi sans statut supplémentaire
   - index `{ status: 1, sendAfter: 1 }`
 - `settings` : document unique `{ _id: 'global', defaultMinIncrement, antiSnipingMs, paymentDelayMs, minDurationMs, maxDurationMs }`
   - valeurs par défaut dans [business-rules.md](../domain/business-rules.md), section « Paramètres globaux »

@@ -56,6 +56,8 @@ Règles : [account.md](../domain/workflows/account.md).
 | T2.19 | E2E | Inscription → email lu dans Mailpit → clic → connexion. |
 | T2.20 *(ajout)* | Unit | Config : `MONGO_URL` obligatoire en production, défaut local sinon ; une valeur refusée n'apparaît jamais dans le message. |
 | T2.21 *(ajout)* | Int | Connexion MongoDB : échec avec un message clair, sans l'URL (mot de passe possible) ; base réelle vidée entre les tests. |
+| T2.22 *(ajout)* | Int | Modèle `users` : valeurs par défaut (`buyer`, non vérifié) ; email normalisé et unique sans tenir compte de la casse ; plusieurs comptes anonymisés (`email: null`) autorisés ; rôle inconnu refusé. |
+| T2.23 *(ajout)* | Int | Modèles `authTokens`, `sessions`, `emails` : `tokenHash` et `refreshTokenHash` uniques ; type et statut inconnus refusés ; index TTL sur `expiresAt` ; `data` vide conservé. |
 
 ## Étape 3 — Création et modération
 

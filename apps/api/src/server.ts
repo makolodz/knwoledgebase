@@ -1,6 +1,8 @@
 import { buildApp } from './app'
 import { ConfigError, loadConfig } from './config/env'
 import { connectDb, DbConnectionError, disconnectDb } from './infra/db'
+// Enregistre les modèles avant la connexion, pour que `connectDb` crée leurs index.
+import './models'
 
 let config
 try {
