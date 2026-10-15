@@ -2,14 +2,14 @@
 
 > Document **tenu à jour par l'IA** à chaque modification (code, doc, roadmap). Source des cases : [roadmap.md](roadmap.md). Ne pas y recopier le contenu des étapes, seulement l'état.
 >
-> Dernière mise à jour : 2026-10-13 · Commit de référence : `43f88f0`
+> Dernière mise à jour : 2026-10-15 · Commit de référence : `504a71e`
 
 ## Vue d'ensemble
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
 | 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
-| 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🟡 En revue |
+| 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
 | 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
 | 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
@@ -18,7 +18,7 @@
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | | **Total** | `██░░░░░░░░` **30 %** | **14 / 47** | |
 
-**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles, file d'envoi des emails, inscription, connexion, refresh avec rotation, déconnexion et `auth.me`. Toutes les cases sont cochées : API (inscription, sessions, vérification, mot de passe oublié, profil, rôles, limites anti-abus, seed), pages du front, test E2E T2.19 et runbook. Reste : ouvrir la PR (`Closes #3`) et vérifier que la CI passe, en particulier le job `e2e` avec le vrai Mailpit.
+**Étape en cours** : aucune étape de code. L'étape 2 est terminée (PR #17 fusionnée le 2026-10-13, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3) fermée, CI verte dont le job `e2e`) ; l'étape 3 n'est pas commencée. En parallèle : durcissement de la CI et de la gouvernance IA (branche `chore/durcir-ci-gouvernance-ia`)  ([PR #19](https://github.com/makolodz/knwoledgebase/pull/19)). Les skills de projet (`.claude/skills/`) sont fusionnés ([PR #18](https://github.com/makolodz/knwoledgebase/pull/18)).
 
 ## État de la documentation
 
@@ -31,6 +31,8 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-10-15 | Skills de projet `.claude/skills/` : `checklist-commit` (checklist de `CLAUDE.md`), `verifier-avant-conclure` (lint, format, types, tests) et `verifier-branche-a-jour` (retard sur `origin/main` avant une PR), fusionnés ([PR #18](https://github.com/makolodz/knwoledgebase/pull/18)) | Transverse |
+| 2026-10-15 | CI durcie : déclenchée par PR et par push sur `main` seulement (plus de double exécution), build du front en `check`, une exécution sur `main` n'en annule plus une autre ; audit des dépendances `pnpm audit` dans [audit.yml](../.github/workflows/audit.yml) (à chaque changement du lockfile et chaque lundi) ; `CODEOWNERS` sur `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.github/`, `docs/domain/` et `docs/decisions/` (demande de revue automatique, sans revue obligatoire tant qu'il n'y a qu'un humain) ; gabarit de PR avec la mention de l'IA ; réglages GitHub à activer décrits dans [testing.md](technical/testing.md) ; tableau de bord remis à jour (étape 2 terminée) | Transverse |
 | 2026-10-13 | Test E2E T2.19 (inscription, email lu dans Mailpit, vérification, connexion, session renouvelée, déconnexion), base `encheres-e2e`, [retours d'expérience de l'étape 2](lessons-learned/2026-10-etape-2-comptes-sessions.md), procédure de vérification manuelle du runbook | 2 |
 | 2026-10-13 | Front de l'étape 2 : pages de connexion, d'inscription, de vérification, de mot de passe oublié et « Mon compte » ; store `auth`, renouvellement transparent de la session (`fetch` partagé entre onglets), gardes de routes avec redirection assainie, en-tête selon la session (T2.39 à T2.47) | 2 |
 | 2026-10-13 | Script de seed `pnpm seed` : admin, vendeur et deux acheteurs (domaine `.test`), idempotent, refusé en production et sur une base non locale (T2.38) | 2 |
