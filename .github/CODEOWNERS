@@ -1,0 +1,11 @@
+# Fichiers qui gouvernent l'IA, la CI et le métier : une modification demande la revue du
+# propriétaire, y compris quand elle vient d'un agent IA dans la même PR que le code.
+# L'effet est obligatoire seulement si « Require review from Code Owners » est activé dans la
+# protection de la branche `main` (réglage GitHub, voir docs/technical/testing.md).
+
+/AGENTS.md              @makolodz
+/CLAUDE.md              @makolodz
+/.claude/               @makolodz
+/.github/               @makolodz
+/docs/domain/           @makolodz
+/docs/decisions/        @makolodz
