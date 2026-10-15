@@ -65,7 +65,7 @@ Docs : [business-rules.md](domain/business-rules.md), [realtime.md](technical/re
 ## Étape 5 — Clôture
 Docs : [auction-lifecycle.md](domain/workflows/auction-lifecycle.md), [data-flow.md](architecture/data-flow.md).
 - [ ] Job de clôture `live → ended`, `winnerId`, `paymentDeadline`, `auction:ended`.
-- [ ] Emails de victoir et de clôture sans offre.
+- [ ] Emails de victoire et de clôture sans offre.
 - [ ] Remise en vente par duplication.
 - [ ] Espace utilisateur : mes offres, mes enchères gagnées.
 
