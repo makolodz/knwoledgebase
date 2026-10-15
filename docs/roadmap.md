@@ -31,7 +31,7 @@ Docs : [account.md](domain/workflows/account.md), [security.md](technical/securi
 - [x] Modèles `users`, `authTokens`, `sessions`.
 - [x] Inscription, connexion, déconnexion, refresh avec rotation, `me`.
 - [x] File d'envoi `emails` + job d'envoi + `mailer` (Mailpit) ([ADR-006](decisions/ADR-006-emails-brevo.md)).
-- [x] Vérification d'email, mot de passe oublié, modification du profil.
+- [x] Vérification d'email, mt de passe oublié, modification du profil.
 - [x] Middlewares tRPC `authed` / `seller` / `admin`, rôles relus en base.
 - [x] Limites anti-abus sur l'authentification.
 - [x] Script de seed : un admin, un vendeur, deux acheteurs.
