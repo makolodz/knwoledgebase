@@ -72,7 +72,7 @@ Workflow à part : [`.github/workflows/audit.yml`](../../.github/workflows/audit
 ### Garde-fous de la branche `main` (réglages GitHub, hors dépôt)
 Les fichiers du dépôt ne suffisent pas : sans ces réglages, la CI reste consultative. À activer dans *Settings → Branches → protection de `main`* :
 - checks obligatoires : `Lint, types et tests` et `Tests E2E` (branche à jour avant la fusion) ;
-- *Require review from Code Owners* : [`.github/CODEOWNERS`](../../.github/CODEOWNERS) protège `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.github/`, `docs/domain/` et `docs/decisions/`, c'est-à-dire ce qui encadre l'IA, la CI et le métier ;
-- *Do not allow bypassing the above settings* (`enforce_admins`) pour que les pushs directs sur `main` soient refusés.
+- *Do not allow bypassing the above settings* (`enforce_admins`) pour que les pushs directs sur `main` soient refusés ;
+- *Lock branch* **désactivé** : il met `main` en lecture seule, plus aucune PR ne peut être fusionnée.
 
-La PR ([gabarit](../../.github/pull_request_template.md)) dit si une IA a écrit tout ou partie du changement, avec quel modèle, et un humain coche la relecture.
+[`.github/CODEOWNERS`](../../.github/CODEOWNERS) désigne le propriétaire de `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.github/`, `docs/domain/` et `docs/decisions/`, c'est-à-dire de ce qui encadre l'IA, la CI et le métier : GitHub lui demande sa revue dès qu'une PR les modifie. **Ne pas activer *Require review from Code Owners* avec un seul humain** : GitHub interdit d'approuver sa propre PR, et avec `enforce_admins` plus aucune PR touchant ces fichiers ne pourrait être fusionnée. Seul, le garde-fou est donc la relecture par l'humain, déclarée dans le [gabarit de PR](../../.github/pull_request_template.md) : il dit si une IA a écrit tout ou partie du changement, avec quel modèle, et l'humain coche la relecture. Une revue obligatoire demande un second relecteur.

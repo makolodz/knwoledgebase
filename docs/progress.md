@@ -2,7 +2,7 @@
 
 > Document **tenu à jour par l'IA** à chaque modification (code, doc, roadmap). Source des cases : [roadmap.md](roadmap.md). Ne pas y recopier le contenu des étapes, seulement l'état.
 >
-> Dernière mise à jour : 2026-10-15 · Commit de référence : `107ef95`
+> Dernière mise à jour : 2026-10-15 · Commit de référence : `504a71e`
 
 ## Vue d'ensemble
 
@@ -18,7 +18,7 @@
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | | **Total** | `██░░░░░░░░` **30 %** | **14 / 47** | |
 
-**Étape en cours** : aucune étape de code. L'étape 2 est terminée (PR #17 fusionnée le 2026-10-13, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3) fermée, CI verte dont le job `e2e`) ; l'étape 3 n'est pas commencée. En parallèle : durcissement de la CI et de la gouvernance IA (branche `chore/durcir-ci-gouvernance-ia`) ; les skills de projet attendent dans la [PR #18](https://github.com/makolodz/knwoledgebase/pull/18).
+**Étape en cours** : aucune étape de code. L'étape 2 est terminée (PR #17 fusionnée le 2026-10-13, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3) fermée, CI verte dont le job `e2e`) ; l'étape 3 n'est pas commencée. En parallèle : durcissement de la CI et de la gouvernance IA (branche `chore/durcir-ci-gouvernance-ia`)  ([PR #19](https://github.com/makolodz/knwoledgebase/pull/19)). Les skills de projet (`.claude/skills/`) sont fusionnés ([PR #18](https://github.com/makolodz/knwoledgebase/pull/18)).
 
 ## État de la documentation
 
@@ -31,7 +31,8 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
-| 2026-10-15 | CI durcie : déclenchée par PR et par push sur `main` seulement (plus de double exécution), build du front en `check`, une exécution sur `main` n'en annule plus une autre ; audit des dépendances `pnpm audit` dans [audit.yml](../.github/workflows/audit.yml) (à chaque changement du lockfile et chaque lundi) ; `CODEOWNERS` sur `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.github/`, `docs/domain/` et `docs/decisions/` ; gabarit de PR avec la mention de l'IA ; réglages GitHub à activer décrits dans [testing.md](technical/testing.md) ; tableau de bord remis à jour (étape 2 terminée) | Transverse |
+| 2026-10-15 | Skills de projet `.claude/skills/` : `checklist-commit` (checklist de `CLAUDE.md`), `verifier-avant-conclure` (lint, format, types, tests) et `verifier-branche-a-jour` (retard sur `origin/main` avant une PR), fusionnés ([PR #18](https://github.com/makolodz/knwoledgebase/pull/18)) | Transverse |
+| 2026-10-15 | CI durcie : déclenchée par PR et par push sur `main` seulement (plus de double exécution), build du front en `check`, une exécution sur `main` n'en annule plus une autre ; audit des dépendances `pnpm audit` dans [audit.yml](../.github/workflows/audit.yml) (à chaque changement du lockfile et chaque lundi) ; `CODEOWNERS` sur `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.github/`, `docs/domain/` et `docs/decisions/` (demande de revue automatique, sans revue obligatoire tant qu'il n'y a qu'un humain) ; gabarit de PR avec la mention de l'IA ; réglages GitHub à activer décrits dans [testing.md](technical/testing.md) ; tableau de bord remis à jour (étape 2 terminée) | Transverse |
 | 2026-10-13 | Test E2E T2.19 (inscription, email lu dans Mailpit, vérification, connexion, session renouvelée, déconnexion), base `encheres-e2e`, [retours d'expérience de l'étape 2](lessons-learned/2026-10-etape-2-comptes-sessions.md), procédure de vérification manuelle du runbook | 2 |
 | 2026-10-13 | Front de l'étape 2 : pages de connexion, d'inscription, de vérification, de mot de passe oublié et « Mon compte » ; store `auth`, renouvellement transparent de la session (`fetch` partagé entre onglets), gardes de routes avec redirection assainie, en-tête selon la session (T2.39 à T2.47) | 2 |
 | 2026-10-13 | Script de seed `pnpm seed` : admin, vendeur et deux acheteurs (domaine `.test`), idempotent, refusé en production et sur une base non locale (T2.38) | 2 |
