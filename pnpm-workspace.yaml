@@ -30,10 +30,10 @@ catalog:
   socket.io-client: ^4.8.4
   # TypeScript reste en 6.0 : typescript-eslint 8.x déclare typescript < 6.1.
   typescript: ~6.0.3
-  typescript-eslint: ^8.71.1
+  typescript-eslint: ^8.71.2
   # Épinglés sur la version précédente : pnpm 12 refuse les versions trop récentes (minimumReleaseAge).
-  vitest: 5.0.3
-  zod: 4.6.5
+  vitest: 5.0.5
+  zod: 4.6.7
 
 # pnpm 12 propose d'installer les « skills » d'agents IA livrés par certaines dépendances.
 # Refusé : le projet n'accepte pas d'instructions venant de paquets tiers.
