@@ -29,6 +29,7 @@ export const trpcMock = {
   auction: {
     list: { query: procedure() },
     get: { query: procedure() },
+    bids: { query: procedure() },
     rules: { query: procedure() },
     mine: { query: procedure() },
     getMine: { query: procedure() },

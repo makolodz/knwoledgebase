@@ -25,7 +25,7 @@ type AuctionContent = Omit<z.output<typeof createAuctionInputSchema>, 'minIncrem
 }
 
 /** Statuts visibles par tous. Un `draft` attend sa validation ; un `cancelled` est vu de son vendeur. */
-const PUBLIC_STATUSES: AuctionStatus[] = ['scheduled', 'live', 'ended', 'paid', 'unpaid']
+export const PUBLIC_STATUSES: AuctionStatus[] = ['scheduled', 'live', 'ended', 'paid', 'unpaid']
 
 const LIST_STATUSES: Record<z.output<typeof listAuctionsInputSchema>['filter'], AuctionStatus[]> = {
   live: ['live'],

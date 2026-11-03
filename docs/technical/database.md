@@ -17,7 +17,8 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
   - `images[]` : clés (UUID) des photos stockées sur disque, jamais d'URL ni de nom de fichier fourni par l'utilisateur ([ADR-007](../decisions/ADR-007-photos-disque-local.md))
   - `paymentReminderSentAt` : date d'envoi du rappel de paiement, `null` sinon (remis à `null` lors d'une réattribution)
 - `bids` : `{ _id, auctionId, userId, amount, createdAt }`
-  - historique des offres, index `{ auctionId: 1, createdAt: -1 }`
+  - historique des offres, index `{ auctionId: 1, createdAt: -1 }` et `{ userId: 1, createdAt: -1 }` (« mes offres », étape 5)
+  - `createdAt` est l'heure serveur de l'offre ; une offre n'est jamais modifiée ni supprimée
 - `payments` : `{ _id, auctionId, userId, amount, stripeSessionId, status: 'open'|'paid'|'expired'|'refunded', createdAt }`
   - index unique sur `stripeSessionId`
 - `sessions` : `{ _id, userId, refreshTokenHash, previousRefreshTokenHash, expiresAt, lastUsedAt, userAgent, createdAt }`
@@ -33,8 +34,10 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
 
 ## Opération clé : placer une offre
 Une seule requête vérifie toutes les règles et enregistre l'offre, prolongation anti-sniping comprise ([ADR-005](../decisions/ADR-005-offre-atomique.md)).
-- Elle utilise un update pipeline (MongoDB ≥ 4.2).
-- Vérifier l'option que demande la version de Mongoose utilisée pour accepter un pipeline.
+- Elle utilise un update pipeline (MongoDB ≥ 4.2). Avec Mongoose 9, `findOneAndUpdate` n'accepte un pipeline qu'avec l'option `updatePipeline: true`.
+- `returnDocument: 'before'` : on obtient l'ancien meilleur enchérisseur (à prévenir) et l'ancienne `endsAt` ; les nouvelles valeurs se déduisent de la même heure `now` que celle du filtre.
+- L'heure `now` est prise **une seule fois** côté serveur et sert au filtre (`endsAt > now`) comme à l'anti-sniping.
+- Le document `bids` est inséré juste après. MongoDB sans transaction : un plantage entre les deux laisserait une offre dans `auctions` sans ligne dans `bids` ; l'enchère reste la référence du prix et du gagnant.
 
 ```ts
 const auction = await Auction.findOneAndUpdate(

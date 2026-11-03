@@ -14,6 +14,7 @@ const SAMPLE_DATA: Record<EmailTemplateName, unknown> = {
   'password-changed': { name: 'Ana' },
   'email-change-confirm': { name: 'Ana', link: LINK },
   'email-change-notice': { name: 'Ana', newEmail: 'nouvelle@x.fr' },
+  outbid: { name: 'Ana', title: 'Vase', amount: 1250, link: 'https://encheres.example/auctions/1' },
   'auction-validated': { name: 'Ana', title: 'Vase', link: 'https://encheres.example/auctions/1' },
   'auction-rejected': {
     name: 'Ana',

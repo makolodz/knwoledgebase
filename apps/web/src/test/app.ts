@@ -33,6 +33,10 @@ export async function mountApp(path: string, { user }: MountOptions = {}) {
     trpcMock.auction.list.query.mockResolvedValue({ items: [], total: 0, page: 1, limit: 12 })
   }
 
+  if (trpcMock.auction.bids.query.getMockImplementation() === undefined) {
+    trpcMock.auction.bids.query.mockResolvedValue({ items: [], total: 0, page: 1, limit: 20 })
+  }
+
   const pinia = createPinia()
   setActivePinia(pinia)
   const router = createAppRouter(createMemoryHistory())

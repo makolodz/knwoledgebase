@@ -1,4 +1,4 @@
-import type { ErrorCode } from '@encheres/shared'
+import type { BidErrorCode, ErrorCode } from '@encheres/shared'
 import { UploadError, errorCodeOf, isNetworkError } from '../api/errors'
 
 /** Message affiché pour chaque code d'erreur métier (docs/technical/screens.md, « Règles communes »). */
@@ -16,6 +16,11 @@ const MESSAGES: Record<ErrorCode, string> = {
   INVALID_DATES:
     'Les dates ne respectent pas les règles : début dans le futur, durée dans les limites autorisées.',
   INVALID_IMAGE: 'Cette photo n’est pas valide (formats acceptés : JPEG, PNG, WebP).',
+  AUCTION_NOT_LIVE: 'Cette enchère n’est pas ouverte aux offres.',
+  OWN_AUCTION: 'Vous ne pouvez pas enchérir sur votre propre enchère.',
+  ALREADY_HIGHEST: 'Vous êtes déjà le meilleur enchérisseur.',
+  BID_TOO_LOW: 'Votre offre est trop basse : quelqu’un a peut-être enchéri avant vous.',
+  INVALID_AMOUNT: 'Saisissez un montant valide.',
 }
 
 const UPLOAD_MESSAGES: Record<string, string> = {
@@ -28,6 +33,14 @@ const GENERIC_MESSAGE = 'Une erreur est survenue. Réessayez.'
 
 function isKnownCode(code: string): code is ErrorCode {
   return Object.hasOwn(MESSAGES, code)
+}
+
+const BID_INTERNAL_MESSAGE =
+  'Le serveur n’a pas pu traiter votre offre. Vérifiez l’historique avant de réessayer.'
+
+/** Message lisible pour le code d'un ack `bid:place` (docs/domain/business-rules.md). */
+export function bidErrorMessage(code: BidErrorCode): string {
+  return code === 'INTERNAL_ERROR' ? BID_INTERNAL_MESSAGE : MESSAGES[code]
 }
 
 /**

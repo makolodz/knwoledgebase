@@ -162,7 +162,20 @@ Règles : [business-rules.md](../domain/business-rules.md) (« Placer une offre 
 | T4.24 | Int | Aucun événement Socket.IO ne contient d'email ni de donnée privée (vérifié sur le contenu des messages). |
 | T4.25 | Int | Ancien meilleur enchérisseur dépassé : reçoit `bid:new` et un email « offre dépassée » via la file. |
 | T4.26 | Comp | Le compte à rebours se met à jour et le formulaire refuse un montant sous le minimum. |
-| T4.27 | E2E | Deux navigateurs enchérissent : chacun voit les offres de l'autre en direct, et une offre de dernière minute prolonge l'enchère chez les deux. |
+| T4.27 | E2E | Deux navigateurs enchérissent : chacun voit les offres de l'autre en direct, et une offre de dernière minute prolonge l'enchère chez les deux (`e2e/bids.spec.ts`, l'enchère est insérée en base avec une fin à 30 s). Ajoute : « dépassé », minimum affiché, email « offre dépassée » dans Mailpit, visiteur sans formulaire. |
+
+### Ajouts de l'étape 4
+
+| ID | Niveau | Scénario |
+|---|---|---|
+| T4.28 *(ajout)* | Int | Rôle changé, compte supprimé ou suspendu en base : appliqué à l'offre suivante sans reconnexion ; JWT expiré après la connexion : `NOT_AUTHENTICATED`. |
+| T4.29 *(ajout)* | Int | Handshake : visiteur accepté ; token aléatoire, d'un autre secret, expiré ou `alg: none` refusé. |
+| T4.30 *(ajout)* | Int | Offre à `endsAt − 1 ms` acceptée, à `endsAt` et après refusée ; offre exactement à `antiSnipingMs` de la fin : pas de prolongation (jamais de raccourcissement) ; 12 prolongations successives ; une nouvelle valeur de `antiSnipingMs` s'applique à la prochaine offre seulement. |
+| T4.31 *(ajout)* | Int | Entrées Socket.IO : payload mal formé, champ en trop, absence d'ack, identifiant illisible ou enchère non publique, 20 rooms par connexion, `auction:leave`. |
+| T4.32 *(ajout)* | Int | `auction.bids` : plus récente d'abord, paginée, nom seul, refusé pour une enchère non publique ; email « offre dépassée » ignoré pour un enchérisseur anonymisé sans faire échouer l'offre. |
+| T4.33 *(ajout)* | Comp | Front, composable `useAuctionSocket` : chargement et join, rechargement à la reconnexion, offres sans doublon, autres enchères ignorées, prolongation, ouverture d'une enchère à venir, ack, refus, absence de réponse, renouvellement de session et un seul rejeu. |
+| T4.34 *(ajout)* | Comp | Front, formulaire : minimum pré-rempli et qui suit les offres, +1 / +5 pas, montants illisibles ou sous le minimum jamais envoyés, centimes envoyés, refus traduit, confirmation au-delà de 10 fois le prix, désactivé hors connexion ou à zéro ; qui peut enchérir (visiteur, vendeur de l'enchère, admin, email non vérifié). |
+| T4.35 *(ajout)* | Comp | Front, en direct : nouvelle offre, « meilleur enchérisseur » puis « dépassé », prolongation et compte à rebours ; `useCountdown` ; renouvellement du jeton du socket (`socket-session`). |
 
 ## Étape 5 — Clôture
 
