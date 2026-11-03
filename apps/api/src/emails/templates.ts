@@ -6,6 +6,13 @@ const linkSchema = z.url({ protocol: /^https?$/ })
 
 const nameSchema = z.string().min(1)
 
+const euros = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
+
+/** Centimes → « 12,50 € » (les montants sont stockés en centimes entiers). */
+function formatEuros(cents: number): string {
+  return euros.format(cents / 100)
+}
+
 interface EmailTemplate<Schema extends z.ZodType> {
   schema: Schema
   render(data: z.infer<Schema>): RenderedEmail
@@ -110,6 +117,27 @@ export const EMAIL_TEMPLATES = {
         paragraphs: [`Votre compte utilise désormais l’adresse ${newEmail}.`],
         footer:
           'Si vous n’êtes pas à l’origine de ce changement, contactez l’association sans attendre.',
+      }),
+  }),
+
+  /** Le meilleur enchérisseur vient d'être dépassé (business-rules.md, « Notifications »). */
+  outbid: template({
+    schema: z.object({
+      name: nameSchema,
+      title: z.string().min(1),
+      /** Montant de la nouvelle meilleure offre, en centimes. */
+      amount: z.number().int().min(1),
+      link: linkSchema,
+    }),
+    render: ({ name, title, amount, link }) =>
+      composeEmail({
+        subject: 'Vous avez été dépassé',
+        greeting: `Bonjour ${name},`,
+        paragraphs: [
+          `Votre offre sur « ${title} » a été dépassée : la meilleure offre est maintenant de ${formatEuros(amount)}.`,
+          'Vous pouvez enchérir de nouveau tant que l’enchère est ouverte.',
+        ],
+        action: { label: 'Voir l’enchère', url: link },
       }),
   }),
 

@@ -29,13 +29,19 @@ Description de chaque écran : [screens.md](screens.md).
 - Les formulaires valident avec les schémas de `packages/shared` avant d'appeler l'API, qui revérifie tout. Les messages d'erreur du serveur ne sont jamais affichés tels quels : `i18n/errors.ts` les traduit.
 
 ## Temps réel
-Composable `useAuctionSocket(auctionId)` :
+Le socket s'identifie au handshake avec le cookie de session : `main.ts` le reconnecte quand l'utilisateur change (connexion, déconnexion, session restaurée au démarrage), et `renewSessionOnAuthError` renouvelle la session puis se reconnecte une fois si le serveur refuse le jeton (`api/socket-session.ts`).
+
+Composable `useAuctionSocket(auctionId)` (l'état de la page, enchère et historique, y vit : pas de store Pinia dédié) :
 - au montage : `emit('auction:join', { auctionId })`
 - écoute `bid:new`, `auction:extended` et `auction:ended`, et met à jour le store Pinia (prix, `nextMinBid`, `endsAt`, gagnant)
 - le compte à rebours se recalcule à chaque `auction:extended`
 - au démontage : retire les listeners et émet `auction:leave`
 - `bid:place` est envoyé avec un ack ; le code d'erreur ([business-rules.md](../domain/business-rules.md), section « Placer une offre ») est traduit en message lisible
-- le formulaire d'offre propose `nextMinBid` comme montant par défaut
+- le formulaire d'offre (`BidForm`) propose `nextMinBid` comme montant par défaut, des boutons +1 pas / +5 pas, et demande confirmation au-delà de 10 fois le prix actuel
+- après chaque (re)connexion, le composable rejoint la room puis recharge l'état (aucune offre perdue) ; il recharge aussi une enchère `scheduled` quand son heure de début est passée
+- si l'ack d'une offre est `NOT_AUTHENTICATED` alors que l'utilisateur est connecté (JWT du socket expiré), la session est renouvelée, le socket reconnecté et l'offre renvoyée **une seule fois**
+- sans réponse du serveur dans les 8 s, l'offre est présentée comme une panne (`INTERNAL_ERROR`), à vérifier dans l'historique
+- `useCountdown(endsAt)` donne le compte à rebours, qui suit les prolongations ; à zéro, le formulaire est désactivé
 
 Une seule instance de socket pour toute l'app, typée avec `ServerToClientEvents` / `ClientToServerEvents` importés depuis `packages/shared` ([realtime.md](realtime.md)).
 

@@ -1,6 +1,5 @@
 /**
  * Codes d'erreur métier renvoyés au client dans `error.data.code` (docs/technical/api.md).
- * Les codes des offres (`BID_TOO_LOW`…) s'ajouteront avec l'étape 4.
  */
 export const ERROR_CODES = [
   /** Pas de session valide : se connecter ou rafraîchir le token. */
@@ -27,6 +26,16 @@ export const ERROR_CODES = [
   'INVALID_DATES',
   /** Fichier qui n'est pas une photo valide, ou clé de photo inconnue. */
   'INVALID_IMAGE',
+  /** Offre sur une enchère qui n'est pas `live` (pas commencée, terminée, annulée, inconnue). */
+  'AUCTION_NOT_LIVE',
+  /** Le vendeur enchérit sur sa propre enchère. */
+  'OWN_AUCTION',
+  /** L'utilisateur est déjà le meilleur enchérisseur. */
+  'ALREADY_HIGHEST',
+  /** Montant inférieur à `nextMinBid`, y compris quand une autre offre vient d'arriver. */
+  'BID_TOO_LOW',
+  /** Montant non entier, négatif ou démesuré. */
+  'INVALID_AMOUNT',
 ] as const
 
 export type ErrorCode = (typeof ERROR_CODES)[number]

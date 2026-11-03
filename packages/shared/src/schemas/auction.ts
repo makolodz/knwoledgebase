@@ -103,6 +103,8 @@ export const mineAuctionsInputSchema = paginationInputSchema.extend({
   status: auctionStatusSchema.optional(),
 })
 
+export const bidsInputSchema = paginationInputSchema.extend({ id: objectIdSchema })
+
 export const pendingAuctionsInputSchema = paginationInputSchema
 
 export const rejectAuctionInputSchema = z.strictObject({

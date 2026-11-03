@@ -5,7 +5,6 @@ const HOUR_MS = 60 * MINUTE_MS
 
 /**
  * Limites de docs/technical/security.md, section « Limites anti-abus ».
- * `bid:place` (5 par seconde et par utilisateur) arrivera avec l'étape 4, sur le même limiteur.
  */
 export interface RateLimits {
   /** Échecs de connexion par IP : 5 par 15 min. */
@@ -23,6 +22,8 @@ export interface RateLimits {
    * permettrait de deviner le mot de passe via le changement de mot de passe ou d'email.
    */
   passwordCheck: RateLimiter
+  /** Offres par utilisateur : 5 par seconde (docs/technical/security.md). */
+  bid: RateLimiter
   /** Photos envoyées par utilisateur : 20 par heure. */
   imageUpload: RateLimiter
   /** Oublie les compteurs expirés. */
@@ -40,6 +41,7 @@ export function createRateLimits(now: () => number = Date.now): RateLimits {
     forgotPassword: new RateLimiter(perHour, now),
     resendVerification: new RateLimiter(perHour, now),
     passwordCheck: new RateLimiter(failures, now),
+    bid: new RateLimiter({ max: 5, windowMs: 1000 }, now),
     imageUpload: new RateLimiter({ max: 20, windowMs: HOUR_MS }, now),
   }
   return {

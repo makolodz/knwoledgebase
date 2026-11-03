@@ -1,10 +1,12 @@
 import {
   auctionIdInputSchema,
+  bidsInputSchema,
   createAuctionInputSchema,
   listAuctionsInputSchema,
   mineAuctionsInputSchema,
   updateAuctionInputSchema,
 } from '@encheres/shared'
+import { listBids } from '../../services/bids'
 import {
   cancelOwnAuction,
   createAuction,
@@ -25,6 +27,9 @@ export const auctionRouter = router({
   get: publicProcedure
     .input(auctionIdInputSchema)
     .query(({ ctx, input }) => getPublicAuction(ctx.storage, input.id)),
+
+  /** Historique des offres, la plus récente d'abord (nom d'affichage seulement). */
+  bids: publicProcedure.input(bidsInputSchema).query(({ input }) => listBids(input.id, input)),
 
   /** Paramètres utiles au formulaire de création (pas métier : lecture seule). */
   rules: sellerProcedure.query(() => getAuctionRules()),

@@ -29,6 +29,14 @@ const DEFINITIONS: Record<ErrorCode, { trpcCode: TrpcCode; message: string }> = 
     message: 'Les dates de l’enchère ne respectent pas les règles.',
   },
   INVALID_IMAGE: { trpcCode: 'BAD_REQUEST', message: 'Photo invalide.' },
+  AUCTION_NOT_LIVE: {
+    trpcCode: 'CONFLICT',
+    message: 'Cette enchère n’est pas ouverte aux offres.',
+  },
+  OWN_AUCTION: { trpcCode: 'FORBIDDEN', message: 'Vous ne pouvez pas enchérir sur votre enchère.' },
+  ALREADY_HIGHEST: { trpcCode: 'CONFLICT', message: 'Vous êtes déjà le meilleur enchérisseur.' },
+  BID_TOO_LOW: { trpcCode: 'CONFLICT', message: 'Votre offre est trop basse.' },
+  INVALID_AMOUNT: { trpcCode: 'BAD_REQUEST', message: 'Montant invalide.' },
 }
 
 /**

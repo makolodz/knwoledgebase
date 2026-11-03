@@ -30,6 +30,7 @@ Chaque procédure valide son entrée avec Zod et appelle un service ; aucune log
 Étape 3 : `auction.list`, `get`, `create`, `update`, `cancel`, `mine`, `getMine`, `rules` et `admin.pendingAuctions`, `validate`, `reject` existent ; `relist` arrive à l'étape 5, `reassign` à l'étape 6, `cancelAuction` à l'étape 7.
 - `auction.list` : `{ page, limit, filter: live|upcoming|ended, sort: endingSoon|priceAsc|priceDesc|recent }`. Ne renvoie jamais un `draft` ni un `cancelled`. `ended` regroupe `ended`, `paid` et `unpaid`. Le tri par prix porte sur le prix affiché (offre courante, sinon prix de départ).
 - `auction.get` : public. Un `draft` ou un `cancelled` répond `AUCTION_NOT_FOUND` (le vendeur les lit par `getMine`).
+- `auction.bids` : `{ id, page, limit }`, public, la plus récente offre d'abord. Chaque offre porte `{ id, amount, bidder: { id, name }, at }` : jamais d'email. Une enchère non publique répond `AUCTION_NOT_FOUND`.
 - `auction.getMine` : une enchère du vendeur, tous statuts, avec le motif d'un refus (`cancelReason`). Celle d'un autre vendeur répond `AUCTION_NOT_FOUND`.
 - `auction.rules` : `defaultMinIncrement`, `minDurationMs` et `maxDurationMs`, pour pré-remplir et valider le formulaire.
 - Codes d'erreur ajoutés : `AUCTION_NOT_FOUND`, `AUCTION_STATE_INVALID` (transition absente du cycle de vie), `INVALID_DATES`, `INVALID_IMAGE`.

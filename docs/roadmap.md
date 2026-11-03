@@ -52,13 +52,13 @@ Docs : [business-rules.md](domain/business-rules.md), [auction-lifecycle.md](dom
 
 ## Étape 4 — Offres en temps réel (cœur du projet)
 Docs : [business-rules.md](domain/business-rules.md), [realtime.md](technical/realtime.md), [database.md](technical/database.md), [ADR-004](decisions/ADR-004-anti-sniping.md), [ADR-005](decisions/ADR-005-offre-atomique.md).
-- [ ] Contrat des événements dans `packages/shared`.
-- [ ] Auth Socket.IO au handshake, rooms `auction:<id>`.
-- [ ] `bid:place` : vérifications utilisateur, requête atomique, anti-sniping, insertion `bids`, ack avec codes d'erreur.
-- [ ] Diffusion `bid:new`, `auction:extended` ; email « offre dépassée ».
-- [ ] Limite 5 offres/s par utilisateur.
-- [ ] Front : `useAuctionSocket`, formulaire d'offre, compte à rebours, historique en direct.
-- [ ] **Tests d'offres simultanées et d'anti-sniping.**
+- [x] Contrat des événements dans `packages/shared`.
+- [x] Auth Socket.IO au handshake, rooms `auction:<id>`.
+- [x] `bid:place` : vérifications utilisateur, requête atomique, anti-sniping, insertion `bids`, ack avec codes d'erreur.
+- [x] Diffusion `bid:new`, `auction:extended` ; email « offre dépassée ».
+- [x] Limite 5 offres/s par utilisateur.
+- [x] Front : `useAuctionSocket`, formulaire d'offre, compte à rebours, historique en direct.
+- [x] **Tests d'offres simultanées et d'anti-sniping.**
 
 **Fini quand** : deux navigateurs enchérissent sur la même enchère, voient les offres de l'autre en direct, et une offre de dernière minute prolonge l'enchère.
 

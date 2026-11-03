@@ -8,6 +8,11 @@ export interface AccessClaims {
   sessionId: string
 }
 
+export interface VerifiedAccessClaims extends AccessClaims {
+  /** Fin de validité du token, en millisecondes depuis l'epoch. */
+  expiresAtMs: number
+}
+
 const encodeSecret = (secret: string) => new TextEncoder().encode(secret)
 
 /** JWT HS256 au contenu minimal : jamais de rôle ni de donnée personnelle (security.md). */
@@ -29,11 +34,12 @@ export function signAccessToken(
 export async function verifyAccessToken(
   secret: string,
   token: string,
-): Promise<AccessClaims | null> {
+): Promise<VerifiedAccessClaims | null> {
   try {
     const { payload } = await jwtVerify(token, encodeSecret(secret), { algorithms: ['HS256'] })
     if (typeof payload.sub !== 'string' || typeof payload.sid !== 'string') return null
-    return { userId: payload.sub, sessionId: payload.sid }
+    if (typeof payload.exp !== 'number') return null
+    return { userId: payload.sub, sessionId: payload.sid, expiresAtMs: payload.exp * 1000 }
   } catch {
     return null
   }
