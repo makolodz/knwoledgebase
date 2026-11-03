@@ -8,6 +8,32 @@ import { authGuard } from './guards'
 export const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/terms', name: 'terms', component: TermsView },
+  { path: '/status', name: 'status', component: () => import('../views/StatusView.vue') },
+  { path: '/auctions/:id', name: 'auction', component: () => import('../views/AuctionView.vue') },
+  {
+    path: '/seller/auctions',
+    name: 'seller-auctions',
+    component: () => import('../views/seller/SellerAuctionsView.vue'),
+    meta: { requiresAuth: true, roles: ['seller'] },
+  },
+  {
+    path: '/seller/auctions/new',
+    name: 'seller-auction-new',
+    component: () => import('../views/seller/AuctionEditView.vue'),
+    meta: { requiresAuth: true, roles: ['seller'] },
+  },
+  {
+    path: '/seller/auctions/:id/edit',
+    name: 'seller-auction-edit',
+    component: () => import('../views/seller/AuctionEditView.vue'),
+    meta: { requiresAuth: true, roles: ['seller'] },
+  },
+  {
+    path: '/admin/auctions/pending',
+    name: 'admin-pending-auctions',
+    component: () => import('../views/admin/PendingAuctionsView.vue'),
+    meta: { requiresAuth: true, roles: ['admin'] },
+  },
   {
     path: '/login',
     name: 'login',

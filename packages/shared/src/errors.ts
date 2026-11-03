@@ -19,6 +19,14 @@ export const ERROR_CODES = [
    * déjà à jour, réessayer une fois.
    */
   'REFRESH_CONFLICT',
+  /** Enchère inexistante, pas encore publique, ou qui n'appartient pas au vendeur. */
+  'AUCTION_NOT_FOUND',
+  /** Action impossible dans l'état actuel de l'enchère (transition absente du cycle de vie). */
+  'AUCTION_STATE_INVALID',
+  /** Début dans le passé, ou durée hors des bornes `minDurationMs` et `maxDurationMs`. */
+  'INVALID_DATES',
+  /** Fichier qui n'est pas une photo valide, ou clé de photo inconnue. */
+  'INVALID_IMAGE',
 ] as const
 
 export type ErrorCode = (typeof ERROR_CODES)[number]

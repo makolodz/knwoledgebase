@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto'
+import { resolve } from 'node:path'
 import { originSchema } from '@encheres/shared'
 import { z } from 'zod'
 
@@ -10,6 +11,9 @@ const DEFAULT_MONGO_URL = 'mongodb://127.0.0.1:27017/encheres'
 /** Serveur SMTP de développement : Mailpit, dans docker-compose.yml. */
 const DEFAULT_SMTP_HOST = '127.0.0.1'
 const DEFAULT_SMTP_FROM = 'Enchères <no-reply@encheres.local>'
+
+/** Dossier des photos en développement (ignoré par git). */
+const DEFAULT_UPLOAD_DIR = './uploads'
 
 const envSchema = z
   .object({
@@ -30,6 +34,7 @@ const envSchema = z
     SMTP_USER: z.string().min(1).optional(),
     SMTP_PASSWORD: z.string().min(1).optional(),
     SMTP_FROM: z.string().regex(/@/, 'doit contenir une adresse email').optional(),
+    UPLOAD_DIR: z.string().min(1).optional(),
   })
   .superRefine((env, context) => {
     const missing = (name: string, message: string) =>
@@ -42,6 +47,7 @@ const envSchema = z
       if (env.JWT_SECRET === undefined) missing('JWT_SECRET', 'obligatoire en production')
       if (env.SMTP_HOST === undefined) missing('SMTP_HOST', 'obligatoire en production')
       if (env.SMTP_FROM === undefined) missing('SMTP_FROM', 'obligatoire en production')
+      if (env.UPLOAD_DIR === undefined) missing('UPLOAD_DIR', 'obligatoire en production')
     }
     // Un identifiant sans mot de passe (ou l'inverse) est une erreur de saisie, pas un SMTP ouvert.
     if ((env.SMTP_USER === undefined) !== (env.SMTP_PASSWORD === undefined)) {
@@ -77,6 +83,8 @@ export interface Config {
   jwtSecret: string
   /** Contient un mot de passe éventuel : ne jamais le journaliser. */
   smtp: SmtpConfig
+  /** Dossier (volume persistant) des photos des enchères, chemin absolu (ADR-007). */
+  uploadDir: string
 }
 
 /** Erreur de configuration : le message liste les variables en cause, jamais leurs valeurs. */
@@ -103,6 +111,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     logLevel: parsed.LOG_LEVEL,
     mongoUrl: parsed.MONGO_URL ?? DEFAULT_MONGO_URL,
     jwtSecret: parsed.JWT_SECRET ?? randomBytes(32).toString('base64url'),
+    uploadDir: resolve(parsed.UPLOAD_DIR ?? DEFAULT_UPLOAD_DIR),
     smtp: {
       host: parsed.SMTP_HOST ?? DEFAULT_SMTP_HOST,
       port: parsed.SMTP_PORT,

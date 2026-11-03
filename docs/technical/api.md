@@ -8,7 +8,7 @@ Raisons du choix : [ADR-010](../decisions/ADR-010-api-trpc.md). Temps réel : [r
 - Pas de versioning : front et API sont déployés ensemble.
 - Exceptions en **routes Fastify classiques** :
   - `POST /api/webhooks/stripe` : besoin du corps brut pour la signature ;
-  - `POST /api/uploads/images` : upload `multipart` ([ADR-007](../decisions/ADR-007-photos-disque-local.md)) ;
+  - `POST /api/uploads/images` : upload `multipart` ([ADR-007](../decisions/ADR-007-photos-disque-local.md)). Une photo par requête (champ `file`), réservée aux vendeurs, 20 par heure et par utilisateur. Réponse `201 { key, url, thumbUrl }` ; erreurs `{ error: { code, message } }` : `NOT_AUTHENTICATED` (401), `FORBIDDEN` (403), `INVALID_IMAGE` (400), `PAYLOAD_TOO_LARGE` (413, plus de 5 Mo), `UNSUPPORTED_MEDIA_TYPE` (415), `RATE_LIMITED` (429) ;
   - `GET /uploads/*` : fichiers statiques.
 
 ## Procédures
@@ -22,10 +22,17 @@ Chaque procédure valide son entrée avec Zod et appelle un service ; aucune log
 | `profile` | `update`, `changePassword`, `changeEmail`, `confirmEmailChange`, `delete` | mutation | connecté |
 | `profile` | `myBids`, `myWins`, `myPayments` | query | connecté |
 | `auction` | `list`, `get`, `bids` | query | public |
-| `auction` | `create`, `update`, `cancel`, `relist`, `mine` | mutation / query | `seller` (ses enchères) |
+| `auction` | `create`, `update`, `cancel`, `relist`, `mine`, `getMine`, `rules` | mutation / query | `seller` (ses enchères) |
 | `payment` | `checkout` | mutation | gagnant (`winnerId`) |
 | `payment` | `status` | query | gagnant |
 | `admin` | `pendingAuctions`, `validate`, `reject`, `cancelAuction`, `reassign` | query / mutation | `admin` |
+
+Étape 3 : `auction.list`, `get`, `create`, `update`, `cancel`, `mine`, `getMine`, `rules` et `admin.pendingAuctions`, `validate`, `reject` existent ; `relist` arrive à l'étape 5, `reassign` à l'étape 6, `cancelAuction` à l'étape 7.
+- `auction.list` : `{ page, limit, filter: live|upcoming|ended, sort: endingSoon|priceAsc|priceDesc|recent }`. Ne renvoie jamais un `draft` ni un `cancelled`. `ended` regroupe `ended`, `paid` et `unpaid`. Le tri par prix porte sur le prix affiché (offre courante, sinon prix de départ).
+- `auction.get` : public. Un `draft` ou un `cancelled` répond `AUCTION_NOT_FOUND` (le vendeur les lit par `getMine`).
+- `auction.getMine` : une enchère du vendeur, tous statuts, avec le motif d'un refus (`cancelReason`). Celle d'un autre vendeur répond `AUCTION_NOT_FOUND`.
+- `auction.rules` : `defaultMinIncrement`, `minDurationMs` et `maxDurationMs`, pour pré-remplir et valider le formulaire.
+- Codes d'erreur ajoutés : `AUCTION_NOT_FOUND`, `AUCTION_STATE_INVALID` (transition absente du cycle de vie), `INVALID_DATES`, `INVALID_IMAGE`.
 | `admin` | `users`, `setRole`, `suspend`, `unsuspend`, `deleteUser` | query / mutation | `admin` |
 | `admin` | `getSettings`, `updateSettings` | query / mutation | `admin` |
 

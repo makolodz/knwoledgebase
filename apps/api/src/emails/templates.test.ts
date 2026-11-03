@@ -14,6 +14,13 @@ const SAMPLE_DATA: Record<EmailTemplateName, unknown> = {
   'password-changed': { name: 'Ana' },
   'email-change-confirm': { name: 'Ana', link: LINK },
   'email-change-notice': { name: 'Ana', newEmail: 'nouvelle@x.fr' },
+  'auction-validated': { name: 'Ana', title: 'Vase', link: 'https://encheres.example/auctions/1' },
+  'auction-rejected': {
+    name: 'Ana',
+    title: 'Vase',
+    reason: 'Photos floues',
+    link: 'https://encheres.example/seller/auctions',
+  },
 }
 
 const NAMES = Object.keys(EMAIL_TEMPLATES) as EmailTemplateName[]

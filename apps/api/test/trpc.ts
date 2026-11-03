@@ -84,6 +84,31 @@ export class TestClient {
       .map(([name]) => name)
   }
 
+  /**
+   * Envoie une requête HTTP qui n'est pas tRPC (upload de photo) avec les cookies du client.
+   * La réponse est celle de `inject`.
+   */
+  async http(
+    method: 'GET' | 'POST',
+    url: string,
+    options: { payload?: Buffer; contentType?: string } = {},
+  ) {
+    const cookie = [...this.jar.entries()]
+      .filter(([, { path }]) => path === '/' || url.startsWith(path))
+      .map(([name, { value }]) => `${name}=${value}`)
+      .join('; ')
+    return this.app.inject({
+      method,
+      url,
+      headers: {
+        ...this.headers,
+        ...(cookie === '' ? {} : { cookie }),
+        ...(options.contentType === undefined ? {} : { 'content-type': options.contentType }),
+      },
+      ...(options.payload === undefined ? {} : { payload: options.payload }),
+    })
+  }
+
   private async send<Data>(
     method: 'GET' | 'POST',
     procedure: string,

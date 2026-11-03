@@ -20,3 +20,11 @@ export function isNetworkError(error: unknown): boolean {
   const cause = error instanceof TRPCClientError ? (error.cause ?? error) : error
   return cause instanceof TypeError || (error instanceof TRPCClientError && error.data == null)
 }
+
+/** Erreur d'upload d'une photo, portant le code de l'API (`INVALID_IMAGE`, `RATE_LIMITED`…). */
+export class UploadError extends Error {
+  constructor(readonly code: string) {
+    super(code)
+    this.name = 'UploadError'
+  }
+}

@@ -53,6 +53,7 @@ Source : `.env.example` (valeurs par défaut entre parenthèses). L'API refuse d
 | `SMTP_HOST` (`127.0.0.1`) / `SMTP_PORT` (`1025`) | Serveur SMTP : Mailpit en local, le relais de Brevo en production. `SMTP_HOST` est obligatoire en production. |
 | `SMTP_FROM` (`Enchères <no-reply@encheres.local>`) | Expéditeur des emails. Obligatoire en production. |
 | `SMTP_USER` / `SMTP_PASSWORD` (aucun) | Authentification SMTP, toutes deux ou aucune. Les identifiants ne partent jamais sans TLS. |
+| `UPLOAD_DIR` (`./uploads`, relatif au dossier `apps/api` en développement) | Dossier des photos des enchères (ADR-007). Obligatoire en production, sur un volume persistant à sauvegarder avec MongoDB. Ignoré par git. |
 | `VITE_API_URL` (`http://localhost:3000`) | Adresse de l'API vue du navigateur. Visible de tous : jamais de secret dans une variable `VITE_*`. |
 
 Si le front change de port, `WEB_ORIGIN` doit suivre. Vite est configuré sans repli (`strictPort`) pour que l'API ne refuse pas silencieusement un autre port.
@@ -94,6 +95,13 @@ Avant un commit : `pnpm lint`, `pnpm format:check`, `pnpm typecheck` et `pnpm te
 6. Mot de passe oublié (`/forgot-password`) : le même message s'affiche pour n'importe quelle adresse ; l'email n'arrive dans Mailpit que pour un compte existant. Le lien (1 h, une seule fois) permet de choisir un nouveau mot de passe ; toutes les sessions sont alors fermées.
 7. Adresse email (`/account`) : saisir une nouvelle adresse et le mot de passe actuel. L'email part vers la **nouvelle** adresse ; l'adresse du compte ne change qu'après le clic sur le lien (connecté).
 8. Limites : six mauvaises connexions de suite donnent « Trop de tentatives ». Les compteurs sont en mémoire : relancer l'API les remet à zéro.
+
+## Vérifier à la main (étape 3)
+1. `pnpm infra:up`, `pnpm seed`, `pnpm dev`. Comptes : `vendeur@example.test` et `admin@example.test` (mot de passe du seed).
+2. Connecté en vendeur, « Mes enchères » > « Créer une enchère » : une photo (JPEG, PNG ou WebP), un prix, un début dans quelques minutes et une durée d'au moins 1 h. Elle apparaît « En attente de validation » ; un visiteur ne la voit pas sur `/`.
+3. Connecté en admin, « À valider » : valider (ou refuser avec un motif, que le vendeur voit dans sa liste). Les emails arrivent dans Mailpit.
+4. Visiteur : l'enchère est dans « À venir », sa photo s'affiche, puis elle passe « En direct » à l'heure de début (le job tourne chaque seconde).
+5. Les fichiers sont dans `apps/api/uploads/` : un UUID par photo, en deux tailles `.webp`, sans le nom d'origine.
 
 ## Dépannage
 | Symptôme | Cause et solution |

@@ -7,6 +7,8 @@ import { fastifyTRPCPlugin, type FastifyTRPCPluginOptions } from '@trpc/server/a
 import Fastify, { type FastifyError, type FastifyInstance } from 'fastify'
 import type { Config } from './config/env'
 import { loggerOptions } from './config/logger'
+import { createDiskStorage, type Storage } from './infra/storage'
+import { registerUploads } from './routes/uploads'
 import { createRateLimits, type RateLimits } from './services/rate-limits'
 import { attachSocketIo } from './sockets'
 import { createContextFactory } from './trpc/context'
@@ -25,6 +27,8 @@ export const GLOBAL_RATE_LIMIT_PER_MINUTE = 300
 export interface BuildAppOptions {
   /** Destination des logs (les tests y branchent un flux en mémoire). */
   logStream?: Writable
+  /** Stockage des photos ; par défaut le disque de `config.uploadDir` (ADR-007). */
+  storage?: Storage
   /** Réglages réservés aux tests : une limite globale plus basse, une horloge simulée. */
   rateLimit?: {
     globalMax?: number
@@ -50,6 +54,7 @@ export async function buildApp(
 ): Promise<FastifyInstance> {
   const app = Fastify({ logger: loggerOptions(config, options.logStream) })
 
+  const storage = options.storage ?? createDiskStorage(config.uploadDir)
   const rateLimits = createRateLimits(options.rateLimit?.now)
   app.decorate('rateLimits', rateLimits)
 
@@ -81,7 +86,7 @@ export async function buildApp(
     prefix: '/api/trpc',
     trpcOptions: {
       router: appRouter,
-      createContext: createContextFactory(config, rateLimits),
+      createContext: createContextFactory(config, rateLimits, storage),
       // tRPC écrit ses en-têtes sur la réponse brute et remplace le `Vary: Origin` posé par CORS.
       // Sans `Origin` dans Vary, un cache pourrait resservir une réponse sans en-têtes CORS à
       // l'origine autorisée. On reprend donc les valeurs de tRPC en y ajoutant `Origin`.
@@ -93,6 +98,8 @@ export async function buildApp(
       },
     } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
   })
+
+  await registerUploads(app, config, rateLimits, storage)
 
   attachSocketIo(app, config)
 

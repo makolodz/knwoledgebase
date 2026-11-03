@@ -25,6 +25,12 @@ Implémentation des transitions automatiques : [data-flow.md](../../architecture
 - Une enchère `live` n'est **jamais modifiable**, pas même par l'admin (il peut seulement l'annuler).
 - **Remettre en vente** = dupliquer l'enchère dans un nouveau `draft`, sans offres. On ne réutilise jamais le document d'origine, pour garder l'historique. C'est possible depuis `ended` sans gagnant, `unpaid` et `cancelled`.
 
+## Visibilité
+- Public (liste et détail) : `scheduled`, `live`, `ended`, `paid`, `unpaid`.
+- Jamais public : `draft` (en attente de validation) et `cancelled`. Le vendeur les voit dans « Mes enchères », avec le motif d'un refus. La page publique d'une enchère `live` annulée par l'admin (bandeau « Enchère annulée ») sera traitée à l'étape 7.
+- La création et la modification enregistrent toujours un `draft` : il n'y a pas de bouton « soumettre ».
+- Valider une enchère dont `startsAt` est passé est refusé (`INVALID_DATES`) : l'admin la refuse, le vendeur en crée une nouvelle.
+
 ## Clôture
 - Un job serveur passe `live → ended` dès que `endsAt ≤ maintenant`. Il ne se fie qu'à l'heure du serveur et à `endsAt` en base.
 - **Avec au moins une offre** :

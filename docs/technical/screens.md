@@ -20,10 +20,10 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 ## Public
 
 ### Liste des enchères
-- **Route** : `/` · **Accès** : public
+- **Route** : `/` · **Accès** : public (l'état de l'API et du temps réel, ancien contenu de l'accueil, est sur `/status`)
 - **Données** : `auction.list` (enchères `scheduled`, `live`, et `ended` récentes)
 - **Contenu** : filtres (en cours / à venir / terminées), tri (fin proche, prix, récentes), grille de cartes : photo, titre, prix courant ou prix de départ, compte à rebours ou date de début, nombre d'offres.
-- **Actions** : ouvrir une enchère, paginer.
+- **Actions** : ouvrir une enchère, paginer (12 par page). La recherche de l'en-tête n'est pas encore faite.
 - **États** : vide (« Aucune enchère en cours »), les cartes `live` ont un badge « En direct ».
 
 ```
@@ -141,7 +141,7 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 ### Création / modification d'une enchère
 - **Routes** : `/seller/auctions/new`, `/seller/auctions/:id/edit` · **Accès** : `seller` (propriétaire)
 - **Données** : `auction.create`, `auction.update`, `POST /api/uploads/images`
-- **Contenu** : titre, description, photos (1 à 5, glisser-déposer, réordonnables), prix de départ, pas minimum (pré-rempli avec `defaultMinIncrement`), dates de début et de fin.
+- **Contenu** : titre, description, photos (1 à 5, ajout par sélecteur de fichiers, réordonnables avec des boutons : le glisser-déposer n'est pas fait), prix de départ, pas minimum (pré-rempli avec `defaultMinIncrement`), dates de début et de fin.
 - Enregistrer crée ou met à jour l'enchère en `draft`, qui part directement en validation admin.
 - **États** : validation en direct (durée min/max, montants), upload en cours / en erreur par photo, avertissement « La modification renverra l'enchère en validation » si `scheduled`.
 
