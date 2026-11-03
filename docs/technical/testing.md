@@ -61,6 +61,18 @@ Pour garder les tests rapides, les durées sont raccourcies par les paramètres 
 
 ## CI
 Workflow : [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
-- À chaque push (job `check`) : lint, formatage (Prettier), vérification des types, tests unitaires et d'intégration.
+- Sur chaque PR et chaque push sur `main` (job `check`) : lint, formatage (Prettier), vérification des types, build du front, tests unitaires et d'intégration. Un push de branche sans PR ne lance rien : sinon chaque commit était vérifié deux fois (événements `push` et `pull_request`). Le build de l'API sera ajouté à l'étape 8 ([ADR-013](../decisions/ADR-013-outillage-monorepo.md)).
 - Sur la branche principale et les PR (job `e2e`, après `check`) : en plus, les tests E2E (Stripe en clés test uniquement). En cas d'échec, le rapport Playwright est publié en artefact.
+- Sur `main`, une exécution n'en annule pas une autre : chaque commit garde son verdict.
 - Les actions GitHub sont épinglées par SHA ; Dependabot les met à jour.
+
+### Audit des dépendances
+Workflow à part : [`.github/workflows/audit.yml`](../../.github/workflows/audit.yml). `pnpm audit` échoue dès un avis « high » sur les dépendances livrées, « critical » sur l'outillage de développement. Il tourne quand le lockfile ou un `package.json` change, et chaque lundi. Il n'est **pas** à rendre obligatoire : un avis publié du jour au lendemain ne doit pas bloquer une PR qui n'a rien changé.
+
+### Garde-fous de la branche `main` (réglages GitHub, hors dépôt)
+Les fichiers du dépôt ne suffisent pas : sans ces réglages, la CI reste consultative. À activer dans *Settings → Branches → protection de `main`* :
+- checks obligatoires : `Lint, types et tests` et `Tests E2E` (branche à jour avant la fusion) ;
+- *Do not allow bypassing the above settings* (`enforce_admins`) pour que les pushs directs sur `main` soient refusés ;
+- *Lock branch* **désactivé** : il met `main` en lecture seule, plus aucune PR ne peut être fusionnée.
+
+[`.github/CODEOWNERS`](../../.github/CODEOWNERS) désigne le propriétaire de `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.github/`, `docs/domain/` et `docs/decisions/`, c'est-à-dire de ce qui encadre l'IA, la CI et le métier : GitHub lui demande sa revue dès qu'une PR les modifie. **Ne pas activer *Require review from Code Owners* avec un seul humain** : GitHub interdit d'approuver sa propre PR, et avec `enforce_admins` plus aucune PR touchant ces fichiers ne pourrait être fusionnée. Seul, le garde-fou est donc la relecture par l'humain, déclarée dans le [gabarit de PR](../../.github/pull_request_template.md) : il dit si une IA a écrit tout ou partie du changement, avec quel modèle, et l'humain coche la relecture. Une revue obligatoire demande un second relecteur.

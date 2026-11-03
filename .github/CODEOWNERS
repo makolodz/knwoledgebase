@@ -1,0 +1,13 @@
+# Fichiers qui gouvernent l'IA, la CI et le métier : GitHub demande automatiquement la revue du
+# propriétaire dès qu'une PR les modifie, y compris quand elle vient d'un agent IA dans la même PR
+# que le code. Cette demande ne bloque pas la fusion.
+# Ne pas activer « Require review from Code Owners » tant que le projet n'a qu'un seul humain :
+# GitHub interdit d'approuver sa propre PR, plus aucune PR touchant ces fichiers ne pourrait être
+# fusionnée (voir docs/technical/testing.md).
+
+/AGENTS.md              @makolodz
+/CLAUDE.md              @makolodz
+/.claude/               @makolodz
+/.github/               @makolodz
+/docs/domain/           @makolodz
+/docs/decisions/        @makolodz
