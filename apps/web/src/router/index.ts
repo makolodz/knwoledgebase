@@ -11,6 +11,24 @@ export const routes: RouteRecordRaw[] = [
   { path: '/status', name: 'status', component: () => import('../views/StatusView.vue') },
   { path: '/auctions/:id', name: 'auction', component: () => import('../views/AuctionView.vue') },
   {
+    path: '/account/bids',
+    name: 'my-bids',
+    component: () => import('../views/MyBidsView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/account/wins',
+    name: 'my-wins',
+    component: () => import('../views/MyWinsView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/seller/auctions/:id/relist',
+    name: 'seller-auction-relist',
+    component: () => import('../views/seller/RelistView.vue'),
+    meta: { requiresAuth: true, roles: ['seller'] },
+  },
+  {
     path: '/seller/auctions',
     name: 'seller-auctions',
     component: () => import('../views/seller/SellerAuctionsView.vue'),

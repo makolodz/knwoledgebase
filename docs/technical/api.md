@@ -27,10 +27,15 @@ Chaque procédure valide son entrée avec Zod et appelle un service ; aucune log
 | `payment` | `status` | query | gagnant |
 | `admin` | `pendingAuctions`, `validate`, `reject`, `cancelAuction`, `reassign` | query / mutation | `admin` |
 
-Étape 3 : `auction.list`, `get`, `create`, `update`, `cancel`, `mine`, `getMine`, `rules` et `admin.pendingAuctions`, `validate`, `reject` existent ; `relist` arrive à l'étape 5, `reassign` à l'étape 6, `cancelAuction` à l'étape 7.
+Étape 3 : `auction.list`, `get`, `create`, `update`, `cancel`, `mine`, `getMine`, `rules` et `admin.pendingAuctions`, `validate`, `reject` existent ; `reassign` arrive à l'étape 6, `cancelAuction` à l'étape 7.
+Étape 5 : `auction.relist` et `profile.myBids`, `profile.myWins` existent ; `profile.myPayments` arrive à l'étape 6.
 - `auction.list` : `{ page, limit, filter: live|upcoming|ended, sort: endingSoon|priceAsc|priceDesc|recent }`. Ne renvoie jamais un `draft` ni un `cancelled`. `ended` regroupe `ended`, `paid` et `unpaid`. Le tri par prix porte sur le prix affiché (offre courante, sinon prix de départ).
 - `auction.get` : public. Un `draft` ou un `cancelled` répond `AUCTION_NOT_FOUND` (le vendeur les lit par `getMine`).
 - `auction.bids` : `{ id, page, limit }`, public, la plus récente offre d'abord. Chaque offre porte `{ id, amount, bidder: { id, name }, at }` : jamais d'email. Une enchère non publique répond `AUCTION_NOT_FOUND`.
+- `auction.get` / `auction.list` renvoient aussi `winner: { id, name } | null` (nom d'affichage seulement) pour une enchère terminée ; `currentPrice` est alors le prix final. L'échéance de paiement n'est jamais publique.
+- `auction.relist` : `{ id, startsAt, endsAt }`. Copie l'enchère du vendeur dans un nouveau `draft` sans offres, avec des **copies** des photos (nouvelles clés), et revalide les dates comme à la création. Autorisée depuis `ended` sans gagnant, `unpaid` et `cancelled`, sinon `AUCTION_STATE_INVALID` ; l'enchère d'un autre vendeur répond `AUCTION_NOT_FOUND`. L'originale n'est pas modifiée.
+- `profile.myBids` : `{ page, limit }`. Les enchères sur lesquelles l'utilisateur a enchéri, la dernière activité d'abord, avec sa meilleure offre (`myBestBid`) et sa position (`standing` : `leading`, `outbid`, `won`, `lost`, `cancelled`).
+- `profile.myWins` : `{ page, limit }`. Les enchères dont l'utilisateur est `winnerId` (`ended`, `paid`, `unpaid`), la plus récente d'abord, avec `finalPrice` et `paymentDeadline`. Ces deux procédures sont bornées à l'utilisateur connecté : aucune entrée ne permet de désigner quelqu'un d'autre.
 - `auction.getMine` : une enchère du vendeur, tous statuts, avec le motif d'un refus (`cancelReason`). Celle d'un autre vendeur répond `AUCTION_NOT_FOUND`.
 - `auction.rules` : `defaultMinIncrement`, `minDurationMs` et `maxDurationMs`, pour pré-remplir et valider le formulaire.
 - Codes d'erreur ajoutés : `AUCTION_NOT_FOUND`, `AUCTION_STATE_INVALID` (transition absente du cycle de vie), `INVALID_DATES`, `INVALID_IMAGE`.

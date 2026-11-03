@@ -4,6 +4,7 @@ import {
   createAuctionInputSchema,
   listAuctionsInputSchema,
   mineAuctionsInputSchema,
+  relistAuctionInputSchema,
   updateAuctionInputSchema,
 } from '@encheres/shared'
 import { listBids } from '../../services/bids'
@@ -15,6 +16,7 @@ import {
   getPublicAuction,
   listOwnAuctions,
   listPublicAuctions,
+  relistAuction,
   updateAuction,
 } from '../../services/auctions'
 import { publicProcedure, router, sellerProcedure } from '../trpc'
@@ -45,6 +47,11 @@ export const auctionRouter = router({
   cancel: sellerProcedure
     .input(auctionIdInputSchema)
     .mutation(({ ctx, input }) => cancelOwnAuction(ctx.storage, ctx.user, input.id)),
+
+  /** Remise en vente : copie en `draft`, sans offres (depuis `ended` sans gagnant, `unpaid` ou `cancelled`). */
+  relist: sellerProcedure
+    .input(relistAuctionInputSchema)
+    .mutation(({ ctx, input }) => relistAuction(ctx.storage, ctx.user, input)),
 
   mine: sellerProcedure
     .input(mineAuctionsInputSchema)

@@ -34,6 +34,8 @@ const app = await buildApp(config)
 const jobs = startJobs({
   mailer: createSmtpMailer(config.smtp),
   rateLimits: app.rateLimits,
+  io: app.io,
+  config,
   log: app.log,
 })
 

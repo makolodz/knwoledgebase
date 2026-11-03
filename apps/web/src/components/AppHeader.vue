@@ -23,6 +23,10 @@ async function logout() {
       <RouterLink to="/" class="text-xl font-bold tracking-tight">Enchères</RouterLink>
       <nav aria-label="Navigation principale" class="flex items-center gap-3 text-sm">
         <template v-if="auth.user">
+          <template v-if="auth.user.role !== 'admin'">
+            <RouterLink to="/account/bids" class="underline">Mes offres</RouterLink>
+            <RouterLink to="/account/wins" class="underline">Mes gains</RouterLink>
+          </template>
           <RouterLink v-if="auth.user.role === 'seller'" to="/seller/auctions" class="underline">
             Mes enchères
           </RouterLink>

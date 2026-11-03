@@ -191,7 +191,15 @@ Règles : [auction-lifecycle.md](../domain/workflows/auction-lifecycle.md) (« C
 | T5.6 | Int | Remise en vente : nouveau `draft` sans offres, document d'origine intact. Refusée depuis `live` et `scheduled`. |
 | T5.7 | Int | Espace utilisateur : « mes offres » et « mes gains » listent les bonnes enchères et uniquement celles de l'utilisateur. |
 | T5.8 | Int | Données d'un autre utilisateur inaccessibles (offres, gains). |
-| T5.9 | E2E | Une enchère se clôture seule à l'heure, le gagnant le voit en direct et reçoit l'email. |
+| T5.9 | E2E | Une enchère se clôture seule à l'heure, le gagnant le voit en direct et reçoit l'email (`e2e/closing.spec.ts` : la fin est avancée à 6 s par `mongosh`, le job fait le reste ; vérifie aussi « Mes gains », « Mes offres » et l'email du vendeur). |
+| T5.10 *(ajout)* | Int | Le job rattrape toutes les enchères en retard, ignore `draft`, `scheduled`, `cancelled` et les enchères déjà closes ; le délai de paiement est celui des paramètres du moment. |
+| T5.11 *(ajout)* | Int | `auction:ended` : nom du gagnant et prix final sans email, `winner: null` et `finalPrice: null` sans offre, diffusé à la room de l'enchère seulement, une fois même avec trois passages en parallèle (un seul email au gagnant). |
+| T5.12 *(ajout)* | Int | Compte anonymisé (sans email) : la clôture réussit, le vendeur est prévenu ; panne de la file d'emails : la clôture n'est pas défaite et l'erreur est signalée. |
+| T5.13 *(ajout)* | Int | Une offre et la clôture simultanées (15 tirages) : soit l'offre passe et l'enchère reste ouverte et prolongée, soit la clôture passe et l'offre reçoit `AUCTION_NOT_LIVE` ; le gagnant d'une enchère close est toujours son meilleur enchérisseur. |
+| T5.14 *(ajout)* | Int | Remise en vente : l'originale est strictement inchangée ; copie sans offres, `nextMinBid = startingPrice` ; photos copiées sous de nouvelles clés (remplacer une photo de la copie ne supprime pas celle de l'originale) ; refusée depuis `draft`, `scheduled`, `live`, `paid` et `ended` avec gagnant ; dates revalidées ; autre vendeur, acheteur et visiteur refusés. |
+| T5.15 *(ajout)* | Int | `auction.get` après la clôture : gagnant par son nom seul, prix final, jamais d'échéance de paiement ni d'email. |
+| T5.16 *(ajout)* | Int | « Mes offres » : meilleure offre et position (`leading`, `outbid`, `won`, `lost`, `cancelled`), paginée ; « Mes gains » : prix final et échéance, uniquement les enchères dont je suis le gagnant ; un autre utilisateur voit des listes vides ; visiteur refusé. |
+| T5.17 *(ajout)* | Comp | Front : clôture en direct (formulaire retiré, gagnant, « Vous avez remporté », sans offre, autre enchère ignorée) ; « Mes offres » et « Mes gains » (positions, prix, échéance, vide, erreur, visiteur) ; remise en vente (bouton seulement quand c'est permis, dates pré-remplies, validation, erreur du serveur) ; liens de l'en-tête. |
 
 ## Étape 6 — Paiement
 

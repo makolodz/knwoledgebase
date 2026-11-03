@@ -11,18 +11,18 @@
 | 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
 | 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
 | 3 | Enchères : création et modération | `██████████` 100 % | 6 / 6 | 🟢 Terminée |
-| 4 | Offres en temps réel (cœur du projet) | `██████████` 100 % | 7 / 7 | 🟡 En revue |
-| 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
+| 4 | Offres en temps réel (cœur du projet) | `██████████` 100 % | 7 / 7 | 🟢 Terminée |
+| 5 | Clôture | `██████████` 100 % | 4 / 4 | 🟡 En revue |
 | 6 | Paiement | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 7 | Administration et RGPD | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
-| | **Total** | `██████░░░░` **57 %** | **27 / 47** | |
+| | **Total** | `██████░░░░` **66 %** | **31 / 47** | |
 
-**Étape en cours** : 4 — Offres en temps réel (branche `feat/etape-4-offres`). Étape 3 fusionnée (PR #23). Fait : contrat des événements dans `packages/shared`, authentification Socket.IO au handshake, rooms, `bid:place` avec une seule opération atomique (anti-sniping compris), diffusion de `bid:new` et `auction:extended`, email « offre dépassée », limite de 5 offres par seconde, historique `auction.bids`, composable `useAuctionSocket`, formulaire d'offre, compte à rebours et historique en direct, tests d'offres simultanées et d'anti-sniping, test E2E T4.27. Reste : ouvrir la PR et vérifier la CI. `auction:ended` est défini mais n'est émis qu'à l'étape 5.
+**Étape en cours** : 5 — Clôture (branche `feat/etape-5-cloture`). Étape 4 fusionnée (PR #26, CI verte). Fait : job de clôture `live → ended` en une seule mise à jour (gagnant, prix final, échéance de paiement), `auction:ended`, emails du gagnant et du vendeur (`auction-won`, `auction-sold`, `auction-unsold`), remise en vente par copie (photos copiées), `profile.myBids` et `profile.myWins`, pages « Mes offres », « Mes gains » et « Remettre en vente », clôture en direct dans la page de l'enchère, tests T5.1 à T5.17 dont le test E2E T5.9. Reste : ouvrir la PR et vérifier la CI. Le bouton « Payer » arrive à l'étape 6.
 
 ## État de la documentation
 
-- Documents présents : 38 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
+- Documents présents : 39 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
 - Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
 - Documents annoncés mais absents : `architecture/modules.md`, `runbooks/deployment.md`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-11-03 | Étape 5 : job de clôture (une seule mise à jour atomique, exclusive avec les offres), `auction:ended`, emails de victoire et de vente, `auction.relist` (copie en `draft`, photos copiées, `storage.copy`), `profile.myBids` / `myWins`, gagnant exposé par `auction.get`, pages « Mes offres », « Mes gains » et remise en vente, clôture en direct ; contrat `auction:ended` : `finalPrice` nul sans offre ; tests T5.1 à T5.17 | 5 |
 | 2026-11-03 | Étape 4 : événements `auction:*` et `bid:*` typés dans `packages/shared` ; Socket.IO authentifié par le cookie au handshake ; `bid:place` en un seul `findOneAndUpdate` (pipeline, `updatePipeline`), anti-sniping, historique `bids`, email « offre dépassée », limite 5/s ; `auction.bids` ; front : `useAuctionSocket`, `useCountdown`, formulaire d'offre, historique et reconnexion du socket ; nouveaux codes `AUCTION_NOT_LIVE`, `OWN_AUCTION`, `ALREADY_HIGHEST`, `BID_TOO_LOW`, `INVALID_AMOUNT` ; tests T4.1 à T4.35 | 4 |
 | 2026-11-03 | Étape 3 : modèles `auctions` et `settings`, `storage` disque et traitement sharp (webp, deux tailles, EXIF supprimées), route `POST /api/uploads/images` et `GET /uploads/*`, procédures `auction.*` et `admin.pendingAuctions/validate/reject`, emails de validation et de refus, job d'ouverture, pages publiques, vendeur et admin ; l'accueil devient la liste des enchères (état de l'API déplacé sur `/status`) ; `UPLOAD_DIR` ; tests T3.1 à T3.26 | 3 |
 | 2026-10-13 | Test E2E T2.19 (inscription, email lu dans Mailpit, vérification, connexion, session renouvelée, déconnexion), base `encheres-e2e`, [retours d'expérience de l'étape 2](lessons-learned/2026-10-etape-2-comptes-sessions.md), procédure de vérification manuelle du runbook | 2 |

@@ -66,4 +66,5 @@ Ce qui se passe avant et après cette requête : [data-flow.md](../architecture/
 ## Règles
 - Prix en **centimes (entiers)**, dates en **UTC**.
 - Index `{ status: 1, startsAt: 1 }`, `{ status: 1, endsAt: 1 }` et `{ status: 1, paymentDeadline: 1 }` pour les jobs.
+- La clôture est un seul `findOneAndUpdate` avec pipeline (`updatePipeline: true`) : `status: 'ended'`, `winnerId: '$currentBidderId'` et `paymentDeadline` (maintenant + `paymentDelayMs`, ou `null` sans offre), conditionné par `status: 'live'` et `endsAt ≤ maintenant`.
 - Toute transition de statut est un `findOneAndUpdate` **conditionné par le statut courant**. Exemple de clôture : `findOneAndUpdate({ _id, status: 'live', endsAt: { $lte: now } }, { $set: { status: 'ended', ... } })`.

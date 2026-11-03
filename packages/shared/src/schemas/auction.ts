@@ -105,6 +105,16 @@ export const mineAuctionsInputSchema = paginationInputSchema.extend({
 
 export const bidsInputSchema = paginationInputSchema.extend({ id: objectIdSchema })
 
+/**
+ * Remise en vente (docs/domain/workflows/auction-lifecycle.md) : une copie de l'enchère, sans
+ * offres, en `draft`. Les anciennes dates sont passées : les nouvelles sont à fournir.
+ */
+export const relistAuctionInputSchema = z.strictObject({
+  id: objectIdSchema,
+  startsAt: dateSchema,
+  endsAt: dateSchema,
+})
+
 export const pendingAuctionsInputSchema = paginationInputSchema
 
 export const rejectAuctionInputSchema = z.strictObject({
@@ -138,6 +148,8 @@ export interface PublicAuction {
   status: AuctionStatus
   sellerId: string
   sellerName: string
+  /** Gagnant d'une enchère terminée (nom d'affichage seulement), sinon `null`. */
+  winner: { id: string; name: string } | null
 }
 
 /** Une enchère vue par son vendeur ou par l'admin : s'y ajoute le motif d'un refus. */
@@ -151,6 +163,26 @@ export interface Page<Item> {
   total: number
   page: number
   limit: number
+}
+
+/** Où en est l'utilisateur sur une enchère où il a enchéri (docs/technical/screens.md). */
+export type BidStanding = 'leading' | 'outbid' | 'won' | 'lost' | 'cancelled'
+
+/** Une ligne de « Mes offres » : les enchères sur lesquelles j'ai enchéri. */
+export interface MyBid {
+  auction: PublicAuction
+  /** Ma meilleure offre sur cette enchère, en centimes. */
+  myBestBid: number
+  standing: BidStanding
+}
+
+/** Une ligne de « Mes enchères gagnées ». */
+export interface MyWin {
+  auction: PublicAuction
+  /** Prix final à payer, en centimes. */
+  finalPrice: number
+  /** Date limite de paiement (ISO, UTC). */
+  paymentDeadline: string | null
 }
 
 /** Ce que le formulaire de création doit connaître des paramètres globaux. */

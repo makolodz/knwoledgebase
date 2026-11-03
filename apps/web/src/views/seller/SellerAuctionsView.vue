@@ -70,6 +70,12 @@ async function cancel(auction: ManagedAuction) {
 
 const canEdit = (auction: ManagedAuction) => ['draft', 'scheduled'].includes(auction.status)
 
+/** Remise en vente possible : terminée sans gagnant, non payée ou annulée (auction-lifecycle.md). */
+const canRelist = (auction: ManagedAuction) =>
+  auction.status === 'unpaid' ||
+  auction.status === 'cancelled' ||
+  (auction.status === 'ended' && auction.winner === null)
+
 watch(status, () => {
   if (page.value !== 1) page.value = 1
   else void load()
@@ -171,6 +177,14 @@ onMounted(load)
                   data-testid="edit"
                 >
                   Modifier
+                </RouterLink>
+                <RouterLink
+                  v-if="canRelist(auction)"
+                  :to="`/seller/auctions/${auction.id}/relist`"
+                  class="underline"
+                  data-testid="relist"
+                >
+                  Remettre en vente
                 </RouterLink>
                 <Button
                   v-if="canEdit(auction)"

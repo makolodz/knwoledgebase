@@ -23,7 +23,9 @@ Implémentation des transitions automatiques : [data-flow.md](../../architecture
 - **Toute transition absente du tableau est interdite.**
 - `paid`, `cancelled` et `ended` sans gagnant sont des états finaux.
 - Une enchère `live` n'est **jamais modifiable**, pas même par l'admin (il peut seulement l'annuler).
-- **Remettre en vente** = dupliquer l'enchère dans un nouveau `draft`, sans offres. On ne réutilise jamais le document d'origine, pour garder l'historique. C'est possible depuis `ended` sans gagnant, `unpaid` et `cancelled`.
+- **Remettre en vente** = dupliquer l'enchère dans un nouveau `draft`, sans offres. On ne réutilise jamais le document d'origine, pour garder l'historique. C'est possible depuis `ended` sans gagnant, `unpaid` et `cancelled` (pas depuis `ended` avec gagnant : il doit encore payer).
+  - Les anciennes dates sont passées : le vendeur en fournit de nouvelles, soumises aux mêmes règles qu'une création (début dans le futur, durée entre `minDurationMs` et `maxDurationMs`). La copie est un `draft` : elle doit être validée.
+  - Les photos sont **copiées** sous de nouvelles clés, pour que retirer une photo de la copie ne supprime pas celle de l'originale.
 
 ## Visibilité
 - Public (liste et détail) : `scheduled`, `live`, `ended`, `paid`, `unpaid`.
@@ -37,4 +39,5 @@ Implémentation des transitions automatiques : [data-flow.md](../../architecture
   - `winnerId = currentBidderId` et le prix final est `currentPrice` ;
   - `paymentDeadline = maintenant + paymentDelayMs`.
 - **Sans offre** : l'enchère reste `ended` sans gagnant (état final). Le vendeur peut la remettre en vente.
+- Les effets (événement, emails) ne partent que du passage qui a réussi la transition : deux passages, ou deux instances, ne notifient pas deux fois. Une offre et la clôture s'excluent, car chacune exige `status: 'live'` et la bonne date dans sa propre mise à jour atomique.
 - Le serveur émet `auction:ended` à la room, puis notifie le gagnant et le vendeur ([business-rules.md](../business-rules.md), section « Notifications »).

@@ -160,6 +160,21 @@ const formDisabled = computed(() => !connected.value || countdown.finished.value
           Cette enchère est terminée.
         </Message>
 
+        <section
+          v-if="['ended', 'paid', 'unpaid'].includes(auction.status)"
+          class="space-y-2"
+          data-testid="winner-note"
+        >
+          <p v-if="auction.winner === null">Terminée sans offre.</p>
+          <p v-else-if="me !== null && auction.winner.id === me.id" class="font-semibold">
+            Vous avez remporté cette enchère pour {{ formatPrice(price) }}.
+            <RouterLink to="/account/wins" class="underline">Voir mes enchères gagnées</RouterLink>
+          </p>
+          <p v-else>
+            Remportée par <strong>{{ auction.winner.name }}</strong> pour {{ formatPrice(price) }}.
+          </p>
+        </section>
+
         <template v-if="isLive">
           <Message v-if="isHighest" severity="success" data-testid="highest-note">
             Vous êtes le meilleur enchérisseur.

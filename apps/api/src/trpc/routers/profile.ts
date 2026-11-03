@@ -2,9 +2,11 @@ import {
   changeEmailInputSchema,
   changePasswordInputSchema,
   confirmEmailChangeInputSchema,
+  paginationInputSchema,
   updateProfileInputSchema,
 } from '@encheres/shared'
 import { toCurrentUser } from '../../services/auth'
+import { listMyBids, listMyWins } from '../../services/my-auctions'
 import {
   changePassword,
   confirmEmailChange,
@@ -14,6 +16,15 @@ import {
 import { authedProcedure, router } from '../trpc'
 
 export const profileRouter = router({
+  /** Les enchères sur lesquelles j'ai enchéri, avec ma meilleure offre et où j'en suis. */
+  myBids: authedProcedure
+    .input(paginationInputSchema)
+    .query(({ ctx, input }) => listMyBids(ctx.storage, ctx.user, input)),
+
+  /** Les enchères que j'ai gagnées, avec le prix final et l'échéance de paiement. */
+  myWins: authedProcedure
+    .input(paginationInputSchema)
+    .query(({ ctx, input }) => listMyWins(ctx.storage, ctx.user, input)),
   update: authedProcedure.input(updateProfileInputSchema).mutation(async ({ ctx, input }) => ({
     user: toCurrentUser(await updateName(ctx.user, input.name)),
   })),

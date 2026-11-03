@@ -55,7 +55,7 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
   - « Vous êtes le meilleur enchérisseur » / « Vous avez été dépassé ».
   - Prolongation : animation brève + message « Prolongée de 2 min ».
   - `scheduled` : compte à rebours jusqu'au début, pas de formulaire.
-  - `ended` / `paid` / `unpaid` : gagnant et prix final ; si c'est l'utilisateur → bouton « Payer ».
+  - `ended` / `paid` / `unpaid` : gagnant (nom d'affichage) et prix final, ou « Terminée sans offre » ; si c'est l'utilisateur → « Vous avez remporté cette enchère » avec un lien vers « Mes enchères gagnées » (le bouton « Payer » arrive à l'étape 6). La clôture s'affiche en direct (`auction:ended`).
   - `cancelled` : bandeau « Enchère annulée » + motif.
   - Connexion temps réel perdue : bandeau « Reconnexion… », formulaire désactivé.
 
@@ -113,7 +113,7 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 - **États** : suppression bloquée → liste des raisons (enchère en cours, paiement en attente…). Mot de passe actuel incorrect : message sur le champ ; `RATE_LIMITED` après 5 refus en 15 min.
 
 ### Mes offres
-- **Route** : `/account/bids` · **Accès** : connecté
+- **Route** : `/account/bids` · **Accès** : connecté (liens « Mes offres » et « Mes gains » dans l'en-tête, sauf pour l'admin)
 - **Données** : `profile.myBids`
 - **Contenu** : enchères sur lesquelles j'ai enchéri, ma meilleure offre, prix actuel, statut (« En tête », « Dépassé », « Gagnée », « Perdue »).
 
@@ -135,8 +135,13 @@ Format d'une fiche : **Route** · **Accès** · **Données** (procédures) · **
 - **Route** : `/seller/auctions` · **Accès** : `seller`
 - **Données** : `auction.mine`
 - **Contenu** : tableau (PrimeVue DataTable) : titre, statut, prix, offres, dates ; filtres par statut.
-- **Actions** : créer, modifier (`draft` / `scheduled`), annuler, remettre en vente, voir.
+- **Actions** : créer, modifier (`draft` / `scheduled`), annuler, remettre en vente (depuis `ended` sans gagnant, `unpaid` ou `cancelled`), voir.
 - **États** : refusée → motif affiché.
+
+### Remise en vente
+- **Route** : `/seller/auctions/:id/relist` · **Accès** : `seller` (propriétaire)
+- **Données** : `auction.getMine`, `auction.rules`, `auction.relist`
+- **Contenu** : nouveau début et nouvelle fin (pré-remplis : début dans une heure, même durée que l'originale ramenée dans les bornes). Une copie sans offres est créée en `draft`, à valider par l'admin.
 
 ### Création / modification d'une enchère
 - **Routes** : `/seller/auctions/new`, `/seller/auctions/:id/edit` · **Accès** : `seller` (propriétaire)

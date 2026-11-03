@@ -249,9 +249,15 @@ describe('vérifications d’une offre — T4.1 à T4.13', () => {
   })
 
   it('T4.13 — aucune procédure ne modifie ni n’annule une offre', () => {
-    const names = Object.keys(appRouter._def.procedures).filter((name) => /bid/i.test(name))
+    const procedures = Object.entries(appRouter._def.procedures).filter(([name]) =>
+      /bid/i.test(name),
+    )
 
-    expect(names).toEqual(['auction.bids'])
+    // Deux lectures (l'historique public et « mes offres ») : aucune écriture sur une offre.
+    expect(procedures.map(([name]) => name).sort()).toEqual(['auction.bids', 'profile.myBids'])
+    for (const [, procedure] of procedures) {
+      expect((procedure as { _def: { type: string } })._def.type).toBe('query')
+    }
   })
 })
 

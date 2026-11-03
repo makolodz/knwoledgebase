@@ -14,6 +14,25 @@ const SAMPLE_DATA: Record<EmailTemplateName, unknown> = {
   'password-changed': { name: 'Ana' },
   'email-change-confirm': { name: 'Ana', link: LINK },
   'email-change-notice': { name: 'Ana', newEmail: 'nouvelle@x.fr' },
+  'auction-won': {
+    name: 'Ana',
+    title: 'Vase',
+    amount: 1250,
+    deadline: '2030-01-03T10:00:00.000Z',
+    link: 'https://encheres.example/account/wins',
+  },
+  'auction-sold': {
+    name: 'Ana',
+    title: 'Vase',
+    amount: 1250,
+    winnerName: 'Bob',
+    link: 'https://encheres.example/seller/auctions',
+  },
+  'auction-unsold': {
+    name: 'Ana',
+    title: 'Vase',
+    link: 'https://encheres.example/seller/auctions',
+  },
   outbid: { name: 'Ana', title: 'Vase', amount: 1250, link: 'https://encheres.example/auctions/1' },
   'auction-validated': { name: 'Ana', title: 'Vase', link: 'https://encheres.example/auctions/1' },
   'auction-rejected': {
