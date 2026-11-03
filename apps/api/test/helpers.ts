@@ -1,3 +1,6 @@
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { Writable } from 'node:stream'
 import type { AddressInfo } from 'node:net'
 import type { FastifyInstance } from 'fastify'
@@ -16,6 +19,7 @@ export function testConfig(overrides: Partial<Config> = {}): Config {
     logLevel: 'silent',
     mongoUrl: 'mongodb://127.0.0.1:27017/encheres-test',
     jwtSecret: 'secret-de-test-'.padEnd(48, 'x'),
+    uploadDir: mkdtempSync(join(tmpdir(), 'encheres-uploads-')),
     smtp: { host: '127.0.0.1', port: 1025, from: 'Enchères <no-reply@encheres.test>', auth: null },
     ...overrides,
   }

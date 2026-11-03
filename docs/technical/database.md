@@ -13,6 +13,7 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
 - `auctions` : `{ _id, sellerId, title, description, images[], startingPrice, minIncrement, currentPrice, currentBidderId, nextMinBid, bidCount, startsAt, endsAt, status, winnerId, paymentDeadline, paymentReminderSentAt, cancelReason, createdAt }`
   - `status` : `'draft'|'scheduled'|'live'|'ended'|'paid'|'unpaid'|'cancelled'`
   - à la création : `currentPrice: null`, `currentBidderId: null`, `nextMinBid: startingPrice`, `bidCount: 0`
+  - une modification (`draft` ou `scheduled`) remet `nextMinBid` au `startingPrice` : sans offre, les deux sont égaux
   - `images[]` : clés (UUID) des photos stockées sur disque, jamais d'URL ni de nom de fichier fourni par l'utilisateur ([ADR-007](../decisions/ADR-007-photos-disque-local.md))
   - `paymentReminderSentAt` : date d'envoi du rappel de paiement, `null` sinon (remis à `null` lors d'une réattribution)
 - `bids` : `{ _id, auctionId, userId, amount, createdAt }`
@@ -28,7 +29,7 @@ Stocke les utilisateurs, les enchères, les offres, les paiements et les paramè
   - `sendAfter` est repoussé quand le job prend un email en charge, ce qui évite un double envoi sans statut supplémentaire
   - index `{ status: 1, sendAfter: 1 }`
 - `settings` : document unique `{ _id: 'global', defaultMinIncrement, antiSnipingMs, paymentDelayMs, minDurationMs, maxDurationMs }`
-  - valeurs par défaut dans [business-rules.md](../domain/business-rules.md), section « Paramètres globaux »
+  - valeurs par défaut dans [business-rules.md](../domain/business-rules.md), section « Paramètres globaux » ; le document est créé par un `upsert` atomique (`$setOnInsert`) au démarrage de l'API et à la première lecture (`services/settings.ts`), donc sans condition de course
 
 ## Opération clé : placer une offre
 Une seule requête vérifie toutes les règles et enregistre l'offre, prolongation anti-sniping comprise ([ADR-005](../decisions/ADR-005-offre-atomique.md)).

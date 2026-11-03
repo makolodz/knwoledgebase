@@ -2,27 +2,27 @@
 
 > Document **tenu à jour par l'IA** à chaque modification (code, doc, roadmap). Source des cases : [roadmap.md](roadmap.md). Ne pas y recopier le contenu des étapes, seulement l'état.
 >
-> Dernière mise à jour : 2026-10-13 · Commit de référence : `43f88f0`
+> Dernière mise à jour : 2026-11-03 · Commit de référence : `504a71e`
 
 ## Vue d'ensemble
 
 | Étape | Titre | Avancement | Cases | Statut |
 |---|---|---|---|---|
 | 1 | Squelette du monorepo | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
-| 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🟡 En revue |
-| 3 | Enchères : création et modération | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
+| 2 | Comptes et sessions | `██████████` 100 % | 8 / 8 | 🟢 Terminée |
+| 3 | Enchères : création et modération | `██████████` 100 % | 6 / 6 | 🟡 En revue |
 | 4 | Offres en temps réel (cœur du projet) | `░░░░░░░░░░` 0 % | 0 / 7 | ⚪ Pas commencée |
 | 5 | Clôture | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 6 | Paiement | `░░░░░░░░░░` 0 % | 0 / 6 | ⚪ Pas commencée |
 | 7 | Administration et RGPD | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
 | 8 | Finitions et mise en production | `░░░░░░░░░░` 0 % | 0 / 4 | ⚪ Pas commencée |
-| | **Total** | `██░░░░░░░░` **30 %** | **14 / 47** | |
+| | **Total** | `████░░░░░░` **43 %** | **20 / 47** | |
 
-**Étape en cours** : 2 — Comptes et sessions (branche `feat/etape-2-comptes-sessions`, [issue #3](https://github.com/makolodz/knwoledgebase/issues/3)). Étape 1 fusionnée (PR #13, CI verte). Fait : connexion MongoDB, banc de test sur base réelle ([ADR-014](decisions/ADR-014-implementation-authentification.md)), modèles, file d'envoi des emails, inscription, connexion, refresh avec rotation, déconnexion et `auth.me`. Toutes les cases sont cochées : API (inscription, sessions, vérification, mot de passe oublié, profil, rôles, limites anti-abus, seed), pages du front, test E2E T2.19 et runbook. Reste : ouvrir la PR (`Closes #3`) et vérifier que la CI passe, en particulier le job `e2e` avec le vrai Mailpit.
+**Étape en cours** : 3 — Enchères : création et modération (branche `feat/etape-3-encheres`). Étape 2 fusionnée (PR #17). Fait : modèles `auctions` et `settings` (créés avec leurs défauts), upload de photos (`storage` sur disque, sharp, EXIF supprimées), création, modification et annulation par le vendeur (retour en `draft` d'une `scheduled`), validation et refus par l'admin avec emails, liste et détail publics, job d'ouverture `scheduled → live`, pages vendeur, admin et publiques, test E2E T3.16. Reste : ouvrir la PR et vérifier la CI ; photos non rattachées à une enchère non nettoyées (voir [retours d'expérience](lessons-learned/2026-11-etape-3-encheres.md)).
 
 ## État de la documentation
 
-- Documents présents : 36 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
+- Documents présents : 37 fichiers Markdown dans `docs/` (architecture, domaine, technique, ADR, runbook, retours d'expérience).
 - Scénarios de tests métier par étape : [business-tests.md](technical/business-tests.md).
 - Documents annoncés mais absents : `architecture/modules.md`, `runbooks/deployment.md`.
 - Décisions à acter (voir [roadmap.md](roadmap.md)) : aucune en attente.
@@ -31,6 +31,7 @@
 
 | Date | Changement | Étapes touchées |
 |---|---|---|
+| 2026-11-03 | Étape 3 : modèles `auctions` et `settings`, `storage` disque et traitement sharp (webp, deux tailles, EXIF supprimées), route `POST /api/uploads/images` et `GET /uploads/*`, procédures `auction.*` et `admin.pendingAuctions/validate/reject`, emails de validation et de refus, job d'ouverture, pages publiques, vendeur et admin ; l'accueil devient la liste des enchères (état de l'API déplacé sur `/status`) ; `UPLOAD_DIR` ; tests T3.1 à T3.26 | 3 |
 | 2026-10-13 | Test E2E T2.19 (inscription, email lu dans Mailpit, vérification, connexion, session renouvelée, déconnexion), base `encheres-e2e`, [retours d'expérience de l'étape 2](lessons-learned/2026-10-etape-2-comptes-sessions.md), procédure de vérification manuelle du runbook | 2 |
 | 2026-10-13 | Front de l'étape 2 : pages de connexion, d'inscription, de vérification, de mot de passe oublié et « Mon compte » ; store `auth`, renouvellement transparent de la session (`fetch` partagé entre onglets), gardes de routes avec redirection assainie, en-tête selon la session (T2.39 à T2.47) | 2 |
 | 2026-10-13 | Script de seed `pnpm seed` : admin, vendeur et deux acheteurs (domaine `.test`), idempotent, refusé en production et sur une base non locale (T2.38) | 2 |

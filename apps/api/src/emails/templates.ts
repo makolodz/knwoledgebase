@@ -112,6 +112,38 @@ export const EMAIL_TEMPLATES = {
           'Si vous n’êtes pas à l’origine de ce changement, contactez l’association sans attendre.',
       }),
   }),
+
+  /** L'admin a validé l'enchère : elle est publique et s'ouvrira à `startsAt`. */
+  'auction-validated': template({
+    schema: z.object({ name: nameSchema, title: z.string().min(1), link: linkSchema }),
+    render: ({ name, title, link }) =>
+      composeEmail({
+        subject: 'Votre enchère a été validée',
+        greeting: `Bonjour ${name},`,
+        paragraphs: [
+          `Votre enchère « ${title} » a été validée. Elle est visible publiquement et s’ouvrira aux offres à la date de début prévue.`,
+        ],
+        action: { label: 'Voir l’enchère', url: link },
+      }),
+  }),
+
+  /** L'admin a refusé l'enchère : le motif est montré au vendeur. */
+  'auction-rejected': template({
+    schema: z.object({
+      name: nameSchema,
+      title: z.string().min(1),
+      reason: z.string().min(1),
+      link: linkSchema,
+    }),
+    render: ({ name, title, reason, link }) =>
+      composeEmail({
+        subject: 'Votre enchère a été refusée',
+        greeting: `Bonjour ${name},`,
+        paragraphs: [`Votre enchère « ${title} » a été refusée.`, `Motif : ${reason}`],
+        action: { label: 'Mes enchères', url: link },
+        footer: 'Vous pouvez créer une nouvelle enchère en tenant compte de ce motif.',
+      }),
+  }),
 }
 
 export type EmailTemplateName = keyof typeof EMAIL_TEMPLATES

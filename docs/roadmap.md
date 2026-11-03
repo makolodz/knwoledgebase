@@ -41,12 +41,12 @@ Docs : [account.md](domain/workflows/account.md), [security.md](technical/securi
 
 ## Étape 3 — Enchères : création et modération
 Docs : [business-rules.md](domain/business-rules.md), [auction-lifecycle.md](domain/workflows/auction-lifecycle.md), [ADR-007](decisions/ADR-007-photos-disque-local.md).
-- [ ] Modèles `auctions`, `settings` (valeurs par défaut au démarrage).
-- [ ] Upload d'images (`storage` sur disque, sharp, EXIF supprimées).
-- [ ] Vendeur : créer, modifier, annuler ses enchères ; retour en `draft` si modification d'une `scheduled`.
-- [ ] Admin : enchères en attente, valider, refuser.
-- [ ] Public : liste paginée et détail des enchères.
-- [ ] Job d'ouverture `scheduled → live` ([ADR-008](decisions/ADR-008-jobs-setinterval.md)).
+- [x] Modèles `auctions`, `settings` (valeurs par défaut au démarrage).
+- [x] Upload d'images (`storage` sur disque, sharp, EXIF supprimées).
+- [x] Vendeur : créer, modifier, annuler ses enchères ; retour en `draft` si modification d'une `scheduled`.
+- [x] Admin : enchères en attente, valider, refuser.
+- [x] Public : liste paginée et détail des enchères.
+- [x] Job d'ouverture `scheduled → live` ([ADR-008](decisions/ADR-008-jobs-setinterval.md)).
 
 **Fini quand** : un vendeur crée une enchère avec photos, l'admin la valide, elle apparaît publiquement et passe `live` à `startsAt`.
 

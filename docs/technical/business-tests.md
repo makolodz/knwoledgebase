@@ -101,7 +101,17 @@ Règles : [business-rules.md](../domain/business-rules.md) (« Création d'une e
 | T3.13 | Int | Une enchère `draft` n'apparaît jamais dans la liste publique. |
 | T3.14 | Int | Liste publique paginée, sans email du vendeur (seul `name`). |
 | T3.15 | Int | Job `scheduled → live` à `startsAt`, deux passages successifs ne produisent qu'un seul effet. |
-| T3.16 | E2E | Vendeur crée avec photos → admin valide → l'enchère est publique → passe `live` à l'heure. |
+| T3.16 | E2E | Vendeur crée avec photos → admin valide → l'enchère est publique → passe `live` à l'heure (`e2e/auctions.spec.ts`, environ 90 s : le début se règle à la minute). |
+| T3.17 *(ajout)* | Int | Création : statut `draft`, `nextMinBid = startingPrice`, pas minimum par défaut lu dans les paramètres ; clé de photo inconnue refusée ; statut, vendeur ou prix courant imposés par le client refusés ; réservée aux vendeurs (visiteur, acheteur, admin refusés). |
+| T3.18 *(ajout)* | Int | Modification : efface l'ancien motif de refus, remet `nextMinBid`, supprime du disque les photos retirées ; refusée pour `live`, `ended`, `paid`, `unpaid`, `cancelled` ; annulation du vendeur possible depuis `draft` et `scheduled` seulement. |
+| T3.19 *(ajout)* | Int | Admin : brouillons à valider (plus anciens d'abord), valider deux fois refusé, début passé refusé (`INVALID_DATES`), refuser une `scheduled` refusé, procédures `admin` refusées au vendeur et au visiteur, pas d'email pour un vendeur anonymisé. |
+| T3.20 *(ajout)* | Int | Liste publique : filtres en cours / à venir / terminées, tris (prix = offre courante sinon prix de départ), détail avec URL des photos, sans email ; `mine` filtrable par statut ; `rules` réservé aux vendeurs. |
+| T3.21 *(ajout)* | Int | Job d'ouverture : pas avant `startsAt`, deux passages (successifs ou simultanés) = un seul effet, rattrape les enchères en retard, ignore `draft`, `live` et `cancelled`. |
+| T3.22 *(ajout)* | Int | Paramètres : créés avec leurs défauts une seule fois (lectures simultanées), une valeur modifiée n'est pas écrasée. |
+| T3.23 *(ajout)* | Int | Upload : jpeg, png et webp acceptés ; SVG, GIF, fichier vide ou texte renommé `.jpg` refusés (type lu sur le contenu) ; plus de 5 Mo → 413 ; pas multipart → 415 ; visiteur 401, acheteur et admin 403 ; rôle relu en base ; 21e photo en une heure → 429. |
+| T3.24 *(ajout)* | Int | Photos servies par `/uploads/` avec cache d'un an `immutable` et `Cross-Origin-Resource-Policy: cross-origin` ; ni listing, ni chemin remontant ; pas d'écriture. Redimensionnement à 1600 et 400 px sans agrandir ; EXIF supprimées. |
+| T3.25 *(ajout)* | Comp | Front : liste (cartes, « (départ) », vide, erreur et « Réessayer », filtres, pagination), détail (vendeur par son nom, compte à rebours, description jamais interprétée en HTML, introuvable, galerie), accès par rôle et liens de l'en-tête. |
+| T3.26 *(ajout)* | Comp | Front, formulaire : montants en centimes, dates en UTC, validation (titre, prix, photo, début futur, durée), erreur du serveur, échec d'une photo, réordonner et retirer, 5 photos au plus, avertissement pour une enchère `scheduled`, enchère verrouillée ; mes enchères (annuler avec confirmation, filtre) ; admin (aperçu, valider, motif obligatoire pour refuser). |
 
 ## Étape 4 — Offres en temps réel
 

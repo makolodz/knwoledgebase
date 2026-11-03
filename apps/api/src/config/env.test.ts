@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { ConfigError, loadConfig } from './env'
 
@@ -10,6 +11,7 @@ describe('T1.9 — loadConfig', () => {
       webOrigin: 'http://localhost:5173',
       logLevel: 'info',
       mongoUrl: 'mongodb://127.0.0.1:27017/encheres',
+      uploadDir: resolve('./uploads'),
       jwtSecret: expect.any(String) as string,
       smtp: {
         host: '127.0.0.1',
@@ -34,6 +36,7 @@ describe('T1.9 — loadConfig', () => {
       SMTP_USER: 'utilisateur',
       SMTP_PASSWORD: 'secret-smtp',
       SMTP_FROM: 'Enchères <no-reply@encheres.example>',
+      UPLOAD_DIR: '/var/lib/encheres/uploads',
       PATH: '/usr/bin',
     })
 
@@ -45,6 +48,7 @@ describe('T1.9 — loadConfig', () => {
       logLevel: 'warn',
       mongoUrl: 'mongodb+srv://app:motdepasse@cluster.example/encheres',
       jwtSecret: 'x'.repeat(40),
+      uploadDir: resolve('/var/lib/encheres/uploads'),
       smtp: {
         host: 'smtp-relay.example',
         port: 587,
@@ -106,12 +110,13 @@ describe('T2.20 — MONGO_URL, JWT_SECRET et SMTP', () => {
     JWT_SECRET: 'x'.repeat(40),
     SMTP_HOST: 'smtp-relay.example',
     SMTP_FROM: 'no-reply@encheres.example',
+    UPLOAD_DIR: '/var/lib/encheres/uploads',
   }
 
   it('exige MONGO_URL, JWT_SECRET, SMTP_HOST et SMTP_FROM en production : pas de repli sur les services locaux', () => {
     expect(loadConfig(production).smtp.host).toBe('smtp-relay.example')
 
-    for (const name of ['MONGO_URL', 'JWT_SECRET', 'SMTP_HOST', 'SMTP_FROM']) {
+    for (const name of ['MONGO_URL', 'JWT_SECRET', 'SMTP_HOST', 'SMTP_FROM', 'UPLOAD_DIR']) {
       const env: Record<string, string> = { ...production }
       delete env[name]
       expect(() => loadConfig(env)).toThrow(new RegExp(`${name} : obligatoire`))

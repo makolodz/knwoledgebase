@@ -23,6 +23,8 @@ export interface RateLimits {
    * permettrait de deviner le mot de passe via le changement de mot de passe ou d'email.
    */
   passwordCheck: RateLimiter
+  /** Photos envoyées par utilisateur : 20 par heure. */
+  imageUpload: RateLimiter
   /** Oublie les compteurs expirés. */
   sweep(): void
 }
@@ -38,6 +40,7 @@ export function createRateLimits(now: () => number = Date.now): RateLimits {
     forgotPassword: new RateLimiter(perHour, now),
     resendVerification: new RateLimiter(perHour, now),
     passwordCheck: new RateLimiter(failures, now),
+    imageUpload: new RateLimiter({ max: 20, windowMs: HOUR_MS }, now),
   }
   return {
     ...limiters,

@@ -26,6 +26,21 @@ export const trpcMock = {
     forgotPassword: { mutate: procedure() },
     resetPassword: { mutate: procedure() },
   },
+  auction: {
+    list: { query: procedure() },
+    get: { query: procedure() },
+    rules: { query: procedure() },
+    mine: { query: procedure() },
+    getMine: { query: procedure() },
+    create: { mutate: procedure() },
+    update: { mutate: procedure() },
+    cancel: { mutate: procedure() },
+  },
+  admin: {
+    pendingAuctions: { query: procedure() },
+    validate: { mutate: procedure() },
+    reject: { mutate: procedure() },
+  },
   profile: {
     update: { mutate: procedure() },
     changePassword: { mutate: procedure() },

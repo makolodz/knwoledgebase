@@ -19,6 +19,16 @@ const DEFINITIONS: Record<ErrorCode, { trpcCode: TrpcCode; message: string }> = 
     trpcCode: 'CONFLICT',
     message: 'Session en cours de renouvellement, réessayez.',
   },
+  AUCTION_NOT_FOUND: { trpcCode: 'NOT_FOUND', message: 'Enchère introuvable.' },
+  AUCTION_STATE_INVALID: {
+    trpcCode: 'CONFLICT',
+    message: 'Cette action est impossible dans l’état actuel de l’enchère.',
+  },
+  INVALID_DATES: {
+    trpcCode: 'BAD_REQUEST',
+    message: 'Les dates de l’enchère ne respectent pas les règles.',
+  },
+  INVALID_IMAGE: { trpcCode: 'BAD_REQUEST', message: 'Photo invalide.' },
 }
 
 /**

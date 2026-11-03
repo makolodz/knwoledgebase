@@ -3,6 +3,7 @@ import { ConfigError, loadConfig } from './config/env'
 import { connectDb, DbConnectionError, disconnectDb } from './infra/db'
 import { createSmtpMailer } from './infra/mailer'
 import { startJobs } from './jobs'
+import { ensureSettings } from './services/settings'
 // Enregistre les modèles avant la connexion, pour que `connectDb` crée leurs index.
 import './models'
 
@@ -26,6 +27,8 @@ try {
   }
   throw error
 }
+
+await ensureSettings()
 
 const app = await buildApp(config)
 const jobs = startJobs({

@@ -21,9 +21,18 @@ async function logout() {
   <header class="border-b border-slate-200 bg-white">
     <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
       <RouterLink to="/" class="text-xl font-bold tracking-tight">Enchères</RouterLink>
-      <!-- La recherche arrive avec l'étape 3. -->
       <nav aria-label="Navigation principale" class="flex items-center gap-3 text-sm">
         <template v-if="auth.user">
+          <RouterLink v-if="auth.user.role === 'seller'" to="/seller/auctions" class="underline">
+            Mes enchères
+          </RouterLink>
+          <RouterLink
+            v-if="auth.user.role === 'admin'"
+            to="/admin/auctions/pending"
+            class="underline"
+          >
+            À valider
+          </RouterLink>
           <RouterLink to="/account" class="underline" data-testid="nav-account">
             {{ auth.user.name }}
           </RouterLink>
