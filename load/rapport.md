@@ -75,18 +75,32 @@ pnpm --filter @encheres/api load:verify <id> load/summary.json
 
 ### Résultats (30 s, 50 acheteurs)
 
-| Mesure | Valeur |
-|---|---|
-| Offres envoyées | 4 794 (≈ 141 / s) |
-| Acceptées | 2 130 (≈ 63 / s) |
-| Refusées `BID_TOO_LOW` | 2 664 |
-| Autres refus, erreurs de socket | 0 |
-| Latence de l'ack (envoi → réponse) | moyenne 18 ms, p95 35 ms, max 156 ms |
-| Messages Socket.IO reçus par les clients | 213 994 (≈ 6 300 / s : chaque offre est diffusée aux 50 sockets) |
+Deux exécutions identiques, sur deux enchères différentes. La seconde (14 h 54) est la plus récente.
 
-Vérification en base : 2 130 offres, soit exactement le nombre d'acks « acceptée » ; historique strictement croissant avec au moins un pas entre deux offres ; deux offres consécutives jamais du même acheteur ; `bidCount`, `currentPrice`, `currentBidderId` et `nextMinBid` conformes à la plus haute offre ; `endsAt` égal à l'heure de la dernière offre + `antiSnipingMs` (prolongation appliquée une seule fois, jamais raccourcie).
+| Mesure | Exécution 1 | Exécution 2 (14 h 54) |
+|---|---|---|
+| Offres envoyées | 4 794 (≈ 141 / s) | 4 761 (≈ 133 / s) |
+| Acceptées | 2 130 (≈ 63 / s) | 1 721 (≈ 48 / s) |
+| Refusées `BID_TOO_LOW` | 2 664 | 3 040 |
+| Autres refus, erreurs de socket | 0 | 0 |
+| Part d'offres acceptées | 44 % | 36 % |
+| Latence de l'ack (envoi → réponse) : moyenne | 18 ms | 28 ms |
+| Latence de l'ack : médiane / p90 / p95 | — / — / 35 ms | 26 ms / 42 ms / 48 ms |
+| Latence de l'ack : min / max | — / 156 ms | 9 ms / 152 ms |
+| Messages Socket.IO reçus par les clients | 213 994 (≈ 6 300 / s) | 174 111 (≈ 4 900 / s) |
+| Connexions WebSocket (101) | 50 / 50 | 50 / 50 |
+| Connexion HTTP des 50 acheteurs (`auth.login`) | — | 50 / 50, 109 ms en moyenne |
+| Vérifications k6 (`checks`) | 100 % | 100 % (100 / 100) |
 
-Seuils k6 : `p(95) < 500 ms`, au moins une offre acceptée, aucun refus autre que `BID_TOO_LOW` ou `ALREADY_HIGHEST`, aucune erreur de socket : **tous respectés**.
+Vérification en base de l'exécution 2 (`pnpm --filter @encheres/api load:verify 6ae9e72e83a07db291783adb load/summary.json`) :
+
+- 1 721 offres dans `bids`, soit exactement le nombre d'acks « acceptée » vu par k6 ; `bidCount` de l'enchère vaut aussi 1 721 ;
+- prix courant 267 100 centimes (2 671,00 €) ;
+- verdict du script : **cohérent, aucune offre perdue, historique et enchère concordent**.
+
+Vérification de l'exécution 1 (enchère `6ae9e180…`) : 2 130 offres en base pour 2 130 acks « acceptée », historique strictement croissant avec au moins un pas entre deux offres, deux offres consécutives jamais du même acheteur, `bidCount`, `currentPrice`, `currentBidderId` et `nextMinBid` conformes à la plus haute offre, `endsAt` égal à l'heure de la dernière offre + `antiSnipingMs`.
+
+Seuils k6 des deux exécutions : `p(95) < 500 ms` (35 ms puis 48 ms), au moins une offre acceptée, aucun refus autre que `BID_TOO_LOW` ou `ALREADY_HIGHEST`, aucune erreur de socket : **tous respectés**.
 
 ### Analyse et limites
 
@@ -95,3 +109,13 @@ Seuils k6 : `p(95) < 500 ms`, au moins une offre acceptée, aucun refus autre qu
 - **Une seule enchère.** La contention est maximale ; plusieurs enchères en parallèle ne sont couvertes que par le test d'intégration T4.36.
 - **Les emails « offre dépassée »** sont ajoutés à la file à chaque offre acceptée (2 130 ici), avec des adresses `.test`.
 - **Mêmes réserves que le test 1** : mode dev, une seule machine, base presque vide.
+
+### Ce que montre la seconde exécution
+
+- **Le résultat est reproductible.** À débit d'offres quasi identique (≈ 135 offres par seconde), le compte est exact une seconde fois : aucune offre perdue ni fantôme, aucun refus autre que `BID_TOO_LOW`. Les 1 721 + 3 040 refus font bien les 4 761 offres envoyées.
+- **Moins d'offres acceptées, c'est normal.** Les acheteurs visent presque le même montant : le nombre d'offres acceptées dépend de qui arrive en premier à chaque palier, pas d'une dégradation. Les 4 761 offres ont toutes reçu une réponse.
+- **Les messages reçus suivent le nombre d'offres acceptées.** Chaque offre acceptée est diffusée deux fois aux 50 sockets (`bid:new` puis `auction:extended`, car l'enchère finit dans moins de 2 minutes) : 1 721 × 100 = 172 100, auxquels s'ajoutent les acks et les ping (174 111 en tout). Pour l'exécution 1 : 2 130 × 100 = 213 000 pour 213 994.
+- **La latence de l'ack a un peu augmenté** (moyenne 18 → 28 ms, p95 35 → 48 ms), mais reste très loin du seuil de 500 ms ; le maximum est stable (≈ 150 ms). L'écart vient plutôt de la machine partagée (k6, API en `tsx watch`, MongoDB et le navigateur) que du code : il n'y a pas de tendance à la saturation.
+- **La connexion des acheteurs coûte 109 ms en moyenne** (50 `auth.login`, dont le calcul du hash argon2, volontairement lent). Elle est faite avant la mesure, dans `setup()`.
+- **Cas à surveiller** : l'enchère de l'exécution 2 était encore `live` au moment de la vérification (fin à 13 h 56 UTC, soit environ une minute plus tard). Elle est close ensuite par le job de clôture, comme celle de l'exécution 1 (`ended`).
+
