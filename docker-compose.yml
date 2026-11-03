@@ -7,7 +7,10 @@ name: encheres
 
 services:
   mongo:
-    image: mongo:8.0
+    # Version épinglée : les versions récentes de 8.0 refusent de démarrer sur un noyau Linux 6.19
+    # ou plus (SERVER-121912), ce qui est le cas des runners GitHub. Même version que les tests
+    # (apps/api/test/global-setup.ts).
+    image: mongo:8.0.4
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
