@@ -176,6 +176,9 @@ Règles : [business-rules.md](../domain/business-rules.md) (« Placer une offre 
 | T4.33 *(ajout)* | Comp | Front, composable `useAuctionSocket` : chargement et join, rechargement à la reconnexion, offres sans doublon, autres enchères ignorées, prolongation, ouverture d'une enchère à venir, ack, refus, absence de réponse, renouvellement de session et un seul rejeu. |
 | T4.34 *(ajout)* | Comp | Front, formulaire : minimum pré-rempli et qui suit les offres, +1 / +5 pas, montants illisibles ou sous le minimum jamais envoyés, centimes envoyés, refus traduit, confirmation au-delà de 10 fois le prix, désactivé hors connexion ou à zéro ; qui peut enchérir (visiteur, vendeur de l'enchère, admin, email non vérifié). |
 | T4.35 *(ajout)* | Comp | Front, en direct : nouvelle offre, « meilleur enchérisseur » puis « dépassé », prolongation et compte à rebours ; `useCountdown` ; renouvellement du jeton du socket (`socket-session`). |
+| T4.36 *(ajout)* | Int | Offres parallèles sur plusieurs enchères à la fois (5 enchères × 20 acheteurs, 100 offres simultanées) : sur chacune, l'offre la plus haute gagne, `bidCount` = acceptées = documents de `bids`, aucune offre rangée sur une autre enchère, tout refus est `BID_TOO_LOW`. |
+| T4.37 *(ajout)* | Int | Offres parallèles près de la fin, avec des heures qui ne suivent pas l'ordre des montants : `endsAt` vaut la plus tardive des heures acceptées + `antiSnipingMs` et ne recule jamais. |
+| T4.38 *(ajout)* | Int | Test de charge k6 (`load/bids-concurrent.js`) : préparation (acheteurs et enchère, relançable) et vérification en base (offres = acks acceptés, montants espacés d'un pas, pas deux offres de suite du même acheteur, compteur, prix, meilleur enchérisseur, `endsAt` = dernière offre + `antiSnipingMs`) ; chaque incohérence est signalée. |
 
 ## Étape 5 — Clôture
 

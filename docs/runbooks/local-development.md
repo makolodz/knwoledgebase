@@ -69,6 +69,7 @@ Si le front change de port, `WEB_ORIGIN` doit suivre. Vite est configuré sans r
 | `pnpm typecheck` | `tsc` (API, `shared`, E2E) et `vue-tsc` (front) |
 | `pnpm test` | Tests Vitest de tous les paquets : unitaires, intégration, composants. Ils n'ont pas besoin de Docker : `mongodb-memory-server` lance son propre MongoDB. |
 | `pnpm test:e2e` | Tests E2E Playwright : lancent l'API et le front tout seuls. Demandent `pnpm infra:up` (MongoDB pour l'API, Mailpit pour lire les emails). Les comptes créés vont dans la base `encheres-e2e`, pas dans celle du développement. |
+| `pnpm --filter @encheres/api load:prepare` / `load:verify` | Préparent et vérifient en base le test de charge k6 d'offres concurrentes (k6 requis, API lancée) : procédure dans [load/rapport.md](../../load/rapport.md) |
 | `pnpm --filter @encheres/api test` | Tests d'un seul paquet (`@encheres/web`, `@encheres/shared`) |
 
 Premier lancement des E2E : `pnpm --filter @encheres/e2e exec playwright install chromium` (téléchargement d'environ 150 Mo).

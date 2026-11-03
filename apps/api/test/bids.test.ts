@@ -384,6 +384,96 @@ describe('offres simultanées — T4.14 à T4.17 (priorité 1)', () => {
     expect(events).toHaveLength(1)
     expect(await Bid.countDocuments()).toBe(1)
   })
+
+  it('T4.36 — des offres parallèles sur plusieurs enchères : chaque enchère reste cohérente et isolée des autres', async () => {
+    const auctionCount = 5
+    const users = await buyers(20)
+    // Des prix de départ très espacés : une offre rangée sur la mauvaise enchère se verrait tout de suite.
+    const auctions = await Promise.all(
+      Array.from({ length: auctionCount }, (_, index) =>
+        createLiveAuction(seller._id, {
+          startingPrice: 100_000 * (index + 1),
+          nextMinBid: 100_000 * (index + 1),
+        }),
+      ),
+    )
+
+    // Chaque acheteur enchérit sur toutes les enchères en même temps (100 offres simultanées).
+    const results = await Promise.all(
+      auctions.flatMap((auction) =>
+        users.map(async (user, index) => ({
+          auctionId: auction._id.toString(),
+          result: await placeBid({
+            userId: user._id.toString(),
+            auctionId: auction._id.toString(),
+            amount: (auction.startingPrice ?? 0) + index * 100,
+          }),
+        })),
+      ),
+    )
+
+    const highestBidder = users[users.length - 1]
+    for (const auction of auctions) {
+      const stored = await Auction.findById(auction._id).orFail()
+      const own = results.filter((entry) => entry.auctionId === auction._id.toString())
+      const accepted = own.filter((entry) => entry.result.ok).length
+      const history = await Bid.find({ auctionId: auction._id })
+
+      // L'offre la plus haute est toujours acceptée, quel que soit l'ordre d'arrivée.
+      expect(stored.currentPrice).toBe(auction.startingPrice + 19 * 100)
+      expect(stored.nextMinBid).toBe(auction.startingPrice + 19 * 100 + 100)
+      expect(stored.currentBidderId?.toString()).toBe(highestBidder?._id.toString())
+      // Le compteur, l'historique et les acceptations concordent, enchère par enchère.
+      expect(stored.bidCount).toBe(accepted)
+      expect(history).toHaveLength(accepted)
+      expect(
+        history.every(
+          (entry) =>
+            entry.amount >= auction.startingPrice &&
+            entry.amount < auction.startingPrice + 20 * 100,
+        ),
+      ).toBe(true)
+      // Tout refus est un montant trop bas.
+      const codes = own.flatMap((entry) => (entry.result.ok ? [] : [entry.result.code]))
+      expect(codes.every((code) => code === 'BID_TOO_LOW')).toBe(true)
+    }
+    expect(await Bid.countDocuments()).toBe(results.filter((entry) => entry.result.ok).length)
+  })
+
+  it('T4.37 — des offres parallèles près de la fin : endsAt ne recule jamais et vaut la plus tardive des heures acceptées + antiSnipingMs', async () => {
+    const base = Date.now()
+    const auction = await createLiveAuction(seller._id, {
+      endsAt: new Date(base + 30 * SECOND_MS),
+    })
+    const users = await buyers(20)
+    // Les heures ne suivent pas l'ordre des montants : une offre « plus ancienne » peut être traitée après.
+    const nowOf = (index: number) => new Date(base + ((index * 7) % 20) * 500)
+
+    const results = await Promise.all(
+      users.map((user, index) =>
+        placeBid({
+          userId: user._id.toString(),
+          auctionId: auction._id.toString(),
+          amount: 1000 + index * 100,
+          now: nowOf(index),
+        }),
+      ),
+    )
+
+    const acceptedTimes = results.flatMap((result, index) =>
+      result.ok ? [nowOf(index).getTime()] : [],
+    )
+    const stored = await Auction.findById(auction._id).orFail()
+    expect(acceptedTimes.length).toBeGreaterThan(0)
+    // La fin est le maximum des prolongations, quel que soit l'ordre dans lequel elles sont arrivées.
+    expect(stored.endsAt.getTime()).toBe(Math.max(...acceptedTimes) + ANTI_SNIPING_MS)
+    // Aucune prolongation annoncée n'a dépassé la fin finale : elle n'a jamais reculé.
+    for (const result of results) {
+      if (result.ok && result.extendedTo !== null) {
+        expect(result.extendedTo.getTime()).toBeLessThanOrEqual(stored.endsAt.getTime())
+      }
+    }
+  })
 })
 
 describe('anti-sniping — T4.18 à T4.21 (priorité 3)', () => {

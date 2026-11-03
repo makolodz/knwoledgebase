@@ -5,6 +5,9 @@ playwright-report
 test-results
 pnpm-lock.yaml
 
+# Scripts de test de charge k6 (hors de la chaîne Node)
+load
+
 # La documentation suit ses propres conventions (README.md)
 docs
 *.md
