@@ -36,6 +36,7 @@ export const trpcMock = {
     create: { mutate: procedure() },
     update: { mutate: procedure() },
     cancel: { mutate: procedure() },
+    relist: { mutate: procedure() },
   },
   admin: {
     pendingAuctions: { query: procedure() },
@@ -43,6 +44,8 @@ export const trpcMock = {
     reject: { mutate: procedure() },
   },
   profile: {
+    myBids: { query: procedure() },
+    myWins: { query: procedure() },
     update: { mutate: procedure() },
     changePassword: { mutate: procedure() },
     changeEmail: { mutate: procedure() },

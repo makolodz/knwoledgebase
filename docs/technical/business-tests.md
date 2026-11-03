@@ -176,6 +176,9 @@ Règles : [business-rules.md](../domain/business-rules.md) (« Placer une offre 
 | T4.33 *(ajout)* | Comp | Front, composable `useAuctionSocket` : chargement et join, rechargement à la reconnexion, offres sans doublon, autres enchères ignorées, prolongation, ouverture d'une enchère à venir, ack, refus, absence de réponse, renouvellement de session et un seul rejeu. |
 | T4.34 *(ajout)* | Comp | Front, formulaire : minimum pré-rempli et qui suit les offres, +1 / +5 pas, montants illisibles ou sous le minimum jamais envoyés, centimes envoyés, refus traduit, confirmation au-delà de 10 fois le prix, désactivé hors connexion ou à zéro ; qui peut enchérir (visiteur, vendeur de l'enchère, admin, email non vérifié). |
 | T4.35 *(ajout)* | Comp | Front, en direct : nouvelle offre, « meilleur enchérisseur » puis « dépassé », prolongation et compte à rebours ; `useCountdown` ; renouvellement du jeton du socket (`socket-session`). |
+| T4.36 *(ajout)* | Int | Offres parallèles sur plusieurs enchères à la fois (5 enchères × 20 acheteurs, 100 offres simultanées) : sur chacune, l'offre la plus haute gagne, `bidCount` = acceptées = documents de `bids`, aucune offre rangée sur une autre enchère, tout refus est `BID_TOO_LOW`. |
+| T4.37 *(ajout)* | Int | Offres parallèles près de la fin, avec des heures qui ne suivent pas l'ordre des montants : `endsAt` vaut la plus tardive des heures acceptées + `antiSnipingMs` et ne recule jamais. |
+| T4.38 *(ajout)* | Int | Test de charge k6 (`load/bids-concurrent.js`) : préparation (acheteurs et enchère, relançable) et vérification en base (offres = acks acceptés, montants espacés d'un pas, pas deux offres de suite du même acheteur, compteur, prix, meilleur enchérisseur, `endsAt` = dernière offre + `antiSnipingMs`) ; chaque incohérence est signalée. |
 
 ## Étape 5 — Clôture
 
@@ -191,7 +194,15 @@ Règles : [auction-lifecycle.md](../domain/workflows/auction-lifecycle.md) (« C
 | T5.6 | Int | Remise en vente : nouveau `draft` sans offres, document d'origine intact. Refusée depuis `live` et `scheduled`. |
 | T5.7 | Int | Espace utilisateur : « mes offres » et « mes gains » listent les bonnes enchères et uniquement celles de l'utilisateur. |
 | T5.8 | Int | Données d'un autre utilisateur inaccessibles (offres, gains). |
-| T5.9 | E2E | Une enchère se clôture seule à l'heure, le gagnant le voit en direct et reçoit l'email. |
+| T5.9 | E2E | Une enchère se clôture seule à l'heure, le gagnant le voit en direct et reçoit l'email (`e2e/closing.spec.ts` : la fin est avancée à 6 s par `mongosh`, le job fait le reste ; vérifie aussi « Mes gains », « Mes offres » et l'email du vendeur). |
+| T5.10 *(ajout)* | Int | Le job rattrape toutes les enchères en retard, ignore `draft`, `scheduled`, `cancelled` et les enchères déjà closes ; le délai de paiement est celui des paramètres du moment. |
+| T5.11 *(ajout)* | Int | `auction:ended` : nom du gagnant et prix final sans email, `winner: null` et `finalPrice: null` sans offre, diffusé à la room de l'enchère seulement, une fois même avec trois passages en parallèle (un seul email au gagnant). |
+| T5.12 *(ajout)* | Int | Compte anonymisé (sans email) : la clôture réussit, le vendeur est prévenu ; panne de la file d'emails : la clôture n'est pas défaite et l'erreur est signalée. |
+| T5.13 *(ajout)* | Int | Une offre et la clôture simultanées (15 tirages) : soit l'offre passe et l'enchère reste ouverte et prolongée, soit la clôture passe et l'offre reçoit `AUCTION_NOT_LIVE` ; le gagnant d'une enchère close est toujours son meilleur enchérisseur. |
+| T5.14 *(ajout)* | Int | Remise en vente : l'originale est strictement inchangée ; copie sans offres, `nextMinBid = startingPrice` ; photos copiées sous de nouvelles clés (remplacer une photo de la copie ne supprime pas celle de l'originale) ; refusée depuis `draft`, `scheduled`, `live`, `paid` et `ended` avec gagnant ; dates revalidées ; autre vendeur, acheteur et visiteur refusés. |
+| T5.15 *(ajout)* | Int | `auction.get` après la clôture : gagnant par son nom seul, prix final, jamais d'échéance de paiement ni d'email. |
+| T5.16 *(ajout)* | Int | « Mes offres » : meilleure offre et position (`leading`, `outbid`, `won`, `lost`, `cancelled`), paginée ; « Mes gains » : prix final et échéance, uniquement les enchères dont je suis le gagnant ; un autre utilisateur voit des listes vides ; visiteur refusé. |
+| T5.17 *(ajout)* | Comp | Front : clôture en direct (formulaire retiré, gagnant, « Vous avez remporté », sans offre, autre enchère ignorée) ; « Mes offres » et « Mes gains » (positions, prix, échéance, vide, erreur, visiteur) ; remise en vente (bouton seulement quand c'est permis, dates pré-remplies, validation, erreur du serveur) ; liens de l'en-tête. |
 
 ## Étape 6 — Paiement
 

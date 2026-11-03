@@ -13,6 +13,8 @@ export default defineConfig([
     'playwright-report/**',
     'test-results/**',
     'docs/**',
+    // Scripts k6 : moteur JS propre à k6 (imports `k6/http`), hors de la chaîne Node.
+    'load/**',
   ]),
 
   js.configs.recommended,

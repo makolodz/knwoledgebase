@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "tsx watch --clear-screen=false --env-file-if-exists=../../.env src/server.ts",
     "seed": "tsx --env-file-if-exists=../../.env src/scripts/seed-run.ts",
+    "load:prepare": "tsx --env-file-if-exists=../../.env src/scripts/load-bids-run.ts prepare",
+    "load:verify": "tsx --env-file-if-exists=../../.env src/scripts/load-bids-run.ts verify",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

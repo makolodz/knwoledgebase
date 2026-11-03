@@ -41,6 +41,7 @@ Composable `useAuctionSocket(auctionId)` (l'état de la page, enchère et histor
 - après chaque (re)connexion, le composable rejoint la room puis recharge l'état (aucune offre perdue) ; il recharge aussi une enchère `scheduled` quand son heure de début est passée
 - si l'ack d'une offre est `NOT_AUTHENTICATED` alors que l'utilisateur est connecté (JWT du socket expiré), la session est renouvelée, le socket reconnecté et l'offre renvoyée **une seule fois**
 - sans réponse du serveur dans les 8 s, l'offre est présentée comme une panne (`INTERNAL_ERROR`), à vérifier dans l'historique
+- à `auction:ended`, l'enchère passe à terminée avec son gagnant et son prix final, sans rechargement ; le formulaire disparaît
 - `useCountdown(endsAt)` donne le compte à rebours, qui suit les prolongations ; à zéro, le formulaire est désactivé
 
 Une seule instance de socket pour toute l'app, typée avec `ServerToClientEvents` / `ClientToServerEvents` importés depuis `packages/shared` ([realtime.md](realtime.md)).

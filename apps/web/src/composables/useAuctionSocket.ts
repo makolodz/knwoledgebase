@@ -1,5 +1,6 @@
 import type {
   AckResult,
+  AuctionEndedEvent,
   AuctionExtendedEvent,
   BidErrorCode,
   BidNewEvent,
@@ -139,10 +140,22 @@ export function useAuctionSocket(auctionId: Ref<string>, options: UseAuctionSock
     extendedTimer = setTimeout(() => (extended.value = false), 6000)
   }
 
+  // La clôture : le serveur annonce le gagnant et le prix final, sans qu'il faille recharger.
+  const onEnded = (event: AuctionEndedEvent) => {
+    if (event.auctionId !== auctionId.value || auction.value === null) return
+    auction.value = {
+      ...auction.value,
+      status: 'ended',
+      currentPrice: event.finalPrice ?? auction.value.currentPrice,
+      winner: event.winner,
+    }
+  }
+
   socket.on('connect', onConnect)
   socket.on('disconnect', onDisconnect)
   socket.on('bid:new', onBidNew)
   socket.on('auction:extended', onExtended)
+  socket.on('auction:ended', onEnded)
 
   // Première charge : par l'API, que le socket soit connecté ou non (il peut être indisponible).
   void (socket.connected ? joinAndLoad() : load())
@@ -174,6 +187,7 @@ export function useAuctionSocket(auctionId: Ref<string>, options: UseAuctionSock
     socket.off('disconnect', onDisconnect)
     socket.off('bid:new', onBidNew)
     socket.off('auction:extended', onExtended)
+    socket.off('auction:ended', onEnded)
     if (socket.connected) socket.emit('auction:leave', { auctionId: auctionId.value })
   })
 

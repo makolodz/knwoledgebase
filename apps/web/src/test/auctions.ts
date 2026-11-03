@@ -18,6 +18,7 @@ export function publicAuction(overrides: Partial<PublicAuction> = {}): PublicAuc
     status: 'scheduled',
     sellerId: 'b'.repeat(24),
     sellerName: 'Vera',
+    winner: null,
     ...overrides,
   }
 }

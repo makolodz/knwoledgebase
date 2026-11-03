@@ -1,4 +1,5 @@
-import { access, mkdir, rm, writeFile } from 'node:fs/promises'
+import { randomUUID } from 'node:crypto'
+import { access, copyFile, mkdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { imageKeySchema } from '@encheres/shared'
 
@@ -14,6 +15,8 @@ export interface Storage {
   /** Supprime les deux tailles ; sans effet si la photo n'existe pas. */
   delete(key: string): Promise<void>
   exists(key: string): Promise<boolean>
+  /** Copie une photo sous une nouvelle clé (UUID généré ici) et renvoie cette clé. */
+  copy(key: string): Promise<string>
   /** Chemin public de la photo (servie sous `/uploads/`). */
   url(key: string, variant?: ImageVariant): string
 }
@@ -60,6 +63,15 @@ export function createDiskStorage(directory: string): Storage {
       } catch {
         return false
       }
+    },
+    async copy(key) {
+      assertKey(key)
+      const copy = randomUUID()
+      await Promise.all([
+        copyFile(pathOf(key, 'full'), pathOf(copy, 'full')),
+        copyFile(pathOf(key, 'thumb'), pathOf(copy, 'thumb')),
+      ])
+      return copy
     },
     url(key, variant = 'full') {
       assertKey(key)

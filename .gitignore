@@ -22,3 +22,6 @@ uploads/
 .claude/launch.json
 
 .DS_Store
+
+# Résumé de la dernière exécution de k6 (load/rapport.md)
+load/summary.json

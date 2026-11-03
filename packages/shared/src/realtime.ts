@@ -76,7 +76,8 @@ export interface AuctionExtendedEvent {
 export interface AuctionEndedEvent {
   auctionId: string
   winner: BidderRef | null
-  finalPrice: number
+  /** Prix final en centimes ; `null` quand l'enchère s'est terminée sans offre. */
+  finalPrice: number | null
 }
 
 export interface ServerToClientEvents {

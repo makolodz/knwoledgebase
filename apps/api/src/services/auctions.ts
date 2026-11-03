@@ -39,10 +39,15 @@ function toObjectId(id: string): Types.ObjectId {
   return new Types.ObjectId(id)
 }
 
+/** Noms d'affichage des vendeurs et des gagnants : jamais d'email. */
 async function sellerNames(records: AuctionRecord[]): Promise<Map<string, string>> {
-  const ids = [...new Set(records.map((record) => record.sellerId.toString()))]
-  const sellers = await User.find({ _id: { $in: ids } }, { name: 1 })
-  return new Map(sellers.map((seller) => [seller._id.toString(), seller.name]))
+  const ids = new Set<string>()
+  for (const record of records) {
+    ids.add(record.sellerId.toString())
+    if (record.winnerId != null) ids.add(record.winnerId.toString())
+  }
+  const users = await User.find({ _id: { $in: [...ids] } }, { name: 1 })
+  return new Map(users.map((user) => [user._id.toString(), user.name]))
 }
 
 function toPublic(
@@ -69,10 +74,17 @@ function toPublic(
     status: record.status,
     sellerId: record.sellerId.toString(),
     sellerName: names.get(record.sellerId.toString()) ?? '',
+    winner:
+      record.winnerId == null
+        ? null
+        : { id: record.winnerId.toString(), name: names.get(record.winnerId.toString()) ?? '' },
   }
 }
 
-async function presentPublic(records: AuctionRecord[], storage: Storage): Promise<PublicAuction[]> {
+export async function presentPublic(
+  records: AuctionRecord[],
+  storage: Storage,
+): Promise<PublicAuction[]> {
   const names = await sellerNames(records)
   return records.map((record) => toPublic(record, names, storage))
 }
@@ -191,6 +203,47 @@ export async function updateAuction(
 
   const updated = await Auction.findById(id).orFail()
   const [managed] = await presentManaged([updated], storage)
+  return managed as ManagedAuction
+}
+
+/** Statuts depuis lesquels on peut remettre en vente (docs/domain/workflows/auction-lifecycle.md). */
+function canRelist(record: AuctionRecord): boolean {
+  if (record.status === 'unpaid' || record.status === 'cancelled') return true
+  return record.status === 'ended' && record.winnerId == null
+}
+
+/**
+ * Remise en vente : une **copie** de l'enchère dans un nouveau `draft`, sans offres. Le document
+ * d'origine n'est jamais réutilisé ni modifié, pour garder l'historique. Les photos sont copiées
+ * sous de nouvelles clés : retirer une photo de la copie ne doit pas toucher l'originale.
+ */
+export async function relistAuction(
+  storage: Storage,
+  seller: UserDocument,
+  input: { id: string; startsAt: Date; endsAt: Date },
+  now: Date = new Date(),
+): Promise<ManagedAuction> {
+  const original = await Auction.findOne({ _id: toObjectId(input.id), sellerId: seller._id })
+  if (original === null) throw new AppError('AUCTION_NOT_FOUND')
+  if (!canRelist(original)) throw new AppError('AUCTION_STATE_INVALID')
+
+  const settings = await getSettings()
+  assertSchedule(settings, input.startsAt, input.endsAt, now)
+
+  const images = await Promise.all(original.images.map((key) => storage.copy(key)))
+  const copy = await Auction.create({
+    sellerId: seller._id,
+    title: original.title,
+    description: original.description,
+    images,
+    startingPrice: original.startingPrice,
+    minIncrement: original.minIncrement,
+    nextMinBid: original.startingPrice,
+    startsAt: input.startsAt,
+    endsAt: input.endsAt,
+    status: 'draft',
+  })
+  const [managed] = await presentManaged([copy], storage)
   return managed as ManagedAuction
 }
 

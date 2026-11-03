@@ -8,6 +8,17 @@ const nameSchema = z.string().min(1)
 
 const euros = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
 
+const deadlineFormat = new Intl.DateTimeFormat('fr-FR', {
+  dateStyle: 'full',
+  timeStyle: 'short',
+  timeZone: 'Europe/Paris',
+})
+
+/** Échéance lisible, en heure de Paris (les dates sont stockées en UTC). */
+function formatDeadline(iso: string): string {
+  return deadlineFormat.format(new Date(iso))
+}
+
 /** Centimes → « 12,50 € » (les montants sont stockés en centimes entiers). */
 function formatEuros(cents: number): string {
   return euros.format(cents / 100)
@@ -138,6 +149,65 @@ export const EMAIL_TEMPLATES = {
           'Vous pouvez enchérir de nouveau tant que l’enchère est ouverte.',
         ],
         action: { label: 'Voir l’enchère', url: link },
+      }),
+  }),
+
+  /** Le gagnant : l'enchère est close, il doit payer avant l'échéance (auction-lifecycle.md). */
+  'auction-won': template({
+    schema: z.object({
+      name: nameSchema,
+      title: z.string().min(1),
+      /** Prix final, en centimes. */
+      amount: z.number().int().min(1),
+      /** Échéance de paiement (ISO, UTC). */
+      deadline: z.iso.datetime(),
+      link: linkSchema,
+    }),
+    render: ({ name, title, amount, deadline, link }) =>
+      composeEmail({
+        subject: 'Vous avez remporté une enchère',
+        greeting: `Bonjour ${name},`,
+        paragraphs: [
+          `Félicitations : vous avez remporté « ${title} » pour ${formatEuros(amount)}.`,
+          `Le paiement est à effectuer avant le ${formatDeadline(deadline)}. Passé ce délai, l’enchère pourra être attribuée à un autre enchérisseur.`,
+        ],
+        action: { label: 'Voir mes enchères gagnées', url: link },
+      }),
+  }),
+
+  /** Le vendeur : son enchère est close avec un gagnant. */
+  'auction-sold': template({
+    schema: z.object({
+      name: nameSchema,
+      title: z.string().min(1),
+      amount: z.number().int().min(1),
+      winnerName: nameSchema,
+      link: linkSchema,
+    }),
+    render: ({ name, title, amount, winnerName, link }) =>
+      composeEmail({
+        subject: 'Votre enchère est terminée',
+        greeting: `Bonjour ${name},`,
+        paragraphs: [
+          `Votre enchère « ${title} » est terminée : elle est remportée par ${winnerName} pour ${formatEuros(amount)}.`,
+          `Le gagnant a maintenant jusqu’à l’échéance de paiement pour régler.`,
+        ],
+        action: { label: 'Mes enchères', url: link },
+      }),
+  }),
+
+  /** Le vendeur : enchère close sans aucune offre. */
+  'auction-unsold': template({
+    schema: z.object({ name: nameSchema, title: z.string().min(1), link: linkSchema }),
+    render: ({ name, title, link }) =>
+      composeEmail({
+        subject: 'Votre enchère s’est terminée sans offre',
+        greeting: `Bonjour ${name},`,
+        paragraphs: [
+          `Votre enchère « ${title} » s’est terminée sans aucune offre.`,
+          `Vous pouvez la remettre en vente depuis « Mes enchères ».`,
+        ],
+        action: { label: 'Mes enchères', url: link },
       }),
   }),
 

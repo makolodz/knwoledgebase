@@ -184,6 +184,33 @@ describe('événements reçus', () => {
     expect(api.extended.value).toBe(false)
   })
 
+  it('auction:ended passe l’enchère à terminée avec son gagnant et son prix final', async () => {
+    const { api, fake } = setup()
+    await flushPromises()
+
+    fake.serverSends('auction:ended', { auctionId: ID, winner: BOB, finalPrice: 4200 })
+
+    expect(api.auction.value).toMatchObject({ status: 'ended', currentPrice: 4200, winner: BOB })
+  })
+
+  it('auction:ended sans gagnant garde le prix et efface le gagnant', async () => {
+    const { api, fake } = setup()
+    await flushPromises()
+
+    fake.serverSends('auction:ended', { auctionId: ID, winner: null, finalPrice: null })
+
+    expect(api.auction.value).toMatchObject({ status: 'ended', currentPrice: null, winner: null })
+  })
+
+  it('ignore auction:ended d’une autre enchère', async () => {
+    const { api, fake } = setup()
+    await flushPromises()
+
+    fake.serverSends('auction:ended', { auctionId: 'f'.repeat(24), winner: BOB, finalPrice: 1 })
+
+    expect(api.auction.value?.status).toBe('live')
+  })
+
   it('recharge une enchère à venir quand son heure de début est passée', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2030-01-01T10:00:00Z'))
