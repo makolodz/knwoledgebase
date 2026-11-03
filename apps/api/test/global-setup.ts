@@ -9,7 +9,7 @@ declare module 'vitest' {
 }
 
 /**
- * Même version majeure que l'image `mongo:8.0` de docker-compose.yml. Le binaire est
+ * Même version que l'image `mongo:8.0.4` de docker-compose.yml. Le binaire est
  * téléchargé au premier lancement puis gardé en cache (docs/technical/testing.md).
  */
 const MONGO_VERSION = '8.0.4'
