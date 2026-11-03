@@ -18,7 +18,7 @@ L'étape 2 de la [roadmap](../roadmap.md) code les comptes et les sessions déci
 | Envoi SMTP | `nodemailer` | [ADR-006](ADR-006-emails-brevo.md) |
 | Tests | `mongodb-memory-server` (dev) | [testing.md](../technical/testing.md) |
 
-**Tests sur base réelle** : un seul `mongod` (version `8.0.x`, alignée sur `mongo:8.0` de Docker Compose) est démarré par exécution de Vitest (`globalSetup`). Chaque fichier de test utilise **sa propre base**, dont les collections sont vidées entre les tests. Le binaire est téléchargé au premier lancement, pas à l'installation (script d'installation refusé par `allowBuilds`).
+**Tests sur base réelle** : un seul `mongod` (version `8.0.4`, alignée sur `mongo:8.0.4` de Docker Compose, épinglée à cause de SERVER-121912) est démarré par exécution de Vitest (`globalSetup`). Chaque fichier de test utilise **sa propre base**, dont les collections sont vidées entre les tests. Le binaire est téléchargé au premier lancement, pas à l'installation (script d'installation refusé par `allowBuilds`).
 
 **Limites anti-abus** : `@fastify/rate-limit` applique la limite globale (300 requêtes par minute et par IP). Les limites par action d'[security.md](../technical/security.md) (connexion par IP **et** par email, inscription, mot de passe oublié, renvoi de vérification) utilisent un **limiteur en mémoire** écrit pour le projet (`services/rate-limiter.ts`) : tout tRPC passe par une seule route Fastify, donc le plugin ne peut pas distinguer les procédures. Le même limiteur servira à `bid:place`. Il reste valable tant que l'API tourne en une seule instance ([ADR-007](ADR-007-photos-disque-local.md)).
 
